@@ -5,7 +5,9 @@ import * as React from "react";
 import { LeadTable } from "@/components/leads/LeadTable";
 import { Button } from "@/components/ui/Button";
 import { Input, Label } from "@/components/ui/Field";
+import { useI18n } from "@/lib/i18n";
 import type { Lead, LeadList } from "@/lib/leadTypes";
+import { displayListName } from "@/lib/listNames";
 import {
   createList,
   deleteList,
@@ -18,6 +20,7 @@ import {
 import { formatRelative } from "@/lib/utils";
 
 export default function ListsPage() {
+  const { locale } = useI18n();
   const [lists, setLists] = React.useState<LeadList[]>([]);
   const [saved, setSaved] = React.useState<Lead[]>([]);
   const [activeId, setActiveId] = React.useState<string | null>(null);
@@ -46,14 +49,21 @@ export default function ListsPage() {
   }
 
   function handleRename(list: LeadList) {
-    const name = window.prompt("Rename list", list.name);
+    const name = window.prompt(
+      locale === "fr" ? "Renommer la liste" : "Rename list",
+      displayListName(list.name, locale)
+    );
     if (!name || !name.trim()) return;
     updateList(list.id, { name: name.trim() });
     refresh();
   }
 
   function handleDelete(list: LeadList) {
-    if (!window.confirm(`Delete list “${list.name}”?`)) return;
+    const confirmMsg =
+      locale === "fr"
+        ? `Supprimer la liste « ${displayListName(list.name, locale)} » ?`
+        : `Delete list “${displayListName(list.name, locale)}”?`;
+    if (!window.confirm(confirmMsg)) return;
     deleteList(list.id);
     if (activeId === list.id) setActiveId(null);
     refresh();
@@ -68,13 +78,15 @@ export default function ListsPage() {
               onClick={() => setActiveId(null)}
               className="inline-flex items-center gap-1 text-xs text-muted hover:text-foreground"
             >
-              <ArrowLeft size={12} /> Back to lists
+              <ArrowLeft size={12} />{" "}
+              {locale === "fr" ? "Retour aux listes" : "Back to lists"}
             </button>
             <h2 className="mt-1 text-xl font-semibold text-foreground">
-              {active.name}
+              {displayListName(active.name, locale)}
             </h2>
             <p className="text-xs text-muted">
-              {active.leadIds.length} leads · Updated{" "}
+              {active.leadIds.length} leads ·{" "}
+              {locale === "fr" ? "Mis à jour" : "Updated"}{" "}
               {formatRelative(active.updatedAt)}
             </p>
           </div>
@@ -85,7 +97,7 @@ export default function ListsPage() {
               leftIcon={<Edit2 size={12} />}
               onClick={() => handleRename(active)}
             >
-              Rename
+              {locale === "fr" ? "Renommer" : "Rename"}
             </Button>
             <Button
               size="sm"
@@ -93,7 +105,7 @@ export default function ListsPage() {
               leftIcon={<Trash2 size={12} />}
               onClick={() => handleDelete(active)}
             >
-              Delete
+              {locale === "fr" ? "Supprimer" : "Delete"}
             </Button>
           </div>
         </div>
@@ -101,16 +113,21 @@ export default function ListsPage() {
         {activeLeads.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border bg-surface/50 p-10 text-center">
             <h3 className="text-base font-semibold text-foreground">
-              This list is empty.
+              {locale === "fr" ? "Cette liste est vide." : "This list is empty."}
             </h3>
             <p className="mt-1 text-sm text-muted-strong">
-              Run a search and use “Add to list” to populate it.
+              {locale === "fr"
+                ? "Lancez une recherche et utilisez « Ajouter à une liste » pour la remplir."
+                : "Run a search and use “Add to list” to populate it."}
             </p>
           </div>
         ) : (
           <div className="space-y-3">
             <div className="flex flex-wrap items-center justify-between text-xs text-muted">
-              <div>{activeLeads.length} leads in this list</div>
+              <div>
+                {activeLeads.length}{" "}
+                {locale === "fr" ? "leads dans cette liste" : "leads in this list"}
+              </div>
               <div className="flex flex-wrap gap-2">
                 {active.leadIds.length > 0 ? (
                   <button
@@ -122,7 +139,7 @@ export default function ListsPage() {
                     }}
                     className="text-xs text-muted hover:text-danger"
                   >
-                    Empty list
+                    {locale === "fr" ? "Vider la liste" : "Empty list"}
                   </button>
                 ) : null}
               </div>
@@ -143,21 +160,27 @@ export default function ListsPage() {
         <div className="flex items-center gap-2">
           <Plus size={14} className="text-accent-strong" />
           <h3 className="text-sm font-semibold text-foreground">
-            Create a new list
+            {locale === "fr" ? "Créer une nouvelle liste" : "Create a new list"}
           </h3>
         </div>
         <div className="mt-4 flex flex-wrap items-end gap-3">
           <div className="flex-1 min-w-[220px]">
-            <Label htmlFor="ln">List name</Label>
+            <Label htmlFor="ln">
+              {locale === "fr" ? "Nom de la liste" : "List name"}
+            </Label>
             <Input
               id="ln"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
-              placeholder="Q3 web agency prospects"
+              placeholder={
+                locale === "fr"
+                  ? "Prospects agence web Q3"
+                  : "Q3 web agency prospects"
+              }
             />
           </div>
           <Button onClick={handleCreate} leftIcon={<Plus size={14} />}>
-            Create list
+            {locale === "fr" ? "Créer la liste" : "Create list"}
           </Button>
         </div>
       </div>
@@ -173,21 +196,22 @@ export default function ListsPage() {
                 onClick={() => setActiveId(l.id)}
                 className="truncate text-left text-base font-semibold text-foreground hover:text-accent-strong"
               >
-                {l.name}
+                {displayListName(l.name, locale)}
               </button>
               <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] font-medium text-muted-strong">
                 {l.leadIds.length}
               </span>
             </div>
             <p className="mt-1 text-xs text-muted">
-              Updated {formatRelative(l.updatedAt)}
+              {locale === "fr" ? "Mis à jour" : "Updated"}{" "}
+              {formatRelative(l.updatedAt)}
             </p>
             <div className="mt-4 flex items-center justify-between">
               <button
                 onClick={() => setActiveId(l.id)}
                 className="text-xs text-accent-strong hover:text-accent"
               >
-                Open →
+                {locale === "fr" ? "Ouvrir →" : "Open →"}
               </button>
               <div className="flex gap-1">
                 <button
@@ -210,7 +234,9 @@ export default function ListsPage() {
         ))}
         {lists.length === 0 ? (
           <div className="col-span-full rounded-xl border border-dashed border-border bg-surface/50 p-10 text-center text-sm text-muted">
-            No lists yet. Create one above to get started.
+            {locale === "fr"
+              ? "Aucune liste pour l’instant. Créez-en une ci-dessus."
+              : "No lists yet. Create one above to get started."}
           </div>
         ) : null}
       </div>

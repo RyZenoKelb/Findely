@@ -14,13 +14,18 @@ import * as React from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Checkbox, Input, Label, Select } from "@/components/ui/Field";
+import { sortedCountries } from "@/lib/countries";
 import { useI18n } from "@/lib/i18n";
 import type {
   LeadFilterKey,
   LeadObjective,
   SearchResponse,
 } from "@/lib/leadTypes";
-import { OBJECTIVE_LABELS } from "@/lib/leadTypes";
+import {
+  localizedSource,
+  objectiveEntries,
+  sourceStatusLabel,
+} from "@/lib/localizedLabels";
 import type { SourceMetadata } from "@/lib/sources";
 import { bumpUsage, getSettings, saveSearch } from "@/lib/storage";
 import { cn } from "@/lib/utils";
@@ -38,6 +43,7 @@ export interface SearchFormState {
   requirePhone: boolean;
   requireWebsite: boolean;
   includeOnlyContactable: boolean;
+  excludeSeen: boolean;
 }
 
 export function defaultState(): SearchFormState {
@@ -54,6 +60,7 @@ export function defaultState(): SearchFormState {
     requirePhone: false,
     requireWebsite: false,
     includeOnlyContactable: false,
+    excludeSeen: true,
   };
 }
 
@@ -123,34 +130,6 @@ function Section({
   );
 }
 
-function sourceStatusCopy(
-  status: SourceMetadata["status"],
-  locale: "en" | "fr"
-): { label: string; tone: "success" | "warning" | "danger" | "muted" } {
-  if (locale === "fr") {
-    switch (status) {
-      case "available":
-        return { label: "Disponible", tone: "success" };
-      case "missing_key":
-        return { label: "Clé API manquante", tone: "warning" };
-      case "disabled_config":
-        return { label: "Désactivé (config)", tone: "warning" };
-      case "placeholder":
-        return { label: "Bientôt", tone: "muted" };
-    }
-  }
-  switch (status) {
-    case "available":
-      return { label: "Available", tone: "success" };
-    case "missing_key":
-      return { label: "Missing API key", tone: "warning" };
-    case "disabled_config":
-      return { label: "Disabled by config", tone: "warning" };
-    case "placeholder":
-      return { label: "Soon", tone: "muted" };
-  }
-}
-
 export function SearchForm({
   initial,
   onResults,
@@ -185,11 +164,34 @@ export function SearchForm({
     void fetch("/api/sources", { cache: "no-store" })
       .then((r) => r.json())
       .then((data: { sources: SourceMetadata[] }) => {
-        setSources(data.sources ?? []);
+        const all = data.sources ?? [];
+        setSources(all);
         setSourcesLoaded(true);
+        // Prefer Google Places when it's available.
+        const places = all.find(
+          (src) => src.id === "google_maps" && src.enabled
+        );
+        if (places) {
+          setState((prev) =>
+            prev.sources.includes("google_maps")
+              ? prev
+              : {
+                  ...prev,
+                  sources: ["google_maps", ...prev.sources.filter((s) => s !== "mock")],
+                }
+          );
+        }
       })
       .catch(() => setSourcesLoaded(true));
   }, []);
+
+  // Hide the internal mock source from the UI unless no real source is enabled.
+  const anyRealEnabled = sources.some(
+    (src) => src.id !== "mock" && src.enabled
+  );
+  const visibleSources = sources.filter(
+    (src) => src.id !== "mock" || !anyRealEnabled
+  );
 
   const [advancedOpen, setAdvancedOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -354,12 +356,20 @@ export function SearchForm({
                 <Globe size={12} /> {t.searchForm.country}
               </span>
             </Label>
-            <Input
+            <Select
               id="country"
               value={state.country}
               onChange={(e) => patch("country", e.target.value)}
-              placeholder="France"
-            />
+            >
+              <option value="">
+                {locale === "fr" ? "Tous les pays" : "Any country"}
+              </option>
+              {sortedCountries(locale).map((c) => (
+                <option key={c.value} value={c.value}>
+                  {locale === "fr" ? c.fr : c.en}
+                </option>
+              ))}
+            </Select>
           </div>
           <div>
             <Label htmlFor="limit">{t.searchForm.resultLimit}</Label>
@@ -390,10 +400,14 @@ export function SearchForm({
         }
       >
         <div className="space-y-2">
-          {sources.map((s) => {
+          {visibleSources.map((s) => {
             const active = state.sources.includes(s.id);
             const selectable = s.enabled;
-            const copy = sourceStatusCopy(s.status, locale);
+            const copy = sourceStatusLabel(s.status, locale);
+            const loc = localizedSource(s.id, locale);
+            const displayName = loc?.name ?? s.name;
+            const displayDescription = loc?.description ?? s.description;
+            const displayBadge = loc?.badge ?? s.badge;
             return (
               <button
                 key={s.id}
@@ -408,7 +422,6 @@ export function SearchForm({
                     : "border-border bg-white/[0.02] hover:border-border-strong hover:bg-white/5",
                   !selectable && "cursor-not-allowed opacity-70"
                 )}
-                title={s.reason}
               >
                 <span
                   className={cn(
@@ -422,21 +435,16 @@ export function SearchForm({
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-2 text-sm font-medium text-foreground">
-                    {s.name}
-                    {s.badge ? (
-                      <Badge tone={s.id === "mock" ? "accent" : "outline"}>
-                        {s.badge}
+                    {displayName}
+                    {displayBadge ? (
+                      <Badge tone={s.id === "google_maps" ? "accent" : "outline"}>
+                        {displayBadge}
                       </Badge>
                     ) : null}
                   </span>
                   <span className="mt-0.5 block text-xs text-muted-strong">
-                    {s.description}
+                    {displayDescription}
                   </span>
-                  {s.reason ? (
-                    <span className="mt-1 block text-[11px] text-muted">
-                      {s.reason}
-                    </span>
-                  ) : null}
                 </span>
                 <Badge tone={copy.tone}>{copy.label}</Badge>
               </button>
@@ -451,8 +459,13 @@ export function SearchForm({
           ) ? (
             <div className="flex items-start gap-2 rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-xs text-warning">
               <AlertTriangle size={12} className="mt-0.5 flex-none" />
-              {sources.find((s) => s.id === "google_maps")?.reason ??
-                "Google Places unavailable."}
+              {
+                sourceStatusLabel(
+                  sources.find((s) => s.id === "google_maps")?.status ??
+                    "missing_key",
+                  locale
+                ).label
+              }
             </div>
           ) : null}
         </div>
@@ -477,9 +490,9 @@ export function SearchForm({
                 patch("objective", e.target.value as LeadObjective)
               }
             >
-              {Object.entries(OBJECTIVE_LABELS).map(([v, l]) => (
-                <option key={v} value={v}>
-                  {l}
+              {objectiveEntries(locale).map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
                 </option>
               ))}
             </Select>
@@ -582,6 +595,15 @@ export function SearchForm({
                 }
               />
               {t.searchForm.onlyContactable}
+            </label>
+            <label className="flex items-center gap-2 rounded-lg border border-border bg-white/[0.02] px-3 py-2 text-sm md:col-span-2 lg:col-span-4">
+              <Checkbox
+                checked={state.excludeSeen}
+                onChange={(e) => patch("excludeSeen", e.target.checked)}
+              />
+              {locale === "fr"
+                ? "Exclure les leads déjà vus"
+                : "Exclude previously seen leads"}
             </label>
           </div>
         ) : null}

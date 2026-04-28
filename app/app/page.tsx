@@ -27,7 +27,8 @@ import type {
   SearchQuery,
   UsageStats,
 } from "@/lib/leadTypes";
-import { OBJECTIVE_LABELS } from "@/lib/leadTypes";
+import { displayListName } from "@/lib/listNames";
+import { objectiveEntries, objectiveLabel } from "@/lib/localizedLabels";
 import { useI18n } from "@/lib/i18n";
 import {
   DEFAULT_USAGE,
@@ -81,7 +82,7 @@ const TEMPLATES: {
 ];
 
 export default function DashboardHome() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [searches, setSearches] = React.useState<SearchQuery[]>([]);
   const [lists, setLists] = React.useState<LeadList[]>([]);
   const [usage, setUsage] = React.useState<UsageStats>(DEFAULT_USAGE);
@@ -205,9 +206,9 @@ export default function DashboardHome() {
                   }))
                 }
               >
-                {Object.entries(OBJECTIVE_LABELS).map(([v, l]) => (
-                  <option key={v} value={v}>
-                    {l}
+                {objectiveEntries(locale).map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
                   </option>
                 ))}
               </Select>
@@ -248,7 +249,7 @@ export default function DashboardHome() {
                   className="flex items-center gap-2 text-foreground hover:text-accent-strong"
                 >
                   <ListChecks size={14} className="text-muted" />
-                  {l.name}
+                  {displayListName(l.name, locale)}
                 </Link>
                 <span className="text-xs text-muted">
                   {l.leadIds.length} leads
@@ -294,12 +295,13 @@ export default function DashboardHome() {
                   <div className="flex min-w-0 items-center gap-2">
                     <Search size={14} className="flex-none text-muted" />
                     <span className="truncate text-foreground">
-                      {s.businessType} in {s.location}
+                      {s.businessType} {locale === "fr" ? "à" : "in"}{" "}
+                      {s.location}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text-xs text-muted">
                     <span className="hidden sm:inline">
-                      {OBJECTIVE_LABELS[s.objective ?? "general"]}
+                      {objectiveLabel(s.objective ?? "general", locale)}
                     </span>
                     <span>{formatRelative(s.createdAt)}</span>
                     <Link
@@ -310,7 +312,7 @@ export default function DashboardHome() {
                       }`}
                       className="text-accent-strong hover:text-accent"
                     >
-                      Re-run
+                      {locale === "fr" ? "Relancer" : "Re-run"}
                     </Link>
                   </div>
                 </li>

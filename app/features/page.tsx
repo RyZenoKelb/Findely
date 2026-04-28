@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ArrowRight,
   Database,
   Download,
   Filter,
@@ -10,7 +9,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { LinkButton } from "@/components/ui/Button";
 import {
   PublicPageHeader,
   PublicShell,
@@ -242,26 +240,6 @@ export default function FeaturesPage() {
               </div>
             );
           })}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-5xl px-5 pb-20 lg:px-8">
-        <div className="rounded-2xl border border-border-strong bg-gradient-to-br from-accent/[0.1] to-transparent p-8 text-center">
-          <h3 className="text-2xl font-semibold tracking-tight text-foreground">
-            {t.solution.title}
-          </h3>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-muted-strong">
-            {t.solution.subtitle}
-          </p>
-          <div className="mt-6">
-            <LinkButton
-              href="/app/search"
-              size="md"
-              rightIcon={<ArrowRight size={14} />}
-            >
-              {t.solution.tryIt}
-            </LinkButton>
-          </div>
         </div>
       </section>
 

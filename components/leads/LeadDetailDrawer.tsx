@@ -20,21 +20,22 @@ import { Button } from "@/components/ui/Button";
 import { Label, Textarea } from "@/components/ui/Field";
 import { LeadScore } from "./LeadScore";
 import { SignalBadge } from "./SignalBadge";
+import { useI18n } from "@/lib/i18n";
 import type { Lead, LeadList, LeadStatus } from "@/lib/leadTypes";
-import { getOutreachAngle } from "@/lib/outreach";
+import { displayListName } from "@/lib/listNames";
+import { outreachAngleFor, statusLabel } from "@/lib/localizedLabels";
 import { addLeadToList, createList, getLists, saveLead } from "@/lib/storage";
 import { cn } from "@/lib/utils";
 
-const STATUS_OPTIONS: {
+const STATUS_ORDER: {
   value: LeadStatus;
-  label: string;
   tone: "muted" | "accent" | "success" | "warning" | "danger";
 }[] = [
-  { value: "new", label: "New", tone: "muted" },
-  { value: "saved", label: "Saved", tone: "accent" },
-  { value: "contacted", label: "Contacted", tone: "accent" },
-  { value: "interested", label: "Interested", tone: "success" },
-  { value: "ignored", label: "Ignored", tone: "danger" },
+  { value: "new", tone: "muted" },
+  { value: "saved", tone: "accent" },
+  { value: "contacted", tone: "accent" },
+  { value: "interested", tone: "success" },
+  { value: "ignored", tone: "danger" },
 ];
 
 export function LeadDetailDrawer({
@@ -46,6 +47,7 @@ export function LeadDetailDrawer({
   onClose: () => void;
   onUpdated?: (lead: Lead) => void;
 }) {
+  const { t, locale } = useI18n();
   const [notes, setNotes] = React.useState<string>("");
   const [status, setStatus] = React.useState<LeadStatus>("new");
   const [lists, setLists] = React.useState<LeadList[]>([]);
@@ -84,7 +86,7 @@ export function LeadDetailDrawer({
     if (!lead) return;
     const next: Lead = { ...lead, notes: notes.trim() || undefined };
     persist(next);
-    setToast("Notes saved");
+    setToast(t.drawer.saveNotes);
   }
 
   function handleStatus(next: LeadStatus) {
@@ -97,7 +99,7 @@ export function LeadDetailDrawer({
     if (!lead) return;
     addLeadToList(listId, lead.id);
     persist({ ...lead, status: lead.status ?? "saved" });
-    setToast("Added to list");
+    setToast(locale === "fr" ? "Ajouté à la liste" : "Added to list");
     setLists(getLists());
   }
 
@@ -109,10 +111,10 @@ export function LeadDetailDrawer({
     addLeadToList(created.id, lead.id);
     persist({ ...lead, status: lead.status ?? "saved" });
     setLists(getLists());
-    setToast("List created");
+    setToast(locale === "fr" ? "Liste créée" : "List created");
   }
 
-  const angle = getOutreachAngle(lead);
+  const angle = outreachAngleFor(lead, locale);
 
   return (
     <div
@@ -140,11 +142,10 @@ export function LeadDetailDrawer({
               <LeadScore score={lead.score} />
               <Badge
                 tone={
-                  STATUS_OPTIONS.find((s) => s.value === status)?.tone ??
-                  "muted"
+                  STATUS_ORDER.find((s) => s.value === status)?.tone ?? "muted"
                 }
               >
-                {STATUS_OPTIONS.find((s) => s.value === status)?.label}
+                {statusLabel(status, locale)}
               </Badge>
             </div>
           </div>
@@ -242,10 +243,10 @@ export function LeadDetailDrawer({
 
           <section className="border-t border-border px-5 py-4">
             <div className="text-xs font-medium uppercase tracking-wide text-muted">
-              Status
+              {t.drawer.status}
             </div>
             <div className="mt-2 flex flex-wrap gap-1.5">
-              {STATUS_OPTIONS.map((s) => (
+              {STATUS_ORDER.map((s) => (
                 <button
                   key={s.value}
                   onClick={() => handleStatus(s.value)}
@@ -256,8 +257,12 @@ export function LeadDetailDrawer({
                       : "border-border bg-surface-2 text-muted-strong hover:bg-surface-3"
                   )}
                 >
-                  {status === s.value ? <Check size={10} /> : <Flag size={10} />}
-                  {s.label}
+                  {status === s.value ? (
+                    <Check size={10} />
+                  ) : (
+                    <Flag size={10} />
+                  )}
+                  {statusLabel(s.value, locale)}
                 </button>
               ))}
             </div>
@@ -266,7 +271,7 @@ export function LeadDetailDrawer({
           <section className="border-t border-border px-5 py-4">
             <div className="flex items-center justify-between">
               <div className="text-xs font-medium uppercase tracking-wide text-muted">
-                Save to list
+                {t.drawer.saveToList}
               </div>
               <button
                 onClick={handleCreateList}
@@ -277,7 +282,7 @@ export function LeadDetailDrawer({
             </div>
             {lists.length === 0 ? (
               <p className="mt-2 text-xs text-muted">
-                No lists yet. Create one to start saving leads.
+                {t.drawer.noLists}
               </p>
             ) : (
               <div className="mt-2 flex flex-wrap gap-1.5">
@@ -287,7 +292,7 @@ export function LeadDetailDrawer({
                     onClick={() => handleAddToList(l.id)}
                     className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-2.5 py-1 text-xs text-muted-strong hover:border-accent/40 hover:text-foreground"
                   >
-                    {l.name}
+                    {displayListName(l.name, locale)}
                     <span className="text-[10px] text-muted">
                       {l.leadIds.length}
                     </span>
@@ -303,9 +308,15 @@ export function LeadDetailDrawer({
             variant="ghost"
             size="sm"
             leftIcon={<Mail size={14} />}
-            onClick={() => setToast("Outreach not implemented in V1")}
+            onClick={() =>
+              setToast(
+                locale === "fr"
+                  ? "Outreach non implémenté pour l’instant"
+                  : "Outreach not implemented yet"
+              )
+            }
           >
-            Send to outreach
+            {t.drawer.send}
           </Button>
           <Button
             size="sm"
@@ -313,7 +324,7 @@ export function LeadDetailDrawer({
             leftIcon={<Copy size={14} />}
             onClick={() => copy(lead.name, "name")}
           >
-            Copy name
+            {t.drawer.copy}
           </Button>
         </div>
 

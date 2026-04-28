@@ -287,35 +287,44 @@ export function LeadTable({
                       </div>
                     </div>
                   </td>
-                  <td className="px-3 py-2.5">
+                  <td className="overflow-hidden px-3 py-2.5">
                     {lead.phone ? (
-                      <span className="truncate text-foreground">
+                      <div
+                        className="block truncate text-foreground"
+                        title={lead.phone}
+                      >
                         {lead.phone}
-                      </span>
+                      </div>
                     ) : (
                       <Badge tone="danger">{t.table.missing}</Badge>
                     )}
                   </td>
-                  <td className="px-3 py-2.5">
+                  <td className="overflow-hidden px-3 py-2.5">
                     {lead.website ? (
                       <a
                         href={lead.website}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-1 truncate text-accent-strong hover:text-accent"
+                        title={lead.website}
+                        className="flex min-w-0 items-center gap-1 truncate text-accent-strong hover:text-accent"
                       >
-                        {lead.website.replace(/^https?:\/\//, "")}
+                        <span className="truncate">
+                          {lead.website.replace(/^https?:\/\//, "")}
+                        </span>
                         <ExternalLink size={10} className="flex-none" />
                       </a>
                     ) : (
                       <Badge tone="warning">{t.table.noWebsite}</Badge>
                     )}
                   </td>
-                  <td className="px-3 py-2.5">
-                    <span className="block truncate text-muted-strong">
+                  <td className="overflow-hidden px-3 py-2.5">
+                    <div
+                      className="block truncate text-muted-strong"
+                      title={lead.address ?? undefined}
+                    >
                       {lead.address ?? "—"}
-                    </span>
+                    </div>
                   </td>
                   <td className="px-3 py-2.5">
                     <SignalBadges signals={lead.signals} max={2} />

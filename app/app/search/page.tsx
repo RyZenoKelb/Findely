@@ -10,9 +10,11 @@ import {
   SearchForm,
   type SearchFormState,
 } from "@/components/search/SearchForm";
+import { countryLabel } from "@/lib/countries";
 import { useI18n } from "@/lib/i18n";
 import type { Lead, LeadObjective, SearchResponse } from "@/lib/leadTypes";
-import { OBJECTIVE_LABELS } from "@/lib/leadTypes";
+import { objectiveLabel } from "@/lib/localizedLabels";
+import { annotateSeen, markSeen } from "@/lib/seenLeads";
 import { saveLeads } from "@/lib/storage";
 
 export default function SearchPage() {
@@ -25,10 +27,14 @@ export default function SearchPage() {
 
 function SearchPageInner() {
   const params = useSearchParams();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [response, setResponse] = React.useState<SearchResponse | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [hiddenSeen, setHiddenSeen] = React.useState(0);
+  const [showSeen, setShowSeen] = React.useState(false);
+  const [excludeSeen, setExcludeSeen] = React.useState(true);
+  const currentStateRef = React.useRef<SearchFormState | null>(null);
 
   const initial: Partial<SearchFormState> = React.useMemo(() => {
     const out: Partial<SearchFormState> = {};
@@ -44,17 +50,38 @@ function SearchPageInner() {
   }, [params]);
 
   function handleResults(resp: SearchResponse) {
-    setResponse(resp);
+    const state = currentStateRef.current;
+    const wantExclude = state?.excludeSeen ?? true;
+    setExcludeSeen(wantExclude);
+
+    const annotated = annotateSeen(resp.leads);
+    const visible = wantExclude
+      ? annotated.filter((l) => !l.seenBefore)
+      : annotated;
+    setHiddenSeen(annotated.length - visible.length);
+
+    const finalResp: SearchResponse = {
+      ...resp,
+      leads: (wantExclude ? visible : annotated) as Lead[],
+      meta: {
+        ...resp.meta,
+        total: (wantExclude ? visible : annotated).length,
+      },
+    };
+    setResponse(finalResp);
     setLoading(false);
     setError(null);
-    saveLeads(resp.leads as Lead[]);
+    saveLeads(visible as Lead[]);
+    markSeen(resp.leads);
+    setShowSeen(!wantExclude);
   }
 
   return (
     <div className="space-y-6">
       <SearchForm
         initial={initial}
-        onStart={() => {
+        onStart={(state) => {
+          currentStateRef.current = state;
           setLoading(true);
           setError(null);
         }}
@@ -81,16 +108,30 @@ function SearchPageInner() {
               <span className="leading-relaxed">{t.common.fallbackUsed}</span>
             </div>
           ) : null}
-          {response.meta.warnings && response.meta.warnings.length > 0 ? (
-            <div className="rounded-lg border border-border bg-surface px-4 py-2 text-[11px] text-muted">
-              {response.meta.warnings.map((w) => (
-                <div key={w.source}>
-                  <span className="font-mono text-muted-strong">{w.source}</span>
-                  : {w.message}
-                </div>
-              ))}
+
+          {hiddenSeen > 0 && excludeSeen ? (
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-surface px-4 py-2 text-xs text-muted">
+              <span>
+                {locale === "fr"
+                  ? `${hiddenSeen} lead${hiddenSeen > 1 ? "s" : ""} déjà vu${hiddenSeen > 1 ? "s" : ""} masqué${hiddenSeen > 1 ? "s" : ""}.`
+                  : `${hiddenSeen} previously seen lead${hiddenSeen > 1 ? "s" : ""} hidden.`}
+              </span>
+              <button
+                type="button"
+                className="text-accent-cyan hover:text-accent-strong"
+                onClick={() => setShowSeen((s) => !s)}
+              >
+                {showSeen
+                  ? locale === "fr"
+                    ? "Masquer à nouveau"
+                    : "Hide again"
+                  : locale === "fr"
+                    ? "Afficher les leads déjà vus"
+                    : "Show previously seen leads"}
+              </button>
             </div>
           ) : null}
+
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-surface px-4 py-3 text-xs">
             <div className="flex flex-wrap items-center gap-2 text-muted">
               <span className="text-foreground">
@@ -102,28 +143,29 @@ function SearchPageInner() {
               <span className="inline-flex items-center gap-1">
                 {response.meta.sourcesUsed.map((s) => (
                   <Badge key={s} tone="outline">
-                    {s}
+                    {s === "google_maps" ? "Google Places" : s}
                   </Badge>
                 ))}
               </span>
             </div>
             <div className="flex flex-wrap items-center gap-2 text-muted">
-              <Badge tone="accent">
-                {response.meta.query.businessType}
-              </Badge>
+              <Badge tone="accent">{response.meta.query.businessType}</Badge>
               <Badge tone="muted">{response.meta.query.location}</Badge>
-              <Badge tone="outline">
-                {OBJECTIVE_LABELS[response.meta.query.objective ?? "general"]}
-              </Badge>
-              {response.meta.query.filters.map((f) => (
-                <Badge key={f} tone="muted">
-                  {f}
+              {response.meta.query.country ? (
+                <Badge tone="muted">
+                  {countryLabel(response.meta.query.country, locale)}
                 </Badge>
-              ))}
+              ) : null}
+              <Badge tone="outline">
+                {objectiveLabel(
+                  response.meta.query.objective ?? "general",
+                  locale
+                )}
+              </Badge>
             </div>
           </div>
           <LeadTable
-            leads={response.leads}
+            leads={response.leads as Lead[]}
             defaultFilename="findely-search.csv"
           />
         </div>
@@ -132,12 +174,22 @@ function SearchPageInner() {
       {!loading && !response ? (
         <div className="rounded-xl border border-dashed border-border bg-surface/50 p-10 text-center">
           <h3 className="text-base font-semibold text-foreground">
-            Ready when you are.
+            {locale === "fr" ? "Prêt quand vous l’êtes." : "Ready when you are."}
           </h3>
           <p className="mt-1 text-sm text-muted-strong">
-            Try{" "}
-            <span className="text-foreground">“restaurants in Tel Aviv”</span>{" "}
-            or <span className="text-foreground">“dentists in Paris”</span>.
+            {locale === "fr" ? "Essayez " : "Try "}
+            <span className="text-foreground">
+              {locale === "fr"
+                ? "« restaurants à Tel Aviv »"
+                : "“restaurants in Tel Aviv”"}
+            </span>
+            {locale === "fr" ? " ou " : " or "}
+            <span className="text-foreground">
+              {locale === "fr"
+                ? "« dentistes à Paris »"
+                : "“dentists in Paris”"}
+            </span>
+            .
           </p>
         </div>
       ) : null}

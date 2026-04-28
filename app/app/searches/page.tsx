@@ -6,11 +6,13 @@ import * as React from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import type { SearchQuery } from "@/lib/leadTypes";
-import { OBJECTIVE_LABELS } from "@/lib/leadTypes";
+import { objectiveLabel } from "@/lib/localizedLabels";
+import { useI18n } from "@/lib/i18n";
 import { deleteSearch, getSearches } from "@/lib/storage";
 import { formatRelative } from "@/lib/utils";
 
 export default function SearchesPage() {
+  const { t, locale } = useI18n();
   const [searches, setSearches] = React.useState<SearchQuery[]>([]);
 
   const refresh = React.useCallback(() => {
@@ -39,14 +41,18 @@ export default function SearchesPage() {
     return (
       <div className="rounded-xl border border-dashed border-border bg-surface/50 p-10 text-center">
         <h3 className="text-base font-semibold text-foreground">
-          No saved searches yet.
+          {locale === "fr"
+            ? "Aucune recherche enregistrée."
+            : "No saved searches yet."}
         </h3>
         <p className="mt-1 text-sm text-muted-strong">
-          Every search you run from{" "}
+          {locale === "fr" ? "Chaque recherche lancée depuis " : "Every search you run from "}
           <Link href="/app/search" className="text-accent-strong">
             /app/search
           </Link>{" "}
-          is saved here automatically.
+          {locale === "fr"
+            ? "est enregistrée ici automatiquement."
+            : "is saved here automatically."}
         </p>
       </div>
     );
@@ -58,11 +64,15 @@ export default function SearchesPage() {
         <div className="flex items-center gap-2">
           <Clock size={14} className="text-muted" />
           <h3 className="text-sm font-semibold text-foreground">
-            Saved searches
+            {t.sidebar.savedSearches}
           </h3>
           <Badge tone="muted">{searches.length}</Badge>
         </div>
-        <div className="text-xs text-muted">Click Re-run to retry a query.</div>
+        <div className="text-xs text-muted">
+          {locale === "fr"
+            ? "Cliquez Relancer pour rejouer une requête."
+            : "Click Re-run to retry a query."}
+        </div>
       </div>
 
       <ul className="divide-y divide-border">
@@ -71,11 +81,11 @@ export default function SearchesPage() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="min-w-0">
                 <div className="truncate text-sm font-medium text-foreground">
-                  {s.businessType} in {s.location}
+                  {s.businessType} {locale === "fr" ? "à" : "in"} {s.location}
                 </div>
                 <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-muted">
                   <Badge tone="outline">
-                    {OBJECTIVE_LABELS[s.objective ?? "general"]}
+                    {objectiveLabel(s.objective ?? "general", locale)}
                   </Badge>
                   {s.country ? <Badge tone="muted">{s.country}</Badge> : null}
                   {s.filters.map((f) => (
@@ -86,7 +96,9 @@ export default function SearchesPage() {
                   <span>·</span>
                   <span>{s.sources.join(", ")}</span>
                   <span>·</span>
-                  <span>limit {s.limit}</span>
+                  <span>
+                    {locale === "fr" ? "limite" : "limit"} {s.limit}
+                  </span>
                   <span>·</span>
                   <span>{formatRelative(s.createdAt)}</span>
                 </div>
@@ -96,7 +108,8 @@ export default function SearchesPage() {
                   href={rerunHref(s)}
                   className="inline-flex h-8 items-center gap-1 rounded-lg bg-accent px-3 text-xs font-medium text-white hover:bg-accent-strong"
                 >
-                  <RefreshCw size={12} /> Re-run
+                  <RefreshCw size={12} />{" "}
+                  {locale === "fr" ? "Relancer" : "Re-run"}
                 </Link>
                 <Button
                   size="sm"
@@ -104,7 +117,7 @@ export default function SearchesPage() {
                   leftIcon={<Trash2 size={12} />}
                   onClick={() => handleDelete(s.id)}
                 >
-                  Delete
+                  {locale === "fr" ? "Supprimer" : "Delete"}
                 </Button>
               </div>
             </div>

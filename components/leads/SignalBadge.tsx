@@ -1,5 +1,9 @@
+"use client";
+
 import { Badge } from "@/components/ui/Badge";
-import { SIGNAL_LABELS, type LeadSignal } from "@/lib/leadTypes";
+import { useI18n } from "@/lib/i18n";
+import type { LeadSignal } from "@/lib/leadTypes";
+import { signalLabel } from "@/lib/localizedLabels";
 
 type Tone =
   | "default"
@@ -24,7 +28,8 @@ const SIGNAL_TONE: Record<LeadSignal, Tone> = {
 };
 
 export function SignalBadge({ signal }: { signal: LeadSignal }) {
-  return <Badge tone={SIGNAL_TONE[signal]}>{SIGNAL_LABELS[signal]}</Badge>;
+  const { locale } = useI18n();
+  return <Badge tone={SIGNAL_TONE[signal]}>{signalLabel(signal, locale)}</Badge>;
 }
 
 export function SignalBadges({
