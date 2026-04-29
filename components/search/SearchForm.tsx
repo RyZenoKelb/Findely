@@ -13,7 +13,8 @@ import {
 import * as React from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { Checkbox, Input, Label, Select } from "@/components/ui/Field";
+import { Input, Label, Select } from "@/components/ui/Field";
+import { Checkbox } from "@/components/ui/checkbox";
 import { sortedCountries } from "@/lib/countries";
 import { useI18n } from "@/lib/i18n";
 import type {
@@ -576,30 +577,28 @@ export function SearchForm({
             <label className="flex items-center gap-2 rounded-lg border border-border bg-white/[0.02] px-3 py-2 text-sm">
               <Checkbox
                 checked={state.requirePhone}
-                onChange={(e) => patch("requirePhone", e.target.checked)}
+                onCheckedChange={(c) => patch("requirePhone", c)}
               />
               {t.searchForm.requirePhone}
             </label>
             <label className="flex items-center gap-2 rounded-lg border border-border bg-white/[0.02] px-3 py-2 text-sm">
               <Checkbox
                 checked={state.requireWebsite}
-                onChange={(e) => patch("requireWebsite", e.target.checked)}
+                onCheckedChange={(c) => patch("requireWebsite", c)}
               />
               {t.searchForm.requireWebsite}
             </label>
             <label className="flex items-center gap-2 rounded-lg border border-border bg-white/[0.02] px-3 py-2 text-sm">
               <Checkbox
                 checked={state.includeOnlyContactable}
-                onChange={(e) =>
-                  patch("includeOnlyContactable", e.target.checked)
-                }
+                onCheckedChange={(c) => patch("includeOnlyContactable", c)}
               />
               {t.searchForm.onlyContactable}
             </label>
             <label className="flex items-center gap-2 rounded-lg border border-border bg-white/[0.02] px-3 py-2 text-sm md:col-span-2 lg:col-span-4">
               <Checkbox
                 checked={state.excludeSeen}
-                onChange={(e) => patch("excludeSeen", e.target.checked)}
+                onCheckedChange={(c) => patch("excludeSeen", c)}
               />
               {locale === "fr"
                 ? "Exclure les leads déjà vus"

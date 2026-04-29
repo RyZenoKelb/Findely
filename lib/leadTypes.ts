@@ -61,6 +61,20 @@ export interface Lead {
   mapsUrl?: string | null;
   rating?: number;
   ratingCount?: number;
+  /** V5 intelligence fields (computed server-side). */
+  priorityLevel?: "high" | "medium" | "low";
+  priorityLabel?: string;
+  opportunityType?: string;
+  opportunityLabel?: string;
+  opportunityReason?: string;
+  recommendedAction?: string;
+  dataQualityLevel?: "excellent" | "good" | "partial" | "needs_review";
+  dataQualityLabel?: string;
+  contactReadinessLevel?: "ready" | "needs_verify" | "missing";
+  contactReadinessLabel?: string;
+  sourceConfidence?: number;
+  scoreBreakdown?: { label: string; value: number }[];
+  exportedAt?: string;
 }
 
 export type LeadObjective =

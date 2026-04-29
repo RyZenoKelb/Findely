@@ -23,6 +23,14 @@ import { SignalBadge } from "./SignalBadge";
 import { useI18n } from "@/lib/i18n";
 import type { Lead, LeadList, LeadStatus } from "@/lib/leadTypes";
 import { displayListName } from "@/lib/listNames";
+import {
+  getContactReadiness,
+  getDataQuality,
+  getPriorityLabel,
+  getRecommendedAction,
+  opportunityTypeLabel,
+  type OpportunityType,
+} from "@/lib/leadOpportunity";
 import { outreachAngleFor, statusLabel } from "@/lib/localizedLabels";
 import { addLeadToList, createList, getLists, saveLead } from "@/lib/storage";
 import { cn } from "@/lib/utils";
@@ -213,9 +221,123 @@ export function LeadDetailDrawer({
             </div>
           </section>
 
+          {lead.opportunityType || lead.priorityLevel ? (
+            <section className="border-t border-border px-5 py-4">
+              <div className="text-xs font-medium uppercase tracking-wide text-muted">
+                Intelligence
+              </div>
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                {lead.priorityLevel ? (
+                  <div className="rounded-lg border border-border bg-surface-2 p-3">
+                    <div className="text-[11px] uppercase tracking-wide text-muted">
+                      {locale === "fr" ? "Priorité" : "Priority"}
+                    </div>
+                    <div
+                      className={cn(
+                        "mt-1 text-sm font-medium",
+                        lead.priorityLevel === "high"
+                          ? "text-success"
+                          : lead.priorityLevel === "medium"
+                            ? "text-accent-cyan"
+                            : "text-muted-strong"
+                      )}
+                    >
+                      {getPriorityLabel(lead, locale).label}
+                    </div>
+                  </div>
+                ) : null}
+                {lead.opportunityType ? (
+                  <div className="rounded-lg border border-border bg-surface-2 p-3">
+                    <div className="text-[11px] uppercase tracking-wide text-muted">
+                      {locale === "fr" ? "Opportunité" : "Opportunity"}
+                    </div>
+                    <div className="mt-1 text-sm font-medium text-foreground">
+                      {opportunityTypeLabel(
+                        lead.opportunityType as OpportunityType,
+                        locale
+                      )}
+                    </div>
+                  </div>
+                ) : null}
+                {lead.dataQualityLevel ? (
+                  <div className="rounded-lg border border-border bg-surface-2 p-3">
+                    <div className="text-[11px] uppercase tracking-wide text-muted">
+                      {locale === "fr" ? "Qualité des données" : "Data quality"}
+                    </div>
+                    <div className="mt-1 text-sm font-medium text-foreground">
+                      {getDataQuality(lead, locale).label}
+                    </div>
+                  </div>
+                ) : null}
+                {lead.contactReadinessLevel ? (
+                  <div className="rounded-lg border border-border bg-surface-2 p-3">
+                    <div className="text-[11px] uppercase tracking-wide text-muted">
+                      {locale === "fr"
+                        ? "Prêt à contacter"
+                        : "Contact readiness"}
+                    </div>
+                    <div className="mt-1 text-sm font-medium text-foreground">
+                      {getContactReadiness(lead, locale).label}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+              <div className="mt-3 rounded-lg border border-accent/30 bg-accent/[0.08] p-3">
+                <div className="text-[11px] uppercase tracking-wide text-accent-cyan">
+                  {locale === "fr"
+                    ? "Action recommandée"
+                    : "Recommended action"}
+                </div>
+                <div className="mt-1 text-sm font-medium text-foreground">
+                  {getRecommendedAction(lead, "general", locale)}
+                </div>
+              </div>
+
+              {lead.scoreBreakdown && lead.scoreBreakdown.length > 0 ? (
+                <details className="group mt-3 rounded-lg border border-border bg-surface-2/60 px-3 py-2 text-xs">
+                  <summary className="flex cursor-pointer list-none items-center justify-between text-muted-strong transition-colors hover:text-foreground">
+                    <span className="inline-flex items-center gap-2">
+                      <span className="font-mono text-[10px] text-accent-cyan">
+                        {lead.score}
+                      </span>
+                      {locale === "fr"
+                        ? "Pourquoi ce score ?"
+                        : "Why this score?"}
+                    </span>
+                    <span className="text-muted transition-transform group-open:rotate-180">
+                      ▾
+                    </span>
+                  </summary>
+                  <ul className="mt-2 divide-y divide-border/70">
+                    {lead.scoreBreakdown.map((f, i) => (
+                      <li
+                        key={`${f.label}-${i}`}
+                        className="flex items-center justify-between py-1.5"
+                      >
+                        <span className="text-muted-strong">{f.label}</span>
+                        <span
+                          className={cn(
+                            "font-mono tabular-nums",
+                            f.value > 0
+                              ? "text-success"
+                              : f.value < 0
+                                ? "text-danger"
+                                : "text-muted"
+                          )}
+                        >
+                          {f.value > 0 ? `+${f.value}` : f.value}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              ) : null}
+            </section>
+          ) : null}
+
           <section className="border-t border-border px-5 py-4">
             <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted">
-              <Sparkles size={12} /> Suggested outreach angle
+              <Sparkles size={12} /> {t.drawer.outreachAngle}
             </div>
             <p className="mt-2 rounded-lg border border-border bg-surface-2 p-3 text-sm leading-relaxed text-foreground">
               {angle}
@@ -223,12 +345,16 @@ export function LeadDetailDrawer({
           </section>
 
           <section className="border-t border-border px-5 py-4">
-            <Label htmlFor="notes">Notes</Label>
+            <Label htmlFor="notes">{t.drawer.notes}</Label>
             <Textarea
               id="notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Write anything worth remembering before outreach…"
+              placeholder={
+                locale === "fr"
+                  ? "Ajoutez un contexte utile avant la prospection…"
+                  : "Write anything worth remembering before outreach…"
+              }
             />
             <div className="mt-2 flex justify-end">
               <Button
@@ -236,7 +362,7 @@ export function LeadDetailDrawer({
                 leftIcon={<Save size={12} />}
                 onClick={handleSaveNotes}
               >
-                Save notes
+                {t.drawer.saveNotes}
               </Button>
             </div>
           </section>

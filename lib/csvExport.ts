@@ -23,12 +23,24 @@ export function leadsToCsv(
     includeStatus: true,
   }
 ): string {
+  const now = new Date().toISOString();
+
   const headers = ["name", "category", "phone", "website", "address", "source"];
   if (opts.includeScore) headers.push("score");
-  headers.push("rating", "ratingCount", "mapsUrl");
+  headers.push(
+    "priorityLabel",
+    "opportunityType",
+    "opportunityReason",
+    "recommendedAction",
+    "dataQuality",
+    "contactReadiness",
+    "rating",
+    "ratingCount",
+    "mapsUrl"
+  );
   if (opts.includeSignals) headers.push("signals");
   if (opts.includeStatus) headers.push("status");
-  headers.push("seenBefore", "createdAt");
+  headers.push("notes", "seenBefore", "exportedAt", "createdAt");
 
   const rows = leads.map((l) => {
     const base: (string | number)[] = [
@@ -41,13 +53,24 @@ export function leadsToCsv(
     ];
     if (opts.includeScore) base.push(String(l.score));
     base.push(
+      l.priorityLabel ?? "",
+      l.opportunityType ?? "",
+      l.opportunityReason ?? "",
+      l.recommendedAction ?? "",
+      l.dataQualityLabel ?? "",
+      l.contactReadinessLabel ?? "",
       typeof l.rating === "number" ? String(l.rating) : "",
       typeof l.ratingCount === "number" ? String(l.ratingCount) : "",
       l.mapsUrl ?? ""
     );
     if (opts.includeSignals) base.push(l.signals.join("|"));
     if (opts.includeStatus) base.push(l.status ?? "new");
-    base.push(l.seenBefore ? "true" : "false", l.createdAt);
+    base.push(
+      l.notes ?? "",
+      l.seenBefore ? "true" : "false",
+      l.exportedAt ?? now,
+      l.createdAt
+    );
     return base.map(csvEscape).join(",");
   });
 
@@ -72,6 +95,8 @@ export function exportLeads(
   filename = "findely-leads.csv",
   opts?: CsvOptions
 ): void {
-  const csv = leadsToCsv(leads, opts);
+  const now = new Date().toISOString();
+  const stamped = leads.map((l) => ({ ...l, exportedAt: l.exportedAt ?? now }));
+  const csv = leadsToCsv(stamped, opts);
   downloadCsv(filename, csv);
 }

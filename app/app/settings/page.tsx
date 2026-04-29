@@ -1,26 +1,48 @@
 "use client";
 
-import { Check, Save } from "lucide-react";
+import { Check, History, Save, Trash2 } from "lucide-react";
 import * as React from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { Checkbox, Input, Label, Select } from "@/components/ui/Field";
+import { EditableChip } from "@/components/ui/editable-chip";
+import { Input, Label, Select } from "@/components/ui/Field";
+import { Checkbox } from "@/components/ui/checkbox";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { useI18n } from "@/lib/i18n";
 import type { AppSettings } from "@/lib/leadTypes";
+import { clearSeen, seenCount } from "@/lib/seenLeads";
 import { listSources } from "@/lib/sources";
 import { DEFAULT_SETTINGS, getSettings, updateSettings } from "@/lib/storage";
 import { cn } from "@/lib/utils";
 
 export default function SettingsPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [settings, setSettings] = React.useState<AppSettings>(DEFAULT_SETTINGS);
   const [saved, setSaved] = React.useState(false);
+  const [seenTotal, setSeenTotal] = React.useState(0);
+  const [resetToast, setResetToast] = React.useState<string | null>(null);
   const sources = React.useMemo(() => listSources(), []);
 
   React.useEffect(() => {
     setSettings(getSettings());
+    setSeenTotal(seenCount());
   }, []);
+
+  React.useEffect(() => {
+    if (!resetToast) return;
+    const id = setTimeout(() => setResetToast(null), 2200);
+    return () => clearTimeout(id);
+  }, [resetToast]);
+
+  function handleResetSeen() {
+    clearSeen();
+    setSeenTotal(0);
+    setResetToast(
+      locale === "fr"
+        ? "Historique des leads réinitialisé."
+        : "Lead history reset."
+    );
+  }
 
   function patch<K extends keyof AppSettings>(key: K, value: AppSettings[K]) {
     setSettings((s) => ({ ...s, [key]: value }));
@@ -44,14 +66,17 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <Section title={t.settings.profile} subtitle={t.settings.profileSub}>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid items-start gap-4 md:grid-cols-2">
           <div>
-            <Label htmlFor="name">{t.settings.name}</Label>
-            <Input
-              id="name"
-              value={settings.profileName}
-              onChange={(e) => patch("profileName", e.target.value)}
-            />
+            <Label>{t.settings.name}</Label>
+            <div className="mt-1">
+              <EditableChip
+                value={settings.profileName}
+                onChange={(v) => patch("profileName", v)}
+                size="lg"
+                ariaLabel={t.settings.name}
+              />
+            </div>
           </div>
           <div>
             <Label htmlFor="email">{t.settings.email}</Label>
@@ -142,14 +167,14 @@ export default function SettingsPage() {
           <label className="flex items-center gap-2 rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm">
             <Checkbox
               checked={settings.exportIncludeScore}
-              onChange={(e) => patch("exportIncludeScore", e.target.checked)}
+              onCheckedChange={(c) => patch("exportIncludeScore", c)}
             />
             {t.settings.includeScore}
           </label>
           <label className="flex items-center gap-2 rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm">
             <Checkbox
               checked={settings.exportIncludeSignals}
-              onChange={(e) => patch("exportIncludeSignals", e.target.checked)}
+              onCheckedChange={(c) => patch("exportIncludeSignals", c)}
             />
             {t.settings.includeSignals}
           </label>
@@ -182,6 +207,42 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
+      </Section>
+
+      <Section
+        title={locale === "fr" ? "Historique des leads" : "Lead history"}
+        subtitle={
+          locale === "fr"
+            ? "Supprime l’historique local des leads déjà scannés sur cet appareil."
+            : "Clears the local history of leads already scanned on this device."
+        }
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-surface-2 px-4 py-3">
+          <div className="flex items-center gap-3 text-sm text-muted-strong">
+            <History size={16} className="text-accent-cyan" />
+            <span>
+              {seenTotal}{" "}
+              {locale === "fr"
+                ? seenTotal === 1
+                  ? "lead déjà vu"
+                  : "leads déjà vus"
+                : seenTotal === 1
+                  ? "previously seen lead"
+                  : "previously seen leads"}
+            </span>
+          </div>
+          <Button
+            variant="danger"
+            size="sm"
+            leftIcon={<Trash2 size={12} />}
+            onClick={handleResetSeen}
+          >
+            {locale === "fr" ? "Réinitialiser" : "Reset history"}
+          </Button>
+        </div>
+        {resetToast ? (
+          <p className="mt-2 text-xs text-success">{resetToast}</p>
+        ) : null}
       </Section>
 
       <div className="flex items-center justify-end gap-2">

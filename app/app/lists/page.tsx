@@ -1,9 +1,10 @@
 "use client";
 
-import { ArrowLeft, Edit2, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import * as React from "react";
 import { LeadTable } from "@/components/leads/LeadTable";
 import { Button } from "@/components/ui/Button";
+import { EditableChip } from "@/components/ui/editable-chip";
 import { Input, Label } from "@/components/ui/Field";
 import { useI18n } from "@/lib/i18n";
 import type { Lead, LeadList } from "@/lib/leadTypes";
@@ -48,13 +49,9 @@ export default function ListsPage() {
     refresh();
   }
 
-  function handleRename(list: LeadList) {
-    const name = window.prompt(
-      locale === "fr" ? "Renommer la liste" : "Rename list",
-      displayListName(list.name, locale)
-    );
-    if (!name || !name.trim()) return;
-    updateList(list.id, { name: name.trim() });
+  function handleRename(list: LeadList, next: string) {
+    if (!next.trim()) return;
+    updateList(list.id, { name: next.trim() });
     refresh();
   }
 
@@ -81,24 +78,21 @@ export default function ListsPage() {
               <ArrowLeft size={12} />{" "}
               {locale === "fr" ? "Retour aux listes" : "Back to lists"}
             </button>
-            <h2 className="mt-1 text-xl font-semibold text-foreground">
-              {displayListName(active.name, locale)}
-            </h2>
-            <p className="text-xs text-muted">
+            <div className="mt-1">
+              <EditableChip
+                value={displayListName(active.name, locale)}
+                onChange={(v) => handleRename(active, v)}
+                size="lg"
+                ariaLabel={locale === "fr" ? "Nom de la liste" : "List name"}
+              />
+            </div>
+            <p className="mt-1 text-xs text-muted">
               {active.leadIds.length} leads ·{" "}
               {locale === "fr" ? "Mis à jour" : "Updated"}{" "}
               {formatRelative(active.updatedAt)}
             </p>
           </div>
           <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              leftIcon={<Edit2 size={12} />}
-              onClick={() => handleRename(active)}
-            >
-              {locale === "fr" ? "Renommer" : "Rename"}
-            </Button>
             <Button
               size="sm"
               variant="danger"
@@ -215,16 +209,11 @@ export default function ListsPage() {
               </button>
               <div className="flex gap-1">
                 <button
-                  onClick={() => handleRename(l)}
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border text-muted-strong hover:bg-surface-2"
-                  aria-label="Rename"
-                >
-                  <Edit2 size={12} />
-                </button>
-                <button
                   onClick={() => handleDelete(l)}
                   className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border text-muted-strong hover:border-danger/40 hover:bg-danger/10 hover:text-danger"
-                  aria-label="Delete"
+                  aria-label={
+                    locale === "fr" ? "Supprimer la liste" : "Delete list"
+                  }
                 >
                   <Trash2 size={12} />
                 </button>

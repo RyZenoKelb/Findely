@@ -164,6 +164,11 @@ function SearchPageInner() {
               </Badge>
             </div>
           </div>
+
+          {response.leads.length > 0 ? (
+            <TopOpportunities leads={response.leads as Lead[]} />
+          ) : null}
+
           <LeadTable
             leads={response.leads as Lead[]}
             defaultFilename="findely-search.csv"
@@ -172,27 +177,113 @@ function SearchPageInner() {
       ) : null}
 
       {!loading && !response ? (
-        <div className="rounded-xl border border-dashed border-border bg-surface/50 p-10 text-center">
-          <h3 className="text-base font-semibold text-foreground">
-            {locale === "fr" ? "Prêt quand vous l’êtes." : "Ready when you are."}
-          </h3>
-          <p className="mt-1 text-sm text-muted-strong">
-            {locale === "fr" ? "Essayez " : "Try "}
-            <span className="text-foreground">
-              {locale === "fr"
-                ? "« restaurants à Tel Aviv »"
-                : "“restaurants in Tel Aviv”"}
-            </span>
-            {locale === "fr" ? " ou " : " or "}
-            <span className="text-foreground">
-              {locale === "fr"
-                ? "« dentistes à Paris »"
-                : "“dentists in Paris”"}
-            </span>
-            .
-          </p>
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-surface/50 p-8">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-20 -top-20 h-60 w-60 rounded-full opacity-60 blur-3xl"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(59,130,246,0.3), transparent 70%)",
+            }}
+          />
+          <div className="relative grid gap-6 md:grid-cols-[1.1fr_1fr]">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-border-strong bg-white/5 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-accent-cyan">
+                <span className="h-1.5 w-1.5 rounded-full bg-accent-cyan" />
+                {locale === "fr" ? "Prêt à lancer" : "Ready to launch"}
+              </div>
+              <h3 className="mt-3 text-xl font-semibold tracking-tight text-foreground">
+                {locale === "fr"
+                  ? "Construisez votre prochaine liste en quelques secondes."
+                  : "Build your next outreach list in seconds."}
+              </h3>
+              <p className="mt-2 max-w-lg text-sm leading-relaxed text-muted-strong">
+                {locale === "fr"
+                  ? "Choisissez une niche et une ville ci-dessus, puis lancez une recherche. Vos leads sont scorés, qualifiés et prêts à exporter."
+                  : "Pick a niche and a city above, then run a search. Your leads come scored, qualified, and ready to export."}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2 text-xs text-muted">
+                <span className="rounded-full border border-border bg-white/5 px-2.5 py-1">
+                  {locale === "fr"
+                    ? "Essayez « restaurants à Paris »"
+                    : "Try “restaurants in Paris”"}
+                </span>
+                <span className="rounded-full border border-border bg-white/5 px-2.5 py-1">
+                  {locale === "fr"
+                    ? "Ou « agences web à New York »"
+                    : "Or “web agencies in New York”"}
+                </span>
+              </div>
+            </div>
+            <ul className="grid gap-2 self-center">
+              {[
+                locale === "fr"
+                  ? "Priorité calculée par lead"
+                  : "Priority computed per lead",
+                locale === "fr"
+                  ? "Raison d’opportunité claire"
+                  : "Clear opportunity reason",
+                locale === "fr"
+                  ? "Action recommandée pour chacun"
+                  : "A recommended next action",
+                locale === "fr"
+                  ? "Export CSV prêt pour le CRM"
+                  : "CRM-ready CSV export",
+              ].map((b) => (
+                <li
+                  key={b}
+                  className="flex items-start gap-2 rounded-lg border border-border bg-white/[0.03] px-3 py-2 text-sm text-foreground"
+                >
+                  <span className="mt-0.5 inline-flex h-4 w-4 flex-none items-center justify-center rounded-full bg-accent/15 text-accent-cyan">
+                    ✓
+                  </span>
+                  {b}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function TopOpportunities({ leads }: { leads: Lead[] }) {
+  const { locale } = useI18n();
+  const top = [...leads]
+    .filter((l) => l.priorityLevel === "high")
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
+  if (top.length === 0) return null;
+  return (
+    <div className="rounded-xl border border-accent/30 bg-gradient-to-br from-accent/[0.08] to-transparent px-4 py-3">
+      <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-accent-cyan">
+        <span className="inline-flex h-1.5 w-1.5 rounded-full bg-accent-cyan" />
+        {locale === "fr" ? "Top opportunités" : "Top opportunities"}
+      </div>
+      <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        {top.map((l) => (
+          <div
+            key={l.id}
+            className="rounded-lg border border-border bg-surface-2/60 px-3 py-2.5"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <span className="truncate text-sm font-medium text-foreground">
+                {l.name}
+              </span>
+              <span className="font-mono text-xs text-success">{l.score}</span>
+            </div>
+            <div className="mt-0.5 truncate text-xs text-muted">
+              {l.opportunityLabel ?? l.category ?? "Business"}
+            </div>
+            {l.recommendedAction ? (
+              <div className="mt-1.5 text-[11px] leading-relaxed text-muted-strong">
+                {l.recommendedAction}
+              </div>
+            ) : null}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

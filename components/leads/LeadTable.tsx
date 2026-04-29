@@ -18,7 +18,8 @@ import {
 import * as React from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { Checkbox, Input } from "@/components/ui/Field";
+import { Input } from "@/components/ui/Field";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ExportButton } from "./ExportButton";
 import { LeadDetailDrawer } from "./LeadDetailDrawer";
 import { LeadScore } from "./LeadScore";
@@ -234,7 +235,11 @@ export function LeadTable({
           <thead>
             <tr className="border-b border-border bg-surface-2/60 text-left text-[11px] uppercase tracking-wide text-muted">
               <th className="px-3 py-2">
-                <Checkbox checked={allSelected} onChange={toggleAll} />
+                <Checkbox
+                  checked={allSelected}
+                  onCheckedChange={toggleAll}
+                  aria-label="Select all"
+                />
               </th>
               <th className="px-3 py-2">{t.table.business}</th>
               <th className="px-3 py-2">{t.table.phone}</th>
@@ -266,22 +271,43 @@ export function LeadTable({
                   >
                     <Checkbox
                       checked={isSel}
-                      onChange={() => toggle(lead.id)}
+                      onCheckedChange={() => toggle(lead.id)}
+                      aria-label={`Select ${lead.name}`}
                     />
                   </td>
                   <td className="px-3 py-2.5">
                     <div className="flex min-w-0 items-center gap-2">
-                      <div className="flex h-7 w-7 flex-none items-center justify-center rounded-md border border-border bg-surface-2 text-muted-strong">
+                      <div
+                        className={cn(
+                          "flex h-7 w-7 flex-none items-center justify-center rounded-md border text-muted-strong",
+                          lead.priorityLevel === "high"
+                            ? "border-success/40 bg-success/10 text-success"
+                            : lead.priorityLevel === "medium"
+                              ? "border-accent/40 bg-accent/10 text-accent-cyan"
+                              : "border-border bg-surface-2"
+                        )}
+                        title={lead.priorityLabel}
+                      >
                         <Building2 size={13} />
                       </div>
                       <div className="min-w-0">
-                        <div className="truncate font-medium text-foreground">
-                          {lead.name}
+                        <div className="flex items-center gap-1.5 truncate font-medium text-foreground">
+                          <span className="truncate">{lead.name}</span>
+                          {lead.opportunityLabel ? (
+                            <span
+                              className="inline-flex items-center rounded-full border border-border bg-white/5 px-1.5 py-0.5 text-[10px] font-normal text-muted-strong"
+                              title={lead.opportunityReason}
+                            >
+                              {lead.opportunityLabel}
+                            </span>
+                          ) : null}
                         </div>
                         <div className="truncate text-xs text-muted">
                           {lead.category ?? "Business"} ·{" "}
                           <span className="text-muted-strong">
-                            {lead.source}
+                            {lead.source === "google_maps"
+                              ? "Google Places"
+                              : lead.source}
                           </span>
                         </div>
                       </div>

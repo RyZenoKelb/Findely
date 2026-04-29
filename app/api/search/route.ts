@@ -2,7 +2,17 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { cleanAndDedupe } from "@/lib/leadCleaning";
 import { applyFilters } from "@/lib/leadFilters";
-import { scoreLead } from "@/lib/leadScoring";
+import {
+  getContactReadiness,
+  getDataQuality,
+  getOpportunityReason,
+  getOpportunityType,
+  getPriorityLabel,
+  getRecommendedAction,
+  getSourceConfidence,
+  opportunityTypeLabel,
+} from "@/lib/leadOpportunity";
+import { scoreLeadDetailed } from "@/lib/leadScoring";
 import { detectSignals } from "@/lib/leadSignals";
 import type {
   Lead,
@@ -150,7 +160,28 @@ export async function POST(request: Request) {
   const enriched: Lead[] = cleaned.map((lead) => {
     const signals = detectSignals(lead, objective);
     const withSignals: Lead = { ...lead, signals };
-    return { ...withSignals, score: scoreLead(withSignals, objective) };
+    const { score, factors } = scoreLeadDetailed(withSignals, objective);
+    const scored: Lead = { ...withSignals, score, scoreBreakdown: factors };
+
+    const priority = getPriorityLabel(scored, "en");
+    const dq = getDataQuality(scored, "en");
+    const cr = getContactReadiness(scored, "en");
+    const oppType = getOpportunityType(scored, objective);
+
+    return {
+      ...scored,
+      priorityLevel: priority.level,
+      priorityLabel: priority.label,
+      opportunityType: oppType,
+      opportunityLabel: opportunityTypeLabel(oppType, "en"),
+      opportunityReason: getOpportunityReason(scored, objective, "en"),
+      recommendedAction: getRecommendedAction(scored, objective, "en"),
+      dataQualityLevel: dq.level,
+      dataQualityLabel: dq.label,
+      contactReadinessLevel: cr.level,
+      contactReadinessLabel: cr.label,
+      sourceConfidence: getSourceConfidence(scored),
+    };
   });
 
   const filtered = applyFilters(enriched, filterKeys, body.advanced ?? {});
