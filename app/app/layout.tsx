@@ -1,10 +1,20 @@
 import * as React from "react";
 import { AppShell } from "@/components/layout/AppShell";
+import { getCurrentUserProfile } from "@/lib/auth";
 
-export default function AppLayout({
+export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <AppShell>{children}</AppShell>;
+  const profile = await getCurrentUserProfile();
+  return (
+    <AppShell
+      userEmail={profile?.email ?? null}
+      userPlan={profile?.plan ?? null}
+      onboardingCompleted={profile?.onboarding_completed ?? false}
+    >
+      {children}
+    </AppShell>
+  );
 }

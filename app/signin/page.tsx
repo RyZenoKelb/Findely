@@ -2,48 +2,64 @@
 
 import { ArrowRight, Lock, Mail, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
 import { Button, LinkButton } from "@/components/ui/Button";
 import { Input, Label } from "@/components/ui/Field";
 import { PublicShell } from "@/components/landing/PublicShell";
 import { useI18n } from "@/lib/i18n";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { env } from "@/lib/env";
+import { safeRedirectPath } from "@/lib/safeRedirect";
 
 export default function SignInPage() {
-  const { t, locale } = useI18n();
+  return (
+    <React.Suspense fallback={null}>
+      <SignInForm />
+    </React.Suspense>
+  );
+}
+
+function SignInForm() {
+  const { t } = useI18n();
   const router = useRouter();
+  const search = useSearchParams();
+  const redirectTo = safeRedirectPath(search.get("redirect"), "/app");
+
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [error, setError] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  const a = t.auth;
+  const supabaseReady = env.supabaseConfigured;
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    router.push("/app");
+    setError(null);
+    if (!supabaseReady) {
+      setError(a?.setupMissing ?? "Supabase not configured.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const supabase = createSupabaseBrowserClient();
+      const { error: err } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (err) {
+        setError(err.message || a?.genericError || "Sign in failed.");
+        setLoading(false);
+        return;
+      }
+      router.push(redirectTo);
+      router.refresh();
+    } catch (err) {
+      setError((err as Error).message || a?.genericError || "Sign in failed.");
+      setLoading(false);
+    }
   }
-
-  const copy =
-    locale === "fr"
-      ? {
-          title: "Connexion à Findely",
-          sub: "L’auth n’est pas branchée en V1 — ce placeholder vous amène directement dans la démo.",
-          email: "Email professionnel",
-          password: "Mot de passe",
-          cta: "Accéder à l’espace de travail",
-          demo: "Ignorer et ouvrir la démo",
-          or: "ou",
-          legal:
-            "En continuant, vous acceptez les conditions d’utilisation et la politique de confidentialité.",
-        }
-      : {
-          title: "Sign in to Findely",
-          sub: "Auth is not wired up in V1 — this placeholder drops you straight into the demo workspace.",
-          email: "Work email",
-          password: "Password",
-          cta: "Continue to workspace",
-          demo: "Skip and open the demo",
-          or: "or",
-          legal:
-            "By continuing you agree to the terms of service and privacy policy.",
-        };
 
   return (
     <PublicShell>
@@ -56,10 +72,10 @@ export default function SignInPage() {
             {t.hero.badge}
           </span>
           <h1 className="mt-4 text-center text-3xl font-semibold tracking-tight text-foreground">
-            {copy.title}
+            {a?.signInTitle ?? "Welcome back"}
           </h1>
           <p className="mt-2 max-w-sm text-center text-sm text-muted-strong">
-            {copy.sub}
+            {a?.signInSubtitle ?? ""}
           </p>
 
           <form
@@ -68,7 +84,7 @@ export default function SignInPage() {
           >
             <div className="space-y-4">
               <div>
-                <Label htmlFor="email">{copy.email}</Label>
+                <Label htmlFor="email">{a?.emailLabel ?? "Email"}</Label>
                 <div className="relative">
                   <Mail
                     size={14}
@@ -81,11 +97,13 @@ export default function SignInPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@agency.com"
                     className="pl-9"
+                    required
+                    autoComplete="email"
                   />
                 </div>
               </div>
               <div>
-                <Label htmlFor="pw">{copy.password}</Label>
+                <Label htmlFor="pw">{a?.passwordLabel ?? "Password"}</Label>
                 <div className="relative">
                   <Lock
                     size={14}
@@ -98,36 +116,62 @@ export default function SignInPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     className="pl-9"
+                    required
+                    minLength={8}
+                    autoComplete="current-password"
                   />
                 </div>
               </div>
+              {error ? (
+                <div className="rounded-md border border-danger/30 bg-danger/10 px-3 py-2 text-xs text-danger">
+                  {error}
+                </div>
+              ) : null}
               <Button
                 type="submit"
                 size="lg"
                 className="w-full"
                 rightIcon={<ArrowRight size={14} />}
+                disabled={loading || !supabaseReady}
               >
-                {copy.cta}
+                {loading ? "…" : a?.signInCta ?? "Sign in"}
               </Button>
             </div>
-            <div className="my-5 flex items-center gap-3 text-[11px] uppercase tracking-wide text-muted">
-              <span className="h-px flex-1 bg-border" />
-              {copy.or}
-              <span className="h-px flex-1 bg-border" />
+
+            <div className="mt-4 text-center text-xs text-muted">
+              {a?.noAccount ?? "New to Findely?"}{" "}
+              <Link
+                href="/signup"
+                className="text-foreground underline-offset-2 hover:underline"
+              >
+                {a?.switchToSignUp ?? "Create one"}
+              </Link>
             </div>
-            <LinkButton
-              href="/app"
-              variant="outline"
-              size="md"
-              className="w-full"
-            >
-              {copy.demo}
-            </LinkButton>
+
+            {env.demoMode ? (
+              <>
+                <div className="my-5 flex items-center gap-3 text-[11px] uppercase tracking-wide text-muted">
+                  <span className="h-px flex-1 bg-border" />
+                  {a?.orDivider ?? "or"}
+                  <span className="h-px flex-1 bg-border" />
+                </div>
+                <LinkButton
+                  href="/app"
+                  variant="outline"
+                  size="md"
+                  className="w-full"
+                >
+                  {a?.openDemo ?? "Open the demo"}
+                </LinkButton>
+              </>
+            ) : null}
           </form>
 
-          <p className="mt-4 max-w-sm text-center text-[11px] leading-relaxed text-muted">
-            {copy.legal}
-          </p>
+          {!supabaseReady ? (
+            <p className="mt-4 max-w-sm text-center text-[11px] leading-relaxed text-muted">
+              {a?.setupMissing ?? ""}
+            </p>
+          ) : null}
           <div className="mt-6 text-xs text-muted">
             <Link href="/" className="hover:text-foreground">
               ← {t.nav.backToSite}

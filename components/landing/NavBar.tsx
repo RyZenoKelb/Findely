@@ -73,12 +73,12 @@ export function NavBar() {
             {t.nav.signIn}
           </LinkButton>
           <LinkButton
-            href="/app/search"
+            href="/signup"
             size="sm"
             rightIcon={<ArrowRight size={12} />}
             className="hidden sm:inline-flex"
           >
-            {t.nav.cta}
+            {t.auth?.signUpCta ?? t.nav.cta}
           </LinkButton>
           <button
             type="button"
@@ -112,8 +112,8 @@ export function NavBar() {
               >
                 {t.nav.signIn}
               </LinkButton>
-              <LinkButton href="/app/search" size="sm" className="flex-1">
-                {t.nav.cta}
+              <LinkButton href="/signup" size="sm" className="flex-1">
+                {t.auth?.signUpCta ?? t.nav.cta}
               </LinkButton>
             </div>
           </nav>

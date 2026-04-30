@@ -220,6 +220,115 @@ export interface Dict {
     openMaps: string;
     fallbackUsed: string;
   };
+  auth?: {
+    signInTitle: string;
+    signInSubtitle: string;
+    signUpTitle: string;
+    signUpSubtitle: string;
+    emailLabel: string;
+    passwordLabel: string;
+    fullNameLabel: string;
+    signInCta: string;
+    signUpCta: string;
+    signOut: string;
+    haveAccount: string;
+    noAccount: string;
+    switchToSignIn: string;
+    switchToSignUp: string;
+    orDivider: string;
+    openDemo: string;
+    checkInbox: string;
+    checkInboxBody: string;
+    genericError: string;
+    passwordMinHint: string;
+    setupMissing: string;
+  };
+  quota?: {
+    exceededSearches: string;
+    exceededLeads: string;
+    exceededExports: string;
+    exceededApi: string;
+    upgradeCta: string;
+  };
+  demoMode?: {
+    demoBadge: string;
+    realBadge: string;
+    banner: string;
+  };
+  onboarding?: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    cta: string;
+    skip: string;
+    template1Title: string;
+    template1Location: string;
+    template1Niche: string;
+    template2Title: string;
+    template2Location: string;
+    template2Niche: string;
+    template3Title: string;
+    template3Location: string;
+    template3Niche: string;
+  };
+  plans?: {
+    free: string;
+    starter: string;
+    pro: string;
+    agency: string;
+    apiStarter: string;
+    apiPro: string;
+    apiScale: string;
+  };
+  apiKeys?: {
+    title: string;
+    subtitle: string;
+    createTitle: string;
+    nameLabel: string;
+    namePlaceholder: string;
+    createCta: string;
+    creating: string;
+    noKeys: string;
+    oneTimeWarning: string;
+    copy: string;
+    copied: string;
+    done: string;
+    colName: string;
+    colPrefix: string;
+    colCreated: string;
+    colLastUsed: string;
+    colStatus: string;
+    active: string;
+    revoked: string;
+    revoke: string;
+    revokeConfirm: string;
+    upgradeRequired: string;
+    never: string;
+    sidebarLink: string;
+  };
+  developers?: {
+    title: string;
+    subtitle: string;
+    gettingStarted: string;
+    authTitle: string;
+    authBody: string;
+    searchTitle: string;
+    usageTitle: string;
+    creditsTitle: string;
+    creditsBody: string;
+    rateLimitsTitle: string;
+    rateLimitsBody: string;
+    errorsTitle: string;
+    createKeyCta: string;
+  };
+  migration?: {
+    title: string;
+    body: string;
+    importCta: string;
+    dismissCta: string;
+    importing: string;
+    imported: string;
+  };
 }
 
 const en: Dict = {
@@ -477,6 +586,129 @@ const en: Dict = {
     fallbackUsed:
       "Google Places was requested but is not reachable — results came from the sample source.",
   },
+  auth: {
+    signInTitle: "Welcome back",
+    signInSubtitle: "Sign in to access your leads, lists, and searches.",
+    signUpTitle: "Create your Findely account",
+    signUpSubtitle: "Start your first lead search in under a minute.",
+    emailLabel: "Email",
+    passwordLabel: "Password",
+    fullNameLabel: "Full name",
+    signInCta: "Sign in",
+    signUpCta: "Create account",
+    signOut: "Sign out",
+    haveAccount: "Already have an account?",
+    noAccount: "New to Findely?",
+    switchToSignIn: "Sign in",
+    switchToSignUp: "Create one",
+    orDivider: "or",
+    openDemo: "Skip and open the demo",
+    checkInbox: "Check your inbox",
+    checkInboxBody:
+      "We sent a confirmation link to your email. Click it to activate your account.",
+    genericError: "Something went wrong. Please try again.",
+    passwordMinHint: "At least 8 characters.",
+    setupMissing:
+      "Supabase is not configured yet. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local and reload.",
+  },
+  quota: {
+    exceededSearches:
+      "You’ve used all your searches for this cycle. Upgrade to keep prospecting.",
+    exceededLeads:
+      "You’ve reached your monthly lead quota. Upgrade to fetch more leads.",
+    exceededExports:
+      "You’ve reached your export quota. Upgrade for unlimited exports.",
+    exceededApi: "API credit quota reached for this cycle.",
+    upgradeCta: "Upgrade plan",
+  },
+  demoMode: {
+    demoBadge: "Demo data",
+    realBadge: "Real data",
+    banner:
+      "You’re viewing sample data. Sign up to run real searches with Google Places.",
+  },
+  onboarding: {
+    eyebrow: "Get started",
+    title: "Start your first search",
+    subtitle:
+      "Pick a niche, a city, and Findely will prioritize the best leads to contact.",
+    cta: "Run this search",
+    skip: "Skip for now",
+    template1Title: "Restaurants without websites in Paris",
+    template1Location: "Paris",
+    template1Niche: "restaurants",
+    template2Title: "Dentists with phone numbers in Tel Aviv",
+    template2Location: "Tel Aviv",
+    template2Niche: "dentists",
+    template3Title: "Real estate agents in Netanya",
+    template3Location: "Netanya",
+    template3Niche: "real estate agents",
+  },
+  plans: {
+    free: "Free",
+    starter: "Starter",
+    pro: "Pro",
+    agency: "Agency",
+    apiStarter: "API Starter",
+    apiPro: "API Pro",
+    apiScale: "API Scale",
+  },
+  apiKeys: {
+    title: "API keys",
+    subtitle:
+      "Use these keys to authenticate requests to the Findely API.",
+    createTitle: "Create a new key",
+    nameLabel: "Key name",
+    namePlaceholder: "e.g. Production server",
+    createCta: "Create key",
+    creating: "Creating…",
+    noKeys: "No API keys yet. Create one to start using the Findely API.",
+    oneTimeWarning:
+      "Copy this key now. You won’t be able to see it again.",
+    copy: "Copy",
+    copied: "Copied",
+    done: "I’ve saved it",
+    colName: "Name",
+    colPrefix: "Prefix",
+    colCreated: "Created",
+    colLastUsed: "Last used",
+    colStatus: "Status",
+    active: "Active",
+    revoked: "Revoked",
+    revoke: "Revoke",
+    revokeConfirm: "Revoke this key? Any app using it will stop working.",
+    upgradeRequired:
+      "API access requires an Agency or API plan. Upgrade to create keys.",
+    never: "Never",
+    sidebarLink: "API keys",
+  },
+  developers: {
+    title: "Findely API",
+    subtitle:
+      "A single REST endpoint for lead discovery. Same pipeline as the app — scored, deduplicated, CSV-ready.",
+    gettingStarted: "Getting started",
+    authTitle: "Authentication",
+    authBody:
+      "All requests require a Bearer token. Create keys under /app/api-keys.",
+    searchTitle: "POST /api/v1/search",
+    usageTitle: "GET /api/v1/usage",
+    creditsTitle: "Credits",
+    creditsBody:
+      "Each search costs 5 credits plus 1 credit per returned lead. Your plan’s credit balance resets monthly.",
+    rateLimitsTitle: "Rate limits",
+    rateLimitsBody:
+      "API Starter: 30 req/min. API Pro / API Scale: 120 req/min. Agency: 60 req/min.",
+    errorsTitle: "Errors",
+    createKeyCta: "Create an API key",
+  },
+  migration: {
+    title: "Import your local data?",
+    body: "We found lists and saved searches on this device. Import them into your account.",
+    importCta: "Import to my account",
+    dismissCta: "Not now",
+    importing: "Importing…",
+    imported: "Imported",
+  },
 };
 
 const fr: Dict = {
@@ -733,6 +965,130 @@ const fr: Dict = {
     openMaps: "Ouvrir dans Maps",
     fallbackUsed:
       "Google Places a été demandé mais n’est pas disponible — résultats issus de la source d’exemple.",
+  },
+  auth: {
+    signInTitle: "Bon retour",
+    signInSubtitle: "Connectez-vous pour accéder à vos leads, listes et recherches.",
+    signUpTitle: "Créez votre compte Findely",
+    signUpSubtitle: "Lancez votre première recherche en moins d’une minute.",
+    emailLabel: "Email",
+    passwordLabel: "Mot de passe",
+    fullNameLabel: "Nom complet",
+    signInCta: "Se connecter",
+    signUpCta: "Créer un compte",
+    signOut: "Se déconnecter",
+    haveAccount: "Déjà un compte ?",
+    noAccount: "Nouveau sur Findely ?",
+    switchToSignIn: "Se connecter",
+    switchToSignUp: "Créer un compte",
+    orDivider: "ou",
+    openDemo: "Ignorer et ouvrir la démo",
+    checkInbox: "Vérifiez votre boîte mail",
+    checkInboxBody:
+      "Nous avons envoyé un lien de confirmation. Cliquez dessus pour activer votre compte.",
+    genericError: "Une erreur est survenue. Réessayez.",
+    passwordMinHint: "Au moins 8 caractères.",
+    setupMissing:
+      "Supabase n’est pas encore configuré. Renseignez NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY dans .env.local puis rechargez la page.",
+  },
+  quota: {
+    exceededSearches:
+      "Vous avez utilisé toutes vos recherches pour ce cycle. Passez à un plan supérieur pour continuer.",
+    exceededLeads:
+      "Vous avez atteint votre quota mensuel de leads. Passez à un plan supérieur pour en obtenir davantage.",
+    exceededExports:
+      "Vous avez atteint votre quota d’exports. Passez à un plan supérieur pour des exports illimités.",
+    exceededApi: "Quota de crédits API atteint pour ce cycle.",
+    upgradeCta: "Changer de plan",
+  },
+  demoMode: {
+    demoBadge: "Données de démonstration",
+    realBadge: "Données réelles",
+    banner:
+      "Vous consultez des données d’exemple. Inscrivez-vous pour lancer de vraies recherches avec Google Places.",
+  },
+  onboarding: {
+    eyebrow: "Démarrage",
+    title: "Lancez votre première recherche",
+    subtitle:
+      "Choisissez une niche, une ville, et Findely priorise les meilleurs leads à contacter.",
+    cta: "Lancer cette recherche",
+    skip: "Passer pour l’instant",
+    template1Title: "Restaurants sans site à Paris",
+    template1Location: "Paris",
+    template1Niche: "restaurants",
+    template2Title: "Dentistes avec téléphone à Tel Aviv",
+    template2Location: "Tel Aviv",
+    template2Niche: "dentistes",
+    template3Title: "Agents immobiliers à Netanya",
+    template3Location: "Netanya",
+    template3Niche: "agents immobiliers",
+  },
+  plans: {
+    free: "Gratuit",
+    starter: "Starter",
+    pro: "Pro",
+    agency: "Agence",
+    apiStarter: "API Starter",
+    apiPro: "API Pro",
+    apiScale: "API Scale",
+  },
+  apiKeys: {
+    title: "Clés API",
+    subtitle:
+      "Utilisez ces clés pour authentifier vos requêtes à l’API Findely.",
+    createTitle: "Créer une nouvelle clé",
+    nameLabel: "Nom de la clé",
+    namePlaceholder: "ex. Serveur de production",
+    createCta: "Créer la clé",
+    creating: "Création…",
+    noKeys: "Aucune clé API. Créez-en une pour commencer à utiliser l’API Findely.",
+    oneTimeWarning:
+      "Copiez cette clé maintenant. Elle ne sera plus affichée.",
+    copy: "Copier",
+    copied: "Copié",
+    done: "Je l’ai enregistrée",
+    colName: "Nom",
+    colPrefix: "Préfixe",
+    colCreated: "Créée",
+    colLastUsed: "Dernière utilisation",
+    colStatus: "Statut",
+    active: "Active",
+    revoked: "Révoquée",
+    revoke: "Révoquer",
+    revokeConfirm:
+      "Révoquer cette clé ? Toute application qui l’utilise cessera de fonctionner.",
+    upgradeRequired:
+      "L’accès API nécessite un plan Agence ou API. Passez à une offre supérieure pour créer des clés.",
+    never: "Jamais",
+    sidebarLink: "Clés API",
+  },
+  developers: {
+    title: "API Findely",
+    subtitle:
+      "Un endpoint REST unique pour la découverte de leads. Même pipeline que l’app — scoré, dédupliqué, prêt pour l’export CSV.",
+    gettingStarted: "Démarrage",
+    authTitle: "Authentification",
+    authBody:
+      "Toutes les requêtes nécessitent un token Bearer. Créez vos clés depuis /app/api-keys.",
+    searchTitle: "POST /api/v1/search",
+    usageTitle: "GET /api/v1/usage",
+    creditsTitle: "Crédits",
+    creditsBody:
+      "Chaque recherche coûte 5 crédits plus 1 crédit par lead retourné. Votre solde de crédits se remet à zéro chaque mois.",
+    rateLimitsTitle: "Limites de débit",
+    rateLimitsBody:
+      "API Starter : 30 req/min. API Pro / API Scale : 120 req/min. Agence : 60 req/min.",
+    errorsTitle: "Erreurs",
+    createKeyCta: "Créer une clé API",
+  },
+  migration: {
+    title: "Importer vos données locales ?",
+    body: "Nous avons trouvé des listes et recherches enregistrées sur cet appareil. Importez-les dans votre compte.",
+    importCta: "Importer dans mon compte",
+    dismissCta: "Pas maintenant",
+    importing: "Import en cours…",
+    imported: "Importé",
   },
 };
 

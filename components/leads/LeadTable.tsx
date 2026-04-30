@@ -18,6 +18,7 @@ import {
 import * as React from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { DemoBadge } from "@/components/ui/DemoBadge";
 import { Input } from "@/components/ui/Field";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ExportButton } from "./ExportButton";
@@ -37,11 +38,14 @@ export function LeadTable({
   emptyTitle = "No leads yet",
   emptyDescription = "Run a search to populate this view.",
   defaultFilename = "findely-leads.csv",
+  authed = false,
 }: {
   leads: Lead[];
   emptyTitle?: string;
   emptyDescription?: string;
   defaultFilename?: string;
+  /** Forwarded to the detail drawer so "save to list" hits the DB when true. */
+  authed?: boolean;
 }) {
   const { t } = useI18n();
   const [leads, setLeads] = React.useState<Lead[]>(initial);
@@ -302,13 +306,18 @@ export function LeadTable({
                             </span>
                           ) : null}
                         </div>
-                        <div className="truncate text-xs text-muted">
-                          {lead.category ?? "Business"} ·{" "}
-                          <span className="text-muted-strong">
-                            {lead.source === "google_maps"
-                              ? "Google Places"
-                              : lead.source}
+                        <div className="flex items-center gap-2 truncate text-xs text-muted">
+                          <span className="truncate">
+                            {lead.category ?? "Business"} ·{" "}
+                            <span className="text-muted-strong">
+                              {lead.source === "google_maps"
+                                ? "Google Places"
+                                : lead.source}
+                            </span>
                           </span>
+                          {lead.source === "mock" ? (
+                            <DemoBadge variant="demo" />
+                          ) : null}
                         </div>
                       </div>
                     </div>
@@ -409,6 +418,7 @@ export function LeadTable({
           lead={leads.find((l) => l.id === openId) ?? null}
           onClose={() => setOpenId(null)}
           onUpdated={updateLead}
+          authed={authed}
         />
       ) : null}
 

@@ -305,3 +305,141 @@ h4 {
   animation: marquee 40s linear infinite;
   width: max-content;
 }
+
+/* AuroraText — subtle electric sweep, no rotation, no scale jumps */
+@keyframes aurora {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.aurora-text-animate {
+  animation-name: aurora;
+  animation-duration: 7s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: background-position;
+}
+
+/* BorderBeam — conic gradient masked to border, rotated via @property */
+@property --bb-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes bb-rotate {
+  to { --bb-angle: 360deg; }
+}
+.border-beam {
+  border-radius: inherit;
+  padding: var(--bb-border, 1.5px);
+  background: conic-gradient(
+    from var(--bb-angle, 0deg),
+    transparent 0turn,
+    transparent 0.65turn,
+    var(--bb-from, #22d3ee) 0.85turn,
+    var(--bb-to, #2f7bff) 0.95turn,
+    transparent 1turn
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+          mask-composite: exclude;
+  animation: bb-rotate var(--bb-duration, 9s) linear infinite;
+  animation-delay: var(--bb-delay, 0s);
+  opacity: 0.85;
+  filter: drop-shadow(0 0 6px rgba(47, 123, 255, 0.28))
+          drop-shadow(0 0 10px rgba(34, 211, 238, 0.2));
+  transition: opacity 300ms ease, filter 300ms ease;
+}
+.beam-host:hover .border-beam {
+  opacity: 1;
+  filter: drop-shadow(0 0 10px rgba(47, 123, 255, 0.45))
+          drop-shadow(0 0 16px rgba(34, 211, 238, 0.35));
+}
+
+/* Scan-line sweep — a single, tasteful highlight pass over a preview */
+@keyframes scan-sweep {
+  0% { transform: translateY(-60%); opacity: 0; }
+  8% { opacity: 0.9; }
+  60% { opacity: 0.9; }
+  100% { transform: translateY(260%); opacity: 0; }
+}
+.scan-line {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+  mix-blend-mode: screen;
+  z-index: 1;
+}
+.scan-line::after {
+  content: "";
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  height: 22%;
+  top: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(34, 211, 238, 0.12) 45%,
+    rgba(47, 123, 255, 0.22) 50%,
+    rgba(34, 211, 238, 0.12) 55%,
+    transparent 100%
+  );
+  filter: blur(4px);
+  animation: scan-sweep 9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Soft electric halo behind a premium card — opt-in host class */
+.beam-host {
+  position: relative;
+}
+.beam-host::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 0%,
+    rgba(47, 123, 255, 0.22),
+    transparent 60%
+  );
+  opacity: 0.55;
+  transition: opacity 300ms ease;
+  z-index: 0;
+  pointer-events: none;
+}
+.beam-host:hover::before {
+  opacity: 1;
+}
+
+/* Hero connector line — animated data flow dots (search → score → export) */
+@keyframes flow-dot {
+  0% { transform: translateX(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateX(var(--flow-distance, 100%)); opacity: 0; }
+}
+.flow-dot {
+  animation: flow-dot 3.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+/* Reduced motion — freeze heavy loops */
+@media (prefers-reduced-motion: reduce) {
+  .aurora-text-animate,
+  .border-beam,
+  .scan-line::after,
+  .flow-dot,
+  .marquee-track,
+  .shimmer,
+  .pulse-dot,
+  .float-slow {
+    animation: none !important;
+  }
+}

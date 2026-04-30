@@ -2,6 +2,7 @@
 
 import { ArrowRight, PlayCircle } from "lucide-react";
 import { LinkButton } from "@/components/ui/Button";
+import { AuroraText } from "@/components/ui/aurora-text";
 import { useI18n } from "@/lib/i18n";
 import { HeroBackground } from "./Backgrounds";
 import { HeroPreview } from "./HeroPreview";
@@ -22,7 +23,7 @@ export function Hero() {
         <h1 className="mx-auto mt-7 max-w-3xl text-balance text-[44px] font-semibold leading-[1.04] tracking-tight text-foreground sm:text-6xl lg:text-7xl">
           {t.hero.titleA}
           <br />
-          <span className="text-gradient text-glow">{t.hero.titleB}</span>
+          <AuroraText className="text-glow">{t.hero.titleB}</AuroraText>
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-balance text-[15px] leading-relaxed text-muted-strong sm:text-base">
           {t.hero.subtitle}

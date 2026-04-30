@@ -9,6 +9,8 @@ import {
   Zap,
 } from "lucide-react";
 import { LinkButton } from "@/components/ui/Button";
+import { BorderBeam } from "@/components/ui/border-beam";
+import { NumberTicker } from "@/components/ui/number-ticker";
 import { useI18n, type Locale } from "@/lib/i18n";
 
 /* Logo marquee */
@@ -123,31 +125,51 @@ export function SplitNarrative() {
           </div>
         </div>
 
-        <div className="relative">
+        <div className="beam-host relative">
           <div className="bg-aurora pointer-events-none absolute -inset-8" />
           <div className="glow-accent relative overflow-hidden rounded-2xl border border-border-strong bg-surface p-6">
-            <div className="flex items-center justify-between border-b border-border pb-4 text-xs text-muted">
+            <BorderBeam duration={12} size={220} colorFrom="#22D3EE" colorTo="#2F7BFF" />
+            <div className="relative z-[2] flex items-center justify-between border-b border-border pb-4 text-xs text-muted">
               <span className="inline-flex items-center gap-2 text-foreground">
                 <Sparkles size={12} className="text-accent-cyan" />
-                Live pipeline
+                {locale === "fr" ? "Pipeline en direct" : "Live pipeline"}
               </span>
               <span className="font-mono">findely.app</span>
             </div>
-            <div className="mt-5 space-y-3">
+            <div className="relative z-[2] mt-5 space-y-3">
               {[
-                { k: "Places scanned", v: "12,480" },
-                { k: "Duplicates removed", v: "1,204" },
-                { k: "Signals detected", v: "8,337" },
-                { k: "Scored ≥ 75", v: "2,981" },
+                {
+                  k: locale === "fr" ? "Établissements scannés" : "Places scanned",
+                  v: 12480,
+                  d: 0,
+                },
+                {
+                  k: locale === "fr" ? "Doublons supprimés" : "Duplicates removed",
+                  v: 1204,
+                  d: 180,
+                },
+                {
+                  k: locale === "fr" ? "Signaux détectés" : "Signals detected",
+                  v: 8337,
+                  d: 360,
+                },
+                {
+                  k: locale === "fr" ? "Scorés ≥ 75" : "Scored ≥ 75",
+                  v: 2981,
+                  d: 540,
+                },
               ].map((s) => (
                 <div
                   key={s.k}
                   className="flex items-center justify-between rounded-lg border border-border bg-white/5 px-4 py-3"
                 >
                   <span className="text-sm text-muted-strong">{s.k}</span>
-                  <span className="font-mono text-base text-foreground">
-                    {s.v}
-                  </span>
+                  <NumberTicker
+                    value={s.v}
+                    delay={s.d}
+                    duration={1600}
+                    className="font-mono text-base text-foreground"
+                  />
                 </div>
               ))}
             </div>
@@ -160,34 +182,60 @@ export function SplitNarrative() {
 
 /* Stat band */
 
+type StatKind =
+  | { kind: "ticker"; prefix?: string; value: number; suffix?: string; delay: number }
+  | { kind: "text"; text: string };
+
 export function StatBand() {
   const { locale } = useI18n();
-  const stats =
+  const labels =
     locale === "fr"
       ? [
-          { v: "10×", k: "Recherche accélérée" },
-          { v: "0→100", k: "Score par lead" },
-          { v: "< 3 s", k: "Recherche moyenne" },
-          { v: "CSV", k: "Export en un clic" },
+          "Recherche accélérée",
+          "Score par lead",
+          "Recherche moyenne",
+          "Export en un clic",
         ]
       : [
-          { v: "10×", k: "Faster prospecting" },
-          { v: "0→100", k: "Per-lead score" },
-          { v: "< 3 s", k: "Average search" },
-          { v: "CSV", k: "One-click export" },
+          "Faster prospecting",
+          "Per-lead score",
+          "Average search",
+          "One-click export",
         ];
+
+  const values: StatKind[] = [
+    { kind: "ticker", value: 10, suffix: "×", delay: 0 },
+    { kind: "text", text: "0→100" },
+    { kind: "ticker", prefix: "< ", value: 3, suffix: " s", delay: 320 },
+    { kind: "text", text: "CSV" },
+  ];
+
   return (
     <section className="relative overflow-hidden border-y border-border">
       <div className="bg-spotlight pointer-events-none absolute inset-0" />
       <div className="relative mx-auto grid max-w-7xl grid-cols-2 divide-x divide-border px-5 py-14 text-center sm:grid-cols-4 lg:px-8">
-        {stats.map((s) => (
-          <div key={s.k} className="px-4">
-            <div className="text-gradient text-3xl font-semibold tracking-tight sm:text-4xl">
-              {s.v}
+        {values.map((v, i) => (
+          <div key={labels[i]} className="group relative px-4">
+            <div className="text-gradient text-3xl font-semibold tracking-tight transition-[text-shadow] duration-500 group-hover:[text-shadow:0_0_28px_rgba(47,123,255,0.55)] sm:text-4xl">
+              {v.kind === "ticker" ? (
+                <NumberTicker
+                  value={v.value}
+                  prefix={v.prefix}
+                  suffix={v.suffix}
+                  delay={v.delay}
+                  duration={1400}
+                />
+              ) : (
+                <span className="inline-block">{v.text}</span>
+              )}
             </div>
             <div className="mt-2 text-[11px] font-medium uppercase tracking-[0.18em] text-muted">
-              {s.k}
+              {labels[i]}
             </div>
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-8 -bottom-px h-px bg-gradient-to-r from-transparent via-accent-cyan/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+            />
           </div>
         ))}
       </div>

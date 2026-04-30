@@ -17,6 +17,7 @@ import {
 import * as React from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { DemoBadge } from "@/components/ui/DemoBadge";
 import { Label, Textarea } from "@/components/ui/Field";
 import { LeadScore } from "./LeadScore";
 import { SignalBadge } from "./SignalBadge";
@@ -50,10 +51,13 @@ export function LeadDetailDrawer({
   lead,
   onClose,
   onUpdated,
+  authed = false,
 }: {
   lead: Lead | null;
   onClose: () => void;
   onUpdated?: (lead: Lead) => void;
+  /** Authenticated users also persist to Supabase via server actions. */
+  authed?: boolean;
 }) {
   const { t, locale } = useI18n();
   const [notes, setNotes] = React.useState<string>("");
@@ -103,23 +107,38 @@ export function LeadDetailDrawer({
     persist({ ...lead, status: next });
   }
 
-  function handleAddToList(listId: string) {
+  async function handleAddToList(listId: string) {
     if (!lead) return;
     addLeadToList(listId, lead.id);
     persist({ ...lead, status: lead.status ?? "saved" });
     setToast(locale === "fr" ? "Ajouté à la liste" : "Added to list");
     setLists(getLists());
+    if (authed) {
+      const { saveLeadToList } = await import("@/lib/actions/leads");
+      void saveLeadToList(lead, listId, { status: lead.status ?? "saved" });
+    }
   }
 
-  function handleCreateList() {
+  async function handleCreateList() {
     if (!lead) return;
     const name = window.prompt("New list name");
     if (!name || !name.trim()) return;
-    const created = createList(name.trim());
+    const trimmed = name.trim();
+    const created = createList(trimmed);
     addLeadToList(created.id, lead.id);
     persist({ ...lead, status: lead.status ?? "saved" });
     setLists(getLists());
     setToast(locale === "fr" ? "Liste créée" : "List created");
+    if (authed) {
+      const { createLeadList } = await import("@/lib/actions/lists");
+      const { saveLeadToList } = await import("@/lib/actions/leads");
+      const res = await createLeadList(trimmed);
+      if (res.ok) {
+        void saveLeadToList(lead, res.value.id, {
+          status: lead.status ?? "saved",
+        });
+      }
+    }
   }
 
   const angle = outreachAngleFor(lead, locale);
@@ -139,9 +158,10 @@ export function LeadDetailDrawer({
       <aside className="relative flex h-full w-full max-w-[520px] flex-col overflow-hidden border-l border-border bg-surface">
         <div className="flex items-start justify-between gap-4 border-b border-border p-5">
           <div className="min-w-0">
-            <div className="flex items-center gap-2 text-xs text-muted">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
               <Building2 size={12} /> {lead.category ?? "Business"} ·{" "}
               <Badge tone="outline">{lead.source}</Badge>
+              {lead.source === "mock" ? <DemoBadge variant="demo" /> : null}
             </div>
             <h2 className="mt-1 truncate text-xl font-semibold text-foreground">
               {lead.name}

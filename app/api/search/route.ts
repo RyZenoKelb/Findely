@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { getCurrentUserProfile } from "@/lib/auth";
+import { env } from "@/lib/env";
 import { cleanAndDedupe } from "@/lib/leadCleaning";
 import { applyFilters } from "@/lib/leadFilters";
 import {
@@ -21,7 +23,14 @@ import type {
   SearchQuery,
   SearchResponse,
 } from "@/lib/leadTypes";
+import {
+  assertAndReserveSearch,
+  QuotaError,
+  recordUsageEvent,
+} from "@/lib/quota";
+import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
 import { resolveProviders } from "@/lib/sources";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { cryptoRandomId } from "@/lib/utils";
 
 export const runtime = "nodejs";
@@ -93,6 +102,48 @@ export async function POST(request: Request) {
   const filterKeys: LeadFilterKey[] = body.filters ?? [];
   const requestedSources = body.sources ?? [];
   const providers = resolveProviders(body.sources);
+
+  // ---- Auth / demo gate -----------------------------------------------------
+  const profile = await getCurrentUserProfile();
+  if (!profile && !env.demoMode) {
+    return NextResponse.json(
+      { error: "Unauthorized", code: "unauthorized" },
+      { status: 401 }
+    );
+  }
+
+  // ---- Rate limit -----------------------------------------------------------
+  const rlKey = getRateLimitKey(request, profile?.id ?? null);
+  const rlMax = profile ? 20 : 5; // authed 20/min, demo 5/min
+  const rl = rateLimit(rlKey, rlMax, 60_000);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests", code: "rate_limited" },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(Math.ceil(rl.resetMs / 1000)),
+        },
+      }
+    );
+  }
+
+  // ---- Plan quota (authed only) --------------------------------------------
+  // Reserves the search slot atomically via insert-then-re-aggregate, closing
+  // the TOCTOU window where concurrent requests would all pass a plain read.
+  if (profile) {
+    try {
+      await assertAndReserveSearch(profile.id, profile.plan);
+    } catch (err) {
+      if (err instanceof QuotaError) {
+        return NextResponse.json(
+          { error: err.detail, code: err.code },
+          { status: err.status }
+        );
+      }
+      throw err;
+    }
+  }
 
   const perProviderLimit = Math.max(
     10,
@@ -215,6 +266,46 @@ export async function POST(request: Request) {
       missingSources: requestedButMissing,
     },
   };
+
+  // ---- Record usage (authed only, best-effort) ------------------------------
+  if (profile) {
+    const meta = {
+      source: "ui",
+      businessType: body.businessType,
+      location: body.location,
+      objective,
+    };
+    await Promise.all([
+      // `search` usage_event already recorded by assertAndReserveSearch.
+      limited.length > 0
+        ? recordUsageEvent(profile.id, "lead_returned", limited.length, meta)
+        : Promise.resolve(),
+      // Persist the search itself so /app/searches can list it. Best-effort.
+      (async () => {
+        try {
+          const supabase = await createSupabaseServerClient();
+          await supabase.from("lead_searches").insert({
+            user_id: profile.id,
+            business_type: body.businessType,
+            location: body.location,
+            country: body.country ?? null,
+            language: body.language ?? null,
+            objective,
+            filters: filterKeys,
+            sources: providers.map((p) => p.id),
+            result_count: limited.length,
+            meta: {
+              durationMs: Date.now() - start,
+              fallbackUsed,
+              sourcesUsed: usedIds,
+            },
+          });
+        } catch {
+          // Non-fatal — search result is already returned to the client.
+        }
+      })(),
+    ]);
+  }
 
   return NextResponse.json(response);
 }

@@ -1,8 +1,19 @@
 import type { Lead } from "./leadTypes";
 
+/**
+ * Spreadsheet formula prefixes — any cell value starting with one of these
+ * characters is interpreted by Excel / Google Sheets / Numbers as a formula,
+ * which can fetch remote resources or leak data via =HYPERLINK / =IMPORTXML.
+ * Prefix with a leading single quote to force plain-text interpretation.
+ */
+const CSV_FORMULA_PREFIXES = ["=", "+", "-", "@", "\t", "\r"];
+
 function csvEscape(v: unknown): string {
   if (v === null || v === undefined) return "";
-  const s = String(v);
+  let s = String(v);
+  if (s.length > 0 && CSV_FORMULA_PREFIXES.includes(s[0])) {
+    s = `'${s}`;
+  }
   if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
   return s;
 }
@@ -11,9 +22,15 @@ export interface CsvOptions {
   includeSignals?: boolean;
   includeScore?: boolean;
   includeStatus?: boolean;
+  includeDataType?: boolean;
 }
 
 type LeadLike = Lead & { seenBefore?: boolean };
+
+/** "demo" when the lead came from the mock provider, "real" otherwise. */
+export function leadDataType(lead: Pick<Lead, "source">): "demo" | "real" {
+  return lead.source === "mock" ? "demo" : "real";
+}
 
 export function leadsToCsv(
   leads: LeadLike[],
@@ -21,11 +38,14 @@ export function leadsToCsv(
     includeSignals: true,
     includeScore: true,
     includeStatus: true,
+    includeDataType: true,
   }
 ): string {
   const now = new Date().toISOString();
+  const withDataType = opts.includeDataType ?? true;
 
   const headers = ["name", "category", "phone", "website", "address", "source"];
+  if (withDataType) headers.push("dataType");
   if (opts.includeScore) headers.push("score");
   headers.push(
     "priorityLabel",
@@ -51,6 +71,7 @@ export function leadsToCsv(
       l.address ?? "",
       l.source,
     ];
+    if (withDataType) base.push(leadDataType(l));
     if (opts.includeScore) base.push(String(l.score));
     base.push(
       l.priorityLabel ?? "",
@@ -88,6 +109,38 @@ export function downloadCsv(filename: string, content: string): void {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+/**
+ * Builds a descriptive filename:
+ *   findely-{businessType}-{location}-{YYYY-MM-DD}.csv
+ * Falls back to "findely-leads-{YYYY-MM-DD}.csv" when no hints are provided.
+ */
+export function buildExportFilename(input: {
+  businessType?: string;
+  location?: string;
+  date?: Date;
+}): string {
+  const d = input.date ?? new Date();
+  const yyyy = d.getUTCFullYear();
+  const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(d.getUTCDate()).padStart(2, "0");
+  const datePart = `${yyyy}-${mm}-${dd}`;
+
+  const slug = (s: string | undefined) =>
+    (s ?? "")
+      .toLowerCase()
+      .trim()
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 40);
+
+  const bt = slug(input.businessType);
+  const loc = slug(input.location);
+  const parts = ["findely", bt, loc, datePart].filter(Boolean);
+  return `${parts.join("-") || `findely-leads-${datePart}`}.csv`;
 }
 
 export function exportLeads(
