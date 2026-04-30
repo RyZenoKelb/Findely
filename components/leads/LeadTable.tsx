@@ -25,10 +25,18 @@ import { ExportButton } from "./ExportButton";
 import { LeadDetailDrawer } from "./LeadDetailDrawer";
 import { LeadScore } from "./LeadScore";
 import { SignalBadges } from "./SignalBadge";
-import type { Lead, LeadFilterKey } from "@/lib/leadTypes";
+import type { Lead, LeadFilterKey, LeadList } from "@/lib/leadTypes";
 import { applyFilters } from "@/lib/leadFilters";
 import { useI18n } from "@/lib/i18n";
-import { addLeadToList, getLists, saveLead, saveLeads } from "@/lib/storage";
+import {
+  STORAGE_KEYS,
+  addLeadToList,
+  getEmptySnapshot,
+  getRawSnapshot,
+  saveLead,
+  saveLeads,
+  subscribeToLocalStorage,
+} from "@/lib/storage";
 import { cn } from "@/lib/utils";
 
 type SortKey = "score" | "name" | "source";
@@ -49,7 +57,13 @@ export function LeadTable({
 }) {
   const { t } = useI18n();
   const [leads, setLeads] = React.useState<Lead[]>(initial);
-  React.useEffect(() => setLeads(initial), [initial]);
+  const [prevInitial, setPrevInitial] = React.useState<Lead[]>(initial);
+  // Reset internal `leads` whenever the parent passes a new array identity —
+  // derived-state-reset pattern, no setState-in-effect.
+  if (initial !== prevInitial) {
+    setPrevInitial(initial);
+    setLeads(initial);
+  }
 
   const CHIPS: { key: LeadFilterKey; label: string }[] = [
     { key: "without_website", label: t.table.withoutWebsite },
@@ -507,13 +521,20 @@ function RowMenu({
   onAddedToList: (name: string) => void;
   onOpen: () => void;
 }) {
-  const [lists, setLists] = React.useState(() =>
-    typeof window === "undefined" ? [] : getLists()
+  const rawLists = React.useSyncExternalStore(
+    subscribeToLocalStorage,
+    () => getRawSnapshot(STORAGE_KEYS.lists),
+    getEmptySnapshot
   );
+  const lists = React.useMemo<LeadList[]>(() => {
+    if (!rawLists) return [];
+    try {
+      return JSON.parse(rawLists) as LeadList[];
+    } catch {
+      return [];
+    }
+  }, [rawLists]);
   const ref = React.useRef<HTMLDivElement>(null);
-  React.useEffect(() => {
-    if (open) setLists(getLists());
-  }, [open]);
   React.useEffect(() => {
     function h(e: MouseEvent) {
       if (!ref.current?.contains(e.target as Node)) onToggle(false);

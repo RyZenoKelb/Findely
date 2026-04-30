@@ -8,24 +8,34 @@ import { Button } from "@/components/ui/Button";
 import type { SearchQuery } from "@/lib/leadTypes";
 import { objectiveLabel } from "@/lib/localizedLabels";
 import { useI18n } from "@/lib/i18n";
-import { deleteSearch, getSearches } from "@/lib/storage";
+import {
+  STORAGE_KEYS,
+  deleteSearch,
+  getEmptySnapshot,
+  getRawSnapshot,
+  subscribeToLocalStorage,
+} from "@/lib/storage";
 import { formatRelative } from "@/lib/utils";
 
 export default function SearchesPage() {
   const { t, locale } = useI18n();
-  const [searches, setSearches] = React.useState<SearchQuery[]>([]);
 
-  const refresh = React.useCallback(() => {
-    setSearches(getSearches());
-  }, []);
-
-  React.useEffect(() => {
-    refresh();
-  }, [refresh]);
+  const rawSearches = React.useSyncExternalStore(
+    subscribeToLocalStorage,
+    () => getRawSnapshot(STORAGE_KEYS.searches),
+    getEmptySnapshot
+  );
+  const searches = React.useMemo<SearchQuery[]>(() => {
+    if (!rawSearches) return [];
+    try {
+      return JSON.parse(rawSearches) as SearchQuery[];
+    } catch {
+      return [];
+    }
+  }, [rawSearches]);
 
   function handleDelete(id: string) {
     deleteSearch(id);
-    refresh();
   }
 
   function rerunHref(s: SearchQuery): string {

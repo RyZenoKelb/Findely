@@ -10,12 +10,14 @@ import { useI18n } from "@/lib/i18n";
 import type { Lead, LeadList } from "@/lib/leadTypes";
 import { displayListName } from "@/lib/listNames";
 import {
+  STORAGE_KEYS,
   createList,
   deleteList,
   ensureDefaultLists,
-  getLists,
-  getSavedLeads,
+  getEmptySnapshot,
+  getRawSnapshot,
   removeLeadFromList,
+  subscribeToLocalStorage,
   updateList,
 } from "@/lib/storage";
 import { formatRelative } from "@/lib/utils";
@@ -26,20 +28,43 @@ export default function ListsView({
   authed?: boolean;
 } = {}) {
   const { locale } = useI18n();
-  const [lists, setLists] = React.useState<LeadList[]>([]);
-  const [saved, setSaved] = React.useState<Lead[]>([]);
+
+  const rawLists = React.useSyncExternalStore(
+    subscribeToLocalStorage,
+    () => getRawSnapshot(STORAGE_KEYS.lists),
+    getEmptySnapshot
+  );
+  const rawSaved = React.useSyncExternalStore(
+    subscribeToLocalStorage,
+    () => getRawSnapshot(STORAGE_KEYS.leads),
+    getEmptySnapshot
+  );
+
+  const lists = React.useMemo<LeadList[]>(() => {
+    if (!rawLists) return [];
+    try {
+      return JSON.parse(rawLists) as LeadList[];
+    } catch {
+      return [];
+    }
+  }, [rawLists]);
+  const saved = React.useMemo<Lead[]>(() => {
+    if (!rawSaved) return [];
+    try {
+      return JSON.parse(rawSaved) as Lead[];
+    } catch {
+      return [];
+    }
+  }, [rawSaved]);
+
   const [activeId, setActiveId] = React.useState<string | null>(null);
   const [newName, setNewName] = React.useState("");
 
-  const refresh = React.useCallback(() => {
-    ensureDefaultLists();
-    setLists(getLists());
-    setSaved(getSavedLeads());
-  }, []);
-
   React.useEffect(() => {
-    refresh();
-  }, [refresh]);
+    // Seed defaults on first mount. Writes trigger findely:storage, which
+    // the useSyncExternalStore subscription above consumes.
+    ensureDefaultLists();
+  }, []);
 
   const active = lists.find((l) => l.id === activeId) ?? null;
   const activeLeads = active
@@ -50,13 +75,11 @@ export default function ListsView({
     if (!newName.trim()) return;
     createList(newName.trim());
     setNewName("");
-    refresh();
   }
 
   function handleRename(list: LeadList, next: string) {
     if (!next.trim()) return;
     updateList(list.id, { name: next.trim() });
-    refresh();
   }
 
   function handleDelete(list: LeadList) {
@@ -67,7 +90,6 @@ export default function ListsView({
     if (!window.confirm(confirmMsg)) return;
     deleteList(list.id);
     if (activeId === list.id) setActiveId(null);
-    refresh();
   }
 
   if (active) {
@@ -133,7 +155,6 @@ export default function ListsView({
                       active.leadIds.forEach((id) =>
                         removeLeadFromList(active.id, id)
                       );
-                      refresh();
                     }}
                     className="text-xs text-muted hover:text-danger"
                   >

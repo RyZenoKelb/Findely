@@ -34,10 +34,11 @@ import { objectiveEntries, objectiveLabel } from "@/lib/localizedLabels";
 import { useI18n } from "@/lib/i18n";
 import {
   DEFAULT_USAGE,
+  STORAGE_KEYS,
   ensureDefaultLists,
-  getLists,
-  getSearches,
-  getUsage,
+  getEmptySnapshot,
+  getRawSnapshot,
+  subscribeToLocalStorage,
 } from "@/lib/storage";
 import { formatRelative } from "@/lib/utils";
 
@@ -95,9 +96,48 @@ export default function DashboardView({
   onboardingCompleted = false,
 }: DashboardViewProps = {}) {
   const { t, locale } = useI18n();
-  const [searches, setSearches] = React.useState<SearchQuery[]>([]);
-  const [lists, setLists] = React.useState<LeadList[]>([]);
-  const [usage, setUsage] = React.useState<UsageStats>(DEFAULT_USAGE);
+
+  const rawSearches = React.useSyncExternalStore(
+    subscribeToLocalStorage,
+    () => getRawSnapshot(STORAGE_KEYS.searches),
+    getEmptySnapshot
+  );
+  const rawLists = React.useSyncExternalStore(
+    subscribeToLocalStorage,
+    () => getRawSnapshot(STORAGE_KEYS.lists),
+    getEmptySnapshot
+  );
+  const rawUsage = React.useSyncExternalStore(
+    subscribeToLocalStorage,
+    () => getRawSnapshot(STORAGE_KEYS.usage),
+    getEmptySnapshot
+  );
+
+  const searches = React.useMemo<SearchQuery[]>(() => {
+    if (!rawSearches) return [];
+    try {
+      return JSON.parse(rawSearches) as SearchQuery[];
+    } catch {
+      return [];
+    }
+  }, [rawSearches]);
+  const lists = React.useMemo<LeadList[]>(() => {
+    if (!rawLists) return [];
+    try {
+      return JSON.parse(rawLists) as LeadList[];
+    } catch {
+      return [];
+    }
+  }, [rawLists]);
+  const usage = React.useMemo<UsageStats>(() => {
+    if (!rawUsage) return DEFAULT_USAGE;
+    try {
+      return JSON.parse(rawUsage) as UsageStats;
+    } catch {
+      return DEFAULT_USAGE;
+    }
+  }, [rawUsage]);
+
   const [quick, setQuick] = React.useState({
     businessType: "",
     location: "",
@@ -105,10 +145,10 @@ export default function DashboardView({
   });
 
   React.useEffect(() => {
+    // Seed default lists on first mount if storage is empty. Writes to
+    // localStorage, not React state — the useSyncExternalStore subscriptions
+    // above will pick up the new value via the findely:storage custom event.
     ensureDefaultLists();
-    setSearches(getSearches());
-    setLists(getLists());
-    setUsage(getUsage());
   }, []);
 
   const quickHref = React.useMemo(() => {

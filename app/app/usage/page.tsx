@@ -17,6 +17,8 @@ export default async function UsagePage() {
       searches: usage.searches,
       leads: usage.leads,
       exports: usage.exports,
+      apiSearches: usage.apiSearches,
+      apiCredits: usage.apiCredits,
       cycleEnd: usage.cycleEnd,
     };
     exportsHistory = recent.map((e) => ({

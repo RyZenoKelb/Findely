@@ -33,7 +33,15 @@ import {
   type OpportunityType,
 } from "@/lib/leadOpportunity";
 import { outreachAngleFor, statusLabel } from "@/lib/localizedLabels";
-import { addLeadToList, createList, getLists, saveLead } from "@/lib/storage";
+import {
+  STORAGE_KEYS,
+  addLeadToList,
+  createList,
+  getEmptySnapshot,
+  getRawSnapshot,
+  saveLead,
+  subscribeToLocalStorage,
+} from "@/lib/storage";
 import { cn } from "@/lib/utils";
 
 const STATUS_ORDER: {
@@ -60,18 +68,35 @@ export function LeadDetailDrawer({
   authed?: boolean;
 }) {
   const { t, locale } = useI18n();
-  const [notes, setNotes] = React.useState<string>("");
-  const [status, setStatus] = React.useState<LeadStatus>("new");
-  const [lists, setLists] = React.useState<LeadList[]>([]);
+  const [notes, setNotes] = React.useState<string>(lead?.notes ?? "");
+  const [status, setStatus] = React.useState<LeadStatus>(lead?.status ?? "new");
+  const [prevLeadId, setPrevLeadId] = React.useState<string | null>(
+    lead?.id ?? null
+  );
   const [copied, setCopied] = React.useState<string | null>(null);
   const [toast, setToast] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
-    if (!lead) return;
+  // Reset notes/status when a different lead becomes active — derived state
+  // reset pattern, avoids setState-in-effect cascading render.
+  if (lead && lead.id !== prevLeadId) {
+    setPrevLeadId(lead.id);
     setNotes(lead.notes ?? "");
     setStatus(lead.status ?? "new");
-    setLists(getLists());
-  }, [lead]);
+  }
+
+  const rawLists = React.useSyncExternalStore(
+    subscribeToLocalStorage,
+    () => getRawSnapshot(STORAGE_KEYS.lists),
+    getEmptySnapshot
+  );
+  const lists = React.useMemo<LeadList[]>(() => {
+    if (!rawLists) return [];
+    try {
+      return JSON.parse(rawLists) as LeadList[];
+    } catch {
+      return [];
+    }
+  }, [rawLists]);
 
   React.useEffect(() => {
     if (!toast) return;
@@ -112,7 +137,6 @@ export function LeadDetailDrawer({
     addLeadToList(listId, lead.id);
     persist({ ...lead, status: lead.status ?? "saved" });
     setToast(locale === "fr" ? "Ajouté à la liste" : "Added to list");
-    setLists(getLists());
     if (authed) {
       const { saveLeadToList } = await import("@/lib/actions/leads");
       void saveLeadToList(lead, listId, { status: lead.status ?? "saved" });
@@ -127,7 +151,6 @@ export function LeadDetailDrawer({
     const created = createList(trimmed);
     addLeadToList(created.id, lead.id);
     persist({ ...lead, status: lead.status ?? "saved" });
-    setLists(getLists());
     setToast(locale === "fr" ? "Liste créée" : "List created");
     if (authed) {
       const { createLeadList } = await import("@/lib/actions/lists");

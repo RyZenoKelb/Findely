@@ -14,13 +14,16 @@ const STAGES = [
 
 export function LoadingSteps({ running }: { running: boolean }) {
   const [idx, setIdx] = React.useState(0);
+  const [prevRunning, setPrevRunning] = React.useState(running);
+
+  // Reset the stepper whenever `running` toggles — derived state reset.
+  if (running !== prevRunning) {
+    setPrevRunning(running);
+    setIdx(0);
+  }
 
   React.useEffect(() => {
-    if (!running) {
-      setIdx(0);
-      return;
-    }
-    setIdx(0);
+    if (!running) return;
     const id = setInterval(() => {
       setIdx((i) => (i < STAGES.length - 1 ? i + 1 : i));
     }, 650);

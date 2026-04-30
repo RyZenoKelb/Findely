@@ -11,5 +11,7 @@ export default async function ApiKeysPage() {
   const plan = normalizePlan(profile?.plan);
   const canUseApi = getPlanLimits(plan).canUseApi;
 
-  return <ApiKeysPanel initialRows={rows} canUseApi={canUseApi} />;
+  return (
+    <ApiKeysPanel initialRows={rows} canUseApi={canUseApi} plan={plan} />
+  );
 }

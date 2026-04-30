@@ -3,7 +3,12 @@
 import { Check, Sparkles, Zap } from "lucide-react";
 import { PublicShell } from "@/components/landing/PublicShell";
 import { ClosingBand } from "@/components/landing/LandingSections";
-import { Pricing, PricingFaq } from "@/components/landing/Sections";
+import {
+  ApiPricing,
+  ApiPricingFaq,
+  Pricing,
+  PricingFaq,
+} from "@/components/landing/Sections";
 import { useI18n } from "@/lib/i18n";
 
 export default function PricingPage() {
@@ -92,6 +97,8 @@ export default function PricingPage() {
         </div>
       </section>
 
+      <ApiPricing />
+      <ApiPricingFaq />
       <PricingFaq />
       <ClosingBand />
     </PublicShell>

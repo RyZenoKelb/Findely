@@ -15,6 +15,9 @@ const K = {
   usage: "findely:usage",
 } as const;
 
+export const STORAGE_KEYS = K;
+export const STORAGE_EVENT = "findely:storage";
+
 function isBrowser(): boolean {
   return typeof window !== "undefined" && typeof localStorage !== "undefined";
 }
@@ -30,13 +33,57 @@ function readJSON<T>(key: string, fallback: T): T {
   }
 }
 
+function emitChange(key: string): void {
+  if (!isBrowser()) return;
+  try {
+    window.dispatchEvent(new CustomEvent(STORAGE_EVENT, { detail: { key } }));
+  } catch {
+    // CustomEvent unavailable — non-fatal.
+  }
+}
+
 function writeJSON<T>(key: string, value: T): void {
   if (!isBrowser()) return;
   try {
     localStorage.setItem(key, JSON.stringify(value));
+    emitChange(key);
   } catch {
     // quota or serialization failure — ignore silently in V1
   }
+}
+
+/**
+ * Raw localStorage snapshot — returns the string value or "" (never null so
+ * the snapshot identity is stable under `useSyncExternalStore`). Designed to
+ * be passed directly as getSnapshot; callers parse with useMemo.
+ */
+export function getRawSnapshot(key: string): string {
+  if (!isBrowser()) return "";
+  try {
+    return localStorage.getItem(key) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+export function getEmptySnapshot(): string {
+  return "";
+}
+
+/**
+ * Subscribe to both cross-tab `storage` events and same-tab
+ * `findely:storage` CustomEvent dispatched by our write helpers. The native
+ * `storage` event does not fire in the tab that wrote it, so same-tab
+ * components need the custom event to re-render.
+ */
+export function subscribeToLocalStorage(cb: () => void): () => void {
+  if (!isBrowser()) return () => {};
+  window.addEventListener("storage", cb);
+  window.addEventListener(STORAGE_EVENT, cb as EventListener);
+  return () => {
+    window.removeEventListener("storage", cb);
+    window.removeEventListener(STORAGE_EVENT, cb as EventListener);
+  };
 }
 
 /* Saved searches */

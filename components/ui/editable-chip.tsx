@@ -41,11 +41,16 @@ export function EditableChip({
 
   const [editing, setEditing] = React.useState(false);
   const [draft, setDraft] = React.useState(current);
+  const [prevValue, setPrevValue] = React.useState<string | undefined>(value);
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
-  React.useEffect(() => {
-    if (isControlled) setDraft(value as string);
-  }, [value, isControlled]);
+  // Reset draft when the controlled `value` prop changes — derived state
+  // reset pattern (https://react.dev/reference/react/useState#storing-information-from-previous-renders).
+  // Safer than setState-in-effect and avoids a render-commit-render round trip.
+  if (isControlled && value !== prevValue) {
+    setPrevValue(value);
+    setDraft(value as string);
+  }
 
   React.useEffect(() => {
     if (editing) {

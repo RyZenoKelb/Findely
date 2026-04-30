@@ -17,16 +17,17 @@ import { cn } from "@/lib/utils";
 
 export default function SettingsPage() {
   const { t, locale } = useI18n();
-  const [settings, setSettings] = React.useState<AppSettings>(DEFAULT_SETTINGS);
+  // Lazy init reads localStorage once on client mount. SettingsPage is a
+  // client component, so this never runs during SSR.
+  const [settings, setSettings] = React.useState<AppSettings>(() =>
+    typeof window === "undefined" ? DEFAULT_SETTINGS : getSettings()
+  );
   const [saved, setSaved] = React.useState(false);
-  const [seenTotal, setSeenTotal] = React.useState(0);
+  const [seenTotal, setSeenTotal] = React.useState<number>(() =>
+    typeof window === "undefined" ? 0 : seenCount()
+  );
   const [resetToast, setResetToast] = React.useState<string | null>(null);
   const sources = React.useMemo(() => listSources(), []);
-
-  React.useEffect(() => {
-    setSettings(getSettings());
-    setSeenTotal(seenCount());
-  }, []);
 
   React.useEffect(() => {
     if (!resetToast) return;

@@ -2,22 +2,27 @@
 
 import {
   Bookmark,
+  Code2,
   Download,
   Gauge,
+  KeyRound,
   LayoutGrid,
   Search,
   Sparkles,
+  Zap,
 } from "lucide-react";
 import * as React from "react";
 import { Badge } from "@/components/ui/Badge";
 import { LinkButton } from "@/components/ui/Button";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { useI18n } from "@/lib/i18n";
+import type { LeadList, SearchQuery, UsageStats } from "@/lib/leadTypes";
 import {
   DEFAULT_USAGE,
-  getLists,
-  getSearches,
-  getUsage,
+  STORAGE_KEYS,
+  getEmptySnapshot,
+  getRawSnapshot,
+  subscribeToLocalStorage,
 } from "@/lib/storage";
 import {
   PLANS,
@@ -28,10 +33,13 @@ import {
 } from "@/lib/plans";
 import { cn, formatNumber } from "@/lib/utils";
 
-function subscribeToStorage(cb: () => void): () => void {
-  if (typeof window === "undefined") return () => {};
-  window.addEventListener("storage", cb);
-  return () => window.removeEventListener("storage", cb);
+function parseJSON<T>(raw: string, fallback: T): T {
+  if (!raw) return fallback;
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return fallback;
+  }
 }
 
 function Bar({ value, max }: { value: number; max: number }) {
@@ -55,6 +63,8 @@ export interface UsageViewProps {
     searches: number;
     leads: number;
     exports: number;
+    apiSearches: number;
+    apiCredits: number;
     cycleEnd: string;
   } | null;
   /** Recent CSV exports for this user. Empty for unauth. */
@@ -112,25 +122,48 @@ export function UsageView({
 }: UsageViewProps) {
   const { t, locale } = useI18n();
 
-  // Snapshot localStorage without setState-in-effect.
-  const localUsage = React.useSyncExternalStore(
-    subscribeToStorage,
-    () => getUsage(),
-    () => DEFAULT_USAGE,
+  // Raw snapshots are primitive strings → stable identity between renders,
+  // so `useSyncExternalStore` never re-invokes getSnapshot in a loop. Parsed
+  // derivations happen in useMemo and only when the raw value actually
+  // changes. Fixes React 19 "getSnapshot should be cached" + infinite loop.
+  const rawUsage = React.useSyncExternalStore(
+    subscribeToLocalStorage,
+    () => getRawSnapshot(STORAGE_KEYS.usage),
+    getEmptySnapshot,
   );
-  const savedCount = React.useSyncExternalStore(
-    subscribeToStorage,
-    () => getLists().reduce((s, l) => s + l.leadIds.length, 0),
-    () => 0,
+  const rawLists = React.useSyncExternalStore(
+    subscribeToLocalStorage,
+    () => getRawSnapshot(STORAGE_KEYS.lists),
+    getEmptySnapshot,
   );
-  const searchCount = React.useSyncExternalStore(
-    subscribeToStorage,
-    () => getSearches().length,
-    () => 0,
+  const rawSearches = React.useSyncExternalStore(
+    subscribeToLocalStorage,
+    () => getRawSnapshot(STORAGE_KEYS.searches),
+    getEmptySnapshot,
+  );
+
+  const localUsage = React.useMemo<UsageStats>(
+    () => parseJSON<UsageStats>(rawUsage, DEFAULT_USAGE),
+    [rawUsage]
+  );
+  const savedCount = React.useMemo(
+    () =>
+      parseJSON<LeadList[]>(rawLists, []).reduce(
+        (s, l) => s + (l.leadIds?.length ?? 0),
+        0
+      ),
+    [rawLists]
+  );
+  const searchCount = React.useMemo(
+    () => parseJSON<SearchQuery[]>(rawSearches, []).length,
+    [rawSearches]
   );
 
   const currentPlan = normalizePlan(plan);
   const limits = getPlanLimits(currentPlan);
+  const canUseApi = limits.canUseApi;
+  const apiCreditsUsed = dbUsage?.apiCredits ?? 0;
+  const apiSearchesCount = dbUsage?.apiSearches ?? 0;
 
   // DB usage wins when authenticated; otherwise fall back to localStorage demo counters.
   const searchesUsed = dbUsage?.searches ?? localUsage.searchesRun;
@@ -210,7 +243,12 @@ export function UsageView({
             </div>
           ) : null}
         </div>
-        <div className="mt-4 grid gap-6 md:grid-cols-3">
+        <div
+          className={cn(
+            "mt-4 grid gap-6",
+            canUseApi ? "md:grid-cols-2 lg:grid-cols-4" : "md:grid-cols-3"
+          )}
+        >
           <div>
             <div className="flex items-baseline justify-between text-sm">
               <span className="text-muted-strong">{t.usage.searches}</span>
@@ -237,6 +275,92 @@ export function UsageView({
               </span>
             </div>
             <Bar value={exportsUsed} max={limits.monthlyExports} />
+          </div>
+          {canUseApi ? (
+            <div>
+              <div className="flex items-baseline justify-between text-sm">
+                <span className="inline-flex items-center gap-1.5 text-muted-strong">
+                  <Zap size={12} className="text-accent-cyan" />
+                  {t.usage.apiCredits ?? "API credits"}
+                </span>
+                <span className="font-mono text-xs text-muted">
+                  {formatNumber(apiCreditsUsed)} / {formatLimit(limits.apiCredits)}
+                </span>
+              </div>
+              <Bar value={apiCreditsUsed} max={limits.apiCredits} />
+              {apiSearchesCount > 0 ? (
+                <div className="mt-1.5 text-[11px] text-muted">
+                  {formatNumber(apiSearchesCount)}{" "}
+                  {locale === "fr" ? "recherches API" : "API searches"}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      </section>
+
+      <section className="rounded-xl border border-border bg-surface p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="max-w-xl">
+            <div className="flex items-center gap-2">
+              <Code2 size={14} className="text-accent-cyan" />
+              <h3 className="text-sm font-semibold text-foreground">
+                {t.usage.apiAccessTitle ??
+                  (locale === "fr" ? "Accès API" : "API access")}
+              </h3>
+              <Badge tone={canUseApi ? "success" : "outline"}>
+                {canUseApi
+                  ? t.usage.apiIncluded ??
+                    (locale === "fr" ? "Inclus" : "Included")
+                  : t.usage.apiNotIncluded ??
+                    (locale === "fr" ? "Non inclus" : "Not included")}
+              </Badge>
+            </div>
+            <p className="mt-2 text-sm leading-relaxed text-muted-strong">
+              {canUseApi
+                ? t.usage.apiAccessBodyOn ??
+                  (locale === "fr"
+                    ? "Votre plan inclut des crédits API. Créez une clé pour commencer à intégrer Findely."
+                    : "Your plan includes API credits. Create a key to start integrating Findely.")
+                : t.usage.apiAccessBodyOff ??
+                  (locale === "fr"
+                    ? "L'API n'est pas incluse dans votre plan actuel. Passez à Agency, API Starter ou API Pro pour créer des clés et intégrer Findely."
+                    : "API is not included on your current plan. Upgrade to Agency, API Starter or API Pro to create keys and integrate Findely.")}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {canUseApi ? (
+              <LinkButton
+                href="/app/api-keys"
+                size="sm"
+                leftIcon={<KeyRound size={12} />}
+              >
+                {t.usage.manageApiKeys ??
+                  (locale === "fr" ? "Gérer les clés API" : "Manage API keys")}
+              </LinkButton>
+            ) : (
+              <LinkButton
+                href="/pricing#api"
+                size="sm"
+                leftIcon={<Zap size={12} />}
+              >
+                {t.usage.compareApiPlans ??
+                  (locale === "fr"
+                    ? "Comparer les offres API"
+                    : "Compare API plans")}
+              </LinkButton>
+            )}
+            <LinkButton
+              href="/developers"
+              size="sm"
+              variant="outline"
+              leftIcon={<Code2 size={12} />}
+            >
+              {t.usage.viewApiDocs ??
+                (locale === "fr"
+                  ? "Voir la documentation API"
+                  : "View API docs")}
+            </LinkButton>
           </div>
         </div>
       </section>

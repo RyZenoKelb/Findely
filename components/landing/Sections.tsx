@@ -4,11 +4,13 @@ import {
   Bookmark,
   Building2,
   CheckCircle2,
+  Code2,
   Database,
   Download,
   Filter,
   Gauge,
   Globe2,
+  KeyRound,
   Layers,
   ListChecks,
   MailCheck,
@@ -21,11 +23,14 @@ import {
   Target,
   Users,
   Workflow,
+  Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { LinkButton } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
 import { useI18n } from "@/lib/i18n";
+import { PLANS } from "@/lib/plans";
+import { formatNumber } from "@/lib/utils";
 
 function SectionShell({
   id,
@@ -284,7 +289,7 @@ export function HowItWorks() {
   );
 }
 
-const PLANS = [
+const SAAS_LANDING_PLANS = [
   {
     key: "starter" as const,
     price: "$0",
@@ -375,7 +380,7 @@ export function Pricing() {
       subtitle={t.pricing.subtitle}
     >
       <div className="grid gap-4 lg:grid-cols-3">
-        {PLANS.map((p) => (
+        {SAAS_LANDING_PLANS.map((p) => (
           <div
             key={p.key}
             className={`relative rounded-2xl border bg-surface p-6 ${
@@ -439,6 +444,185 @@ export function PricingFaq() {
       </h3>
       <div className="mt-8 grid gap-3 md:grid-cols-2">
         {t.pricing.faq.map((f) => (
+          <div
+            key={f.q}
+            className="rounded-xl border border-border bg-surface p-5"
+          >
+            <div className="text-sm font-semibold text-foreground">{f.q}</div>
+            <p className="mt-2 text-sm leading-relaxed text-muted-strong">
+              {f.a}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function ApiPricing() {
+  const { t, locale } = useI18n();
+  const a = t.apiPricing;
+
+  const starter = PLANS.api_starter;
+  const pro = PLANS.api_pro;
+  const scale = PLANS.api_scale;
+
+  const monthSuffix = t.pricing.month;
+
+  const cards = [
+    {
+      key: "api_starter" as const,
+      title: a?.starterTitle ?? "API Starter",
+      blurb: a?.starterBlurb ?? "",
+      price: starter.priceEur !== null ? `€${starter.priceEur}` : "—",
+      priceSuffix: monthSuffix,
+      credits: starter.apiCredits,
+      highlighted: false,
+    },
+    {
+      key: "api_pro" as const,
+      title: a?.proTitle ?? "API Pro",
+      blurb: a?.proBlurb ?? "",
+      price: pro.priceEur !== null ? `€${pro.priceEur}` : "—",
+      priceSuffix: monthSuffix,
+      credits: pro.apiCredits,
+      highlighted: true,
+    },
+    {
+      key: "api_scale" as const,
+      title: a?.scaleTitle ?? "API Scale",
+      blurb: a?.scaleBlurb ?? "",
+      price: a?.scalePrice ?? (locale === "fr" ? "Sur mesure" : "Custom"),
+      priceSuffix: "",
+      credits: scale.apiCredits,
+      highlighted: false,
+    },
+  ];
+
+  return (
+    <section
+      id="api"
+      className="relative mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-24"
+    >
+      <div className="absolute inset-x-0 top-0 mx-auto h-px max-w-4xl bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
+      <div className="mb-10 flex flex-col items-start gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-2xl">
+          <div className="inline-flex items-center gap-2 rounded-full border border-border-strong bg-surface-2 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-accent-cyan">
+            <Code2 size={12} />
+            {a?.eyebrow ?? "API pricing"}
+          </div>
+          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+            {a?.title ?? "Same pipeline, JSON-native."}
+          </h2>
+          <p className="mt-3 text-[15px] leading-relaxed text-muted-strong">
+            {a?.subtitle ?? ""}
+          </p>
+        </div>
+        <div className="rounded-2xl border border-border bg-surface p-5 md:max-w-sm">
+          <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+            <Zap size={14} className="text-accent-cyan" />
+            {a?.creditModelTitle ?? "How credits work"}
+          </div>
+          <ul className="mt-3 space-y-1.5 text-sm">
+            {(a?.creditModelBullets ?? []).map((b) => (
+              <li key={b} className="flex items-start gap-2 text-muted-strong">
+                <CheckCircle2
+                  size={13}
+                  className="mt-0.5 flex-none text-accent-cyan"
+                />
+                {b}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        {cards.map((c) => (
+          <div
+            key={c.key}
+            className={`relative rounded-2xl border bg-surface p-6 ${
+              c.highlighted
+                ? "border-accent/40 bg-gradient-to-b from-accent/[0.1] to-transparent glow-accent"
+                : "border-border"
+            }`}
+          >
+            {c.highlighted ? (
+              <Badge
+                tone="accent"
+                className="absolute right-5 top-5 text-[10px]"
+              >
+                {a?.popular ?? t.pricing.mostPopular}
+              </Badge>
+            ) : null}
+            <div className="text-sm font-medium text-muted-strong">
+              {c.title}
+            </div>
+            <div className="mt-3 flex items-baseline gap-1">
+              <span className="text-4xl font-semibold text-foreground">
+                {c.price}
+              </span>
+              {c.priceSuffix ? (
+                <span className="text-sm text-muted">{c.priceSuffix}</span>
+              ) : null}
+            </div>
+            <p className="mt-2 text-sm text-muted-strong">{c.blurb}</p>
+            <div className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-2 px-2.5 py-1 font-mono text-xs text-foreground">
+              <Zap size={12} className="text-accent-cyan" />
+              {formatNumber(c.credits)} {a?.monthlyCredits ?? "credits / month"}
+            </div>
+            <div className="mt-6 flex flex-col gap-2">
+              {c.key === "api_scale" ? (
+                <LinkButton
+                  href="mailto:sales@findely.app?subject=API%20Scale"
+                  size="md"
+                  variant="primary"
+                  className="w-full"
+                  leftIcon={<MailCheck size={14} />}
+                >
+                  {a?.contactScale ?? "Contact for Scale"}
+                </LinkButton>
+              ) : (
+                <LinkButton
+                  href="/app/api-keys"
+                  size="md"
+                  variant={c.highlighted ? "primary" : "outline"}
+                  className="w-full"
+                  leftIcon={<KeyRound size={14} />}
+                >
+                  {a?.manageKeys ?? "Manage API keys"}
+                </LinkButton>
+              )}
+              <LinkButton
+                href="/developers"
+                size="sm"
+                variant="ghost"
+                className="w-full"
+                leftIcon={<Code2 size={12} />}
+              >
+                {a?.viewDocs ?? "View API docs"}
+              </LinkButton>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function ApiPricingFaq() {
+  const { t } = useI18n();
+  const a = t.apiPricing;
+  const faq = a?.faq ?? [];
+  if (faq.length === 0) return null;
+  return (
+    <section className="mx-auto max-w-4xl px-5 pb-16 lg:px-8">
+      <h3 className="flex items-center justify-center gap-2 text-center text-2xl font-semibold tracking-tight text-foreground">
+        <Code2 size={16} className="text-accent-cyan" />
+        {a?.faqTitle ?? "API — frequently asked questions"}
+      </h3>
+      <div className="mt-8 grid gap-3 md:grid-cols-2">
+        {faq.map((f) => (
           <div
             key={f.q}
             className="rounded-xl border border-border bg-surface p-5"

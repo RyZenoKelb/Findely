@@ -143,25 +143,28 @@ export function SearchForm({
   onError?: (msg: string) => void;
 }) {
   const { t, locale } = useI18n();
-  const [state, setState] = React.useState<SearchFormState>(() => ({
-    ...defaultState(),
-    ...initial,
-  }));
+  const [state, setState] = React.useState<SearchFormState>(() => {
+    const base = { ...defaultState(), ...initial };
+    // `SearchForm` is a client component, so this initializer only runs in
+    // the browser. Merging persisted settings here avoids a setState-in-effect
+    // round-trip and matches React 19's "read from external sync source at
+    // init time, not in an effect" guidance.
+    if (typeof window === "undefined") return base;
+    const s = getSettings();
+    return {
+      ...base,
+      country: base.country || s.defaultCountry,
+      language: base.language || s.defaultLanguage,
+      sources: base.sources.length > 0 ? base.sources : s.defaultSources,
+      limit: base.limit || s.defaultLimit,
+    };
+  });
 
   const [sources, setSources] = React.useState<SourceMetadata[]>([]);
   const [sourcesLoaded, setSourcesLoaded] = React.useState(false);
 
   React.useEffect(() => {
     if (typeof window === "undefined") return;
-    const s = getSettings();
-    setState((prev) => ({
-      ...prev,
-      country: prev.country || s.defaultCountry,
-      language: prev.language || s.defaultLanguage,
-      sources: prev.sources.length > 0 ? prev.sources : s.defaultSources,
-      limit: prev.limit || s.defaultLimit,
-    }));
-
     void fetch("/api/sources", { cache: "no-store" })
       .then((r) => r.json())
       .then((data: { sources: SourceMetadata[] }) => {

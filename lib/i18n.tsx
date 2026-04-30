@@ -18,6 +18,7 @@ export interface Dict {
     signIn: string;
     cta: string;
     backToSite: string;
+    developers?: string;
   };
   hero: {
     badge: string;
@@ -213,6 +214,16 @@ export interface Dict {
     leads: string;
     exportsLabel: string;
     current: string;
+    apiCredits?: string;
+    apiAccessTitle?: string;
+    apiAccessBodyOn?: string;
+    apiAccessBodyOff?: string;
+    apiIncluded?: string;
+    apiNotIncluded?: string;
+    manageApiKeys?: string;
+    compareApiPlans?: string;
+    viewApiDocs?: string;
+    resetDate?: string;
   };
   common: {
     open: string;
@@ -305,6 +316,18 @@ export interface Dict {
     upgradeRequired: string;
     never: string;
     sidebarLink: string;
+    intro?: string;
+    howItWorksTitle?: string;
+    howItWorksBullets?: string[];
+    planGatingTitle?: string;
+    planGatingBody?: string;
+    upgradeCtaCompare?: string;
+    upgradeCtaPricing?: string;
+    viewDocsCta?: string;
+    currentUsageTitle?: string;
+    currentUsageBody?: string;
+    existingKeysTitle?: string;
+    warningTitle?: string;
   };
   developers?: {
     title: string;
@@ -320,6 +343,31 @@ export interface Dict {
     rateLimitsBody: string;
     errorsTitle: string;
     createKeyCta: string;
+    overviewTitle?: string;
+    overviewBody?: string;
+    pricingCta?: string;
+    manageKeysCta?: string;
+  };
+  apiPricing?: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    creditModelTitle: string;
+    creditModelBullets: string[];
+    starterTitle: string;
+    starterBlurb: string;
+    proTitle: string;
+    proBlurb: string;
+    scaleTitle: string;
+    scaleBlurb: string;
+    scalePrice: string;
+    monthlyCredits: string;
+    viewDocs: string;
+    manageKeys: string;
+    contactScale: string;
+    popular: string;
+    faqTitle?: string;
+    faq?: { q: string; a: string }[];
   };
   migration?: {
     title: string;
@@ -340,6 +388,7 @@ const en: Dict = {
     signIn: "Sign in",
     cta: "Start finding leads",
     backToSite: "Back to site",
+    developers: "Developers",
   },
   hero: {
     badge: "New · Google Places is live",
@@ -578,6 +627,18 @@ const en: Dict = {
     leads: "Leads",
     exportsLabel: "Exports",
     current: "Current",
+    apiCredits: "API credits",
+    apiAccessTitle: "API access",
+    apiAccessBodyOn:
+      "Your plan includes API credits. Create a key and start integrating Findely into your stack.",
+    apiAccessBodyOff:
+      "API is not included on your current plan. Upgrade to Agency, API Starter, or API Pro to create keys and integrate Findely.",
+    apiIncluded: "Included",
+    apiNotIncluded: "Not included",
+    manageApiKeys: "Manage API keys",
+    compareApiPlans: "Compare API plans",
+    viewApiDocs: "View API documentation",
+    resetDate: "Reset date",
   },
   common: {
     open: "Open website",
@@ -681,6 +742,25 @@ const en: Dict = {
       "API access requires an Agency or API plan. Upgrade to create keys.",
     never: "Never",
     sidebarLink: "API keys",
+    intro:
+      "API keys let you call the Findely v1 API from your own systems — same search pipeline as the app, scored and deduplicated leads, JSON responses.",
+    howItWorksTitle: "How API keys work",
+    howItWorksBullets: [
+      "Name your key so you can tell environments apart.",
+      "We show the full key once — copy it to a secret manager.",
+      "Pass it as a Bearer token: Authorization: Bearer findely_live_…",
+      "Revoke any key instantly. Revoked keys stop working on the next request.",
+    ],
+    planGatingTitle: "Which plans include API access?",
+    planGatingBody:
+      "Agency ships with light API access (1,000 credits/mo). API Starter and API Pro are dedicated API plans with larger credit pools. API Scale is custom — get in touch.",
+    upgradeCtaCompare: "Compare API plans",
+    upgradeCtaPricing: "View pricing",
+    viewDocsCta: "View API documentation",
+    currentUsageTitle: "Your current API usage",
+    currentUsageBody: "Track API credits consumed this cycle on the usage page.",
+    existingKeysTitle: "Existing keys",
+    warningTitle: "Keep your keys safe",
   },
   developers: {
     title: "Findely API",
@@ -700,6 +780,65 @@ const en: Dict = {
       "API Starter: 30 req/min. API Pro / API Scale: 120 req/min. Agency: 60 req/min.",
     errorsTitle: "Errors",
     createKeyCta: "Create an API key",
+    overviewTitle: "Overview",
+    overviewBody:
+      "Findely exposes two endpoints. POST /api/v1/search runs a scored, deduplicated lead search. GET /api/v1/usage returns your cycle counters and credit balance. Both take a Bearer token.",
+    pricingCta: "See API pricing",
+    manageKeysCta: "Manage API keys",
+  },
+  apiPricing: {
+    eyebrow: "API pricing",
+    title: "Same pipeline, JSON-native.",
+    subtitle:
+      "Ship Findely-powered lead discovery inside your app, CRM, or internal tools. Per-request credits, no seats.",
+    creditModelTitle: "How credits work",
+    creditModelBullets: [
+      "5 credits per search request",
+      "1 credit per returned lead",
+      "Credits reset on the 1st of every month (UTC)",
+    ],
+    starterTitle: "API Starter",
+    starterBlurb:
+      "Best for solo devs and MVPs plugging Findely into one product.",
+    proTitle: "API Pro",
+    proBlurb:
+      "Best for scale-ups shipping Findely inside a paid product or internal ops tool.",
+    scaleTitle: "API Scale",
+    scaleBlurb:
+      "Custom credit pools, dedicated rate limits, SSO and SLAs. Talk to us.",
+    scalePrice: "Custom",
+    monthlyCredits: "credits / month",
+    viewDocs: "View API docs",
+    manageKeys: "Manage API keys",
+    contactScale: "Contact for Scale",
+    popular: "Most popular",
+    faqTitle: "API — frequently asked questions",
+    faq: [
+      {
+        q: "What are the rate limits?",
+        a: "API Starter: 30 requests/minute. API Pro and API Scale: 120 requests/minute. Agency: 60 requests/minute. Rate-limit responses include a Retry-After header.",
+      },
+      {
+        q: "How do I upgrade my API plan?",
+        a: "Email sales@findely.app with your current plan and target plan. We assign plans manually during the private beta — same day in most cases.",
+      },
+      {
+        q: "Can I rotate a key without downtime?",
+        a: "Yes. Create a second key in /app/api-keys, deploy it, then revoke the old one. Revoked keys fail with 401 on the next request.",
+      },
+      {
+        q: "What do the 4xx error codes mean?",
+        a: "401 = missing or invalid key. 402 = plan quota reached for this cycle. 403 = your plan does not include API access. 422 = validation failure (see issues[]). 429 = rate-limited — back off and retry after Retry-After.",
+      },
+      {
+        q: "Do unused credits roll over?",
+        a: "No. Credits reset on the 1st of every month (UTC). Plan a steady monthly consumption or contact us for API Scale.",
+      },
+      {
+        q: "Is the API available on the Free and Starter plans?",
+        a: "No. API access is included on Agency (1,000 credits/mo) and on the dedicated API Starter / API Pro / API Scale plans.",
+      },
+    ],
   },
   migration: {
     title: "Import your local data?",
@@ -720,6 +859,7 @@ const fr: Dict = {
     signIn: "Connexion",
     cta: "Trouver des leads",
     backToSite: "Retour au site",
+    developers: "Développeurs",
   },
   hero: {
     badge: "Nouveau · Google Places disponible",
@@ -958,6 +1098,18 @@ const fr: Dict = {
     leads: "Leads",
     exportsLabel: "Exports",
     current: "Actuel",
+    apiCredits: "Crédits API",
+    apiAccessTitle: "Accès API",
+    apiAccessBodyOn:
+      "Votre plan inclut des crédits API. Créez une clé et commencez à intégrer Findely à votre stack.",
+    apiAccessBodyOff:
+      "L'API n'est pas incluse dans votre plan actuel. Passez à Agency, API Starter ou API Pro pour créer des clés et intégrer Findely.",
+    apiIncluded: "Inclus",
+    apiNotIncluded: "Non inclus",
+    manageApiKeys: "Gérer les clés API",
+    compareApiPlans: "Comparer les offres API",
+    viewApiDocs: "Voir la documentation API",
+    resetDate: "Date de réinitialisation",
   },
   common: {
     open: "Ouvrir le site",
@@ -1062,6 +1214,26 @@ const fr: Dict = {
       "L’accès API nécessite un plan Agence ou API. Passez à une offre supérieure pour créer des clés.",
     never: "Jamais",
     sidebarLink: "Clés API",
+    intro:
+      "Les clés API permettent d’appeler l’API Findely v1 depuis vos propres systèmes — même pipeline que l’app, leads scorés et dédupliqués, réponses JSON.",
+    howItWorksTitle: "Comment ça marche",
+    howItWorksBullets: [
+      "Nommez votre clé pour distinguer vos environnements.",
+      "Nous affichons la clé complète une seule fois — copiez-la dans un gestionnaire de secrets.",
+      "Utilisez-la comme token Bearer : Authorization: Bearer findely_live_…",
+      "Révoquez une clé à tout moment. Les clés révoquées cessent de fonctionner à la requête suivante.",
+    ],
+    planGatingTitle: "Quels plans incluent l’accès API ?",
+    planGatingBody:
+      "Agency inclut un accès API léger (1 000 crédits/mois). API Starter et API Pro sont des plans API dédiés avec de plus grands pools de crédits. API Scale est personnalisé — contactez-nous.",
+    upgradeCtaCompare: "Comparer les offres API",
+    upgradeCtaPricing: "Voir les tarifs",
+    viewDocsCta: "Voir la documentation API",
+    currentUsageTitle: "Votre utilisation API actuelle",
+    currentUsageBody:
+      "Suivez les crédits API consommés ce cycle sur la page d’utilisation.",
+    existingKeysTitle: "Clés existantes",
+    warningTitle: "Protégez vos clés",
   },
   developers: {
     title: "API Findely",
@@ -1081,6 +1253,65 @@ const fr: Dict = {
       "API Starter : 30 req/min. API Pro / API Scale : 120 req/min. Agence : 60 req/min.",
     errorsTitle: "Erreurs",
     createKeyCta: "Créer une clé API",
+    overviewTitle: "Vue d’ensemble",
+    overviewBody:
+      "Findely expose deux endpoints. POST /api/v1/search lance une recherche de leads scorée et dédupliquée. GET /api/v1/usage renvoie vos compteurs et votre solde de crédits. Les deux utilisent un token Bearer.",
+    pricingCta: "Voir les tarifs API",
+    manageKeysCta: "Gérer les clés API",
+  },
+  apiPricing: {
+    eyebrow: "Tarifs API",
+    title: "Le même pipeline, nativement JSON.",
+    subtitle:
+      "Intégrez la découverte de leads Findely dans votre app, CRM ou outils internes. Crédits à la requête, pas de sièges.",
+    creditModelTitle: "Fonctionnement des crédits",
+    creditModelBullets: [
+      "5 crédits par requête de recherche",
+      "1 crédit par lead retourné",
+      "Les crédits se réinitialisent le 1er de chaque mois (UTC)",
+    ],
+    starterTitle: "API Starter",
+    starterBlurb:
+      "Idéal pour les devs en solo et les MVP qui intègrent Findely à un produit.",
+    proTitle: "API Pro",
+    proBlurb:
+      "Idéal pour les scale-ups qui embarquent Findely dans un produit payant ou un outil interne.",
+    scaleTitle: "API Scale",
+    scaleBlurb:
+      "Pools de crédits personnalisés, limites dédiées, SSO et SLA. Parlons-en.",
+    scalePrice: "Sur mesure",
+    monthlyCredits: "crédits / mois",
+    viewDocs: "Voir la documentation API",
+    manageKeys: "Gérer les clés API",
+    contactScale: "Contacter pour Scale",
+    popular: "Le plus populaire",
+    faqTitle: "API — questions fréquentes",
+    faq: [
+      {
+        q: "Quelles sont les limites de débit ?",
+        a: "API Starter : 30 requêtes/min. API Pro et API Scale : 120 requêtes/min. Agency : 60 requêtes/min. Les réponses 429 incluent un en-tête Retry-After.",
+      },
+      {
+        q: "Comment passer à un plan API supérieur ?",
+        a: "Écrivez à sales@findely.app en indiquant votre plan actuel et le plan cible. L'affectation des plans se fait manuellement pendant la beta privée — en général le jour même.",
+      },
+      {
+        q: "Puis-je faire tourner une clé sans coupure ?",
+        a: "Oui. Créez une seconde clé dans /app/api-keys, déployez-la, puis révoquez l'ancienne. Les clés révoquées renvoient 401 dès la requête suivante.",
+      },
+      {
+        q: "Que signifient les codes d'erreur 4xx ?",
+        a: "401 = clé manquante ou invalide. 402 = quota du plan atteint ce cycle. 403 = votre plan n'inclut pas l'accès API. 422 = validation échouée (voir issues[]). 429 = limite dépassée — attendez et réessayez après Retry-After.",
+      },
+      {
+        q: "Les crédits non utilisés sont-ils reportés ?",
+        a: "Non. Les crédits se réinitialisent le 1er de chaque mois (UTC). Planifiez une consommation mensuelle stable ou contactez-nous pour API Scale.",
+      },
+      {
+        q: "L'API est-elle disponible sur les plans Gratuit et Starter ?",
+        a: "Non. L'accès API est inclus sur Agency (1 000 crédits/mois) et sur les plans dédiés API Starter / API Pro / API Scale.",
+      },
+    ],
   },
   migration: {
     title: "Importer vos données locales ?",
@@ -1094,6 +1325,7 @@ const fr: Dict = {
 
 const DICTS: Record<Locale, Dict> = { en, fr };
 const LS_KEY = "findely:locale";
+const LOCALE_EVENT = "findely:locale-change";
 
 interface I18nContextValue {
   locale: Locale;
@@ -1103,19 +1335,49 @@ interface I18nContextValue {
 
 const I18nContext = React.createContext<I18nContextValue | null>(null);
 
-export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = React.useState<Locale>("en");
+function subscribeLocale(cb: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("storage", cb);
+  window.addEventListener(LOCALE_EVENT, cb as EventListener);
+  return () => {
+    window.removeEventListener("storage", cb);
+    window.removeEventListener(LOCALE_EVENT, cb as EventListener);
+  };
+}
 
-  React.useEffect(() => {
-    if (typeof window === "undefined") return;
-    const stored = window.localStorage.getItem(LS_KEY) as Locale | null;
-    if (stored === "en" || stored === "fr") setLocaleState(stored);
-  }, []);
+function getLocaleSnapshot(): Locale {
+  if (typeof window === "undefined") return "en";
+  try {
+    const raw = window.localStorage.getItem(LS_KEY);
+    return raw === "fr" ? "fr" : "en";
+  } catch {
+    return "en";
+  }
+}
+
+function getServerLocaleSnapshot(): Locale {
+  return "en";
+}
+
+export function I18nProvider({ children }: { children: React.ReactNode }) {
+  const locale = React.useSyncExternalStore(
+    subscribeLocale,
+    getLocaleSnapshot,
+    getServerLocaleSnapshot
+  );
 
   const setLocale = React.useCallback((next: Locale) => {
-    setLocaleState(next);
     if (typeof window !== "undefined") {
-      window.localStorage.setItem(LS_KEY, next);
+      try {
+        window.localStorage.setItem(LS_KEY, next);
+      } catch {
+        // Ignore quota/serialization issues.
+      }
+      try {
+        window.dispatchEvent(new CustomEvent(LOCALE_EVENT, { detail: next }));
+      } catch {
+        // CustomEvent unavailable — non-fatal.
+      }
     }
     if (typeof document !== "undefined") {
       document.documentElement.lang = next;

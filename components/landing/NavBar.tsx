@@ -30,6 +30,7 @@ export function NavBar() {
     { href: "/use-cases", label: t.nav.useCases },
     { href: "/how-it-works", label: t.nav.howItWorks },
     { href: "/pricing", label: t.nav.pricing },
+    { href: "/developers", label: t.nav.developers ?? "Developers" },
   ];
 
   return (

@@ -1,9 +1,11 @@
 "use client";
 
-import { Code2, KeyRound, Zap } from "lucide-react";
+import { Code2, KeyRound, Sparkles, Zap } from "lucide-react";
 import { LinkButton } from "@/components/ui/Button";
 import { PublicShell } from "@/components/landing/PublicShell";
 import { useI18n } from "@/lib/i18n";
+import { PLANS, type Plan } from "@/lib/plans";
+import { formatNumber } from "@/lib/utils";
 
 const SEARCH_CURL = `curl -X POST https://your.findely.app/api/v1/search \\
   -H "Authorization: Bearer findely_live_..." \\
@@ -97,7 +99,7 @@ export default function DevelopersPage() {
           <p className="mt-4 max-w-2xl text-base text-muted-strong">
             {d?.subtitle ?? ""}
           </p>
-          <div className="mt-6">
+          <div className="mt-6 flex flex-wrap gap-2">
             <LinkButton
               href="/app/api-keys"
               size="md"
@@ -105,12 +107,89 @@ export default function DevelopersPage() {
             >
               {d?.createKeyCta ?? "Create an API key"}
             </LinkButton>
+            <LinkButton
+              href="/pricing#api"
+              size="md"
+              variant="outline"
+              leftIcon={<Zap size={14} />}
+            >
+              {d?.pricingCta ?? "See API pricing"}
+            </LinkButton>
           </div>
+          <nav
+            aria-label="On this page"
+            className="mt-8 flex flex-wrap gap-2 text-xs"
+          >
+            {[
+              ["#overview", d?.overviewTitle ?? "Overview"],
+              ["#auth", d?.authTitle ?? "Authentication"],
+              ["#search", "/api/v1/search"],
+              ["#usage", "/api/v1/usage"],
+              ["#credits", d?.creditsTitle ?? "Credits"],
+              ["#rate-limits", d?.rateLimitsTitle ?? "Rate limits"],
+              ["#errors", d?.errorsTitle ?? "Errors"],
+            ].map(([href, label]) => (
+              <a
+                key={href}
+                href={href}
+                className="inline-flex items-center gap-1 rounded-full border border-border bg-surface-2 px-2.5 py-1 text-muted-strong transition-colors hover:border-accent/40 hover:text-foreground"
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
         </div>
       </section>
 
       <section className="relative mx-auto max-w-4xl space-y-10 px-5 pb-24 lg:pb-28">
-        <div>
+        <div id="overview" className="scroll-mt-24">
+          <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground">
+            <Sparkles size={16} className="text-accent-cyan" />
+            {d?.overviewTitle ?? "Overview"}
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted-strong">
+            {d?.overviewBody ??
+              "Findely exposes two endpoints. POST /api/v1/search runs a scored, deduplicated lead search. GET /api/v1/usage returns your cycle counters and credit balance. Both take a Bearer token."}
+          </p>
+          <div className="mt-4 overflow-x-auto rounded-xl border border-border bg-surface">
+            <table className="w-full border-collapse text-sm">
+              <thead>
+                <tr className="border-b border-border text-left text-[11px] uppercase tracking-[0.15em] text-muted">
+                  <th className="px-4 py-3">Plan</th>
+                  <th className="px-4 py-3">Credits / month</th>
+                  <th className="px-4 py-3">Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(["agency", "api_starter", "api_pro", "api_scale"] as Plan[]).map(
+                  (id) => {
+                    const p = PLANS[id];
+                    return (
+                      <tr
+                        key={id}
+                        className="border-b border-border last:border-b-0"
+                      >
+                        <td className="px-4 py-3 font-medium text-foreground">
+                          {p.label}
+                        </td>
+                        <td className="px-4 py-3 font-mono text-muted-strong">
+                          {formatNumber(p.apiCredits)}
+                        </td>
+                        <td className="px-4 py-3 font-mono text-muted-strong">
+                          {p.priceEur === null
+                            ? "Custom"
+                            : `€${p.priceEur}/mo`}
+                        </td>
+                      </tr>
+                    );
+                  }
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="auth" className="scroll-mt-24">
           <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground">
             <KeyRound size={16} className="text-accent-cyan" />
             {d?.authTitle ?? "Authentication"}
@@ -121,7 +200,7 @@ export default function DevelopersPage() {
           </pre>
         </div>
 
-        <div>
+        <div id="search" className="scroll-mt-24">
           <h2 className="text-xl font-semibold text-foreground">
             {d?.searchTitle ?? "POST /api/v1/search"}
           </h2>
@@ -131,7 +210,7 @@ export default function DevelopersPage() {
           </div>
         </div>
 
-        <div>
+        <div id="usage" className="scroll-mt-24">
           <h2 className="text-xl font-semibold text-foreground">
             {d?.usageTitle ?? "GET /api/v1/usage"}
           </h2>
@@ -141,7 +220,7 @@ export default function DevelopersPage() {
           </div>
         </div>
 
-        <div>
+        <div id="credits" className="scroll-mt-24">
           <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground">
             <Zap size={16} className="text-accent-cyan" />
             {d?.creditsTitle ?? "Credits"}
@@ -149,7 +228,7 @@ export default function DevelopersPage() {
           <p className="mt-2 text-sm text-muted-strong">{d?.creditsBody ?? ""}</p>
         </div>
 
-        <div>
+        <div id="rate-limits" className="scroll-mt-24">
           <h2 className="text-xl font-semibold text-foreground">
             {d?.rateLimitsTitle ?? "Rate limits"}
           </h2>
@@ -158,7 +237,7 @@ export default function DevelopersPage() {
           </p>
         </div>
 
-        <div>
+        <div id="errors" className="scroll-mt-24">
           <h2 className="text-xl font-semibold text-foreground">
             {d?.errorsTitle ?? "Errors"}
           </h2>
@@ -185,6 +264,24 @@ export default function DevelopersPage() {
               </tbody>
             </table>
           </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2 rounded-2xl border border-border bg-surface p-5">
+          <LinkButton
+            href="/app/api-keys"
+            size="md"
+            leftIcon={<KeyRound size={14} />}
+          >
+            {d?.manageKeysCta ?? "Manage API keys"}
+          </LinkButton>
+          <LinkButton
+            href="/pricing#api"
+            size="md"
+            variant="outline"
+            leftIcon={<Zap size={14} />}
+          >
+            {d?.pricingCta ?? "See API pricing"}
+          </LinkButton>
         </div>
       </section>
     </PublicShell>
