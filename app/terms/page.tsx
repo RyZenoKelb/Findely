@@ -39,6 +39,11 @@ export default function TermsPage() {
               ? "Findely fournit les données en l'état. Nous ne garantissons pas l'exactitude des informations récupérées depuis les sources tierces."
               : "Findely provides data as-is. We do not guarantee the accuracy of information retrieved from third-party sources."}
           </p>
+          <p className="mt-8 text-xs text-muted">
+            {locale === "fr"
+              ? "Cette page est une version bêta et peut être mise à jour."
+              : "This page is a basic beta version and may be updated."}
+          </p>
         </div>
       </section>
     </PublicShell>

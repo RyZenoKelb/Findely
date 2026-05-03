@@ -42,6 +42,15 @@ export interface Dict {
     subtitle: string;
     bullets: string[];
     tryIt: string;
+    statSources?: string;
+    statScoring?: string;
+    statCleaning?: string;
+    statExport?: string;
+    badgeNoWebsite?: string;
+    badgeHighOpportunity?: string;
+    badgeOutreachReady?: string;
+    badgeLocalBusiness?: string;
+    badgeMissingContact?: string;
   };
   useCases: {
     eyebrow: string;
@@ -469,6 +478,15 @@ const en: Dict = {
       "Exports a CRM-ready CSV in one click",
     ],
     tryIt: "Try it now",
+    statSources: "Sources",
+    statScoring: "Scoring",
+    statCleaning: "Cleaning",
+    statExport: "Export",
+    badgeNoWebsite: "No website",
+    badgeHighOpportunity: "High opportunity",
+    badgeOutreachReady: "Outreach ready",
+    badgeLocalBusiness: "Local business",
+    badgeMissingContact: "Missing contact",
   },
   useCases: {
     eyebrow: "Use cases",
@@ -988,6 +1006,15 @@ const fr: Dict = {
       "Exporte un CSV prêt pour le CRM en un clic",
     ],
     tryIt: "Essayer maintenant",
+    statSources: "Sources",
+    statScoring: "Scoring",
+    statCleaning: "Nettoyage",
+    statExport: "Export",
+    badgeNoWebsite: "Sans site",
+    badgeHighOpportunity: "Forte opportunité",
+    badgeOutreachReady: "Prêt à contacter",
+    badgeLocalBusiness: "Entreprise locale",
+    badgeMissingContact: "Contact manquant",
   },
   useCases: {
     eyebrow: "Cas d’usage",

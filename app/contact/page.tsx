@@ -20,7 +20,7 @@ export default function ContactPage() {
         </p>
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           <a
-            href="mailto:support@findely.app"
+            href="mailto:contact@findely.app"
             className="flex items-start gap-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 transition-colors hover:border-white/[0.1] hover:bg-white/[0.04]"
           >
             <div className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-accent/10 text-accent-cyan">
@@ -31,7 +31,7 @@ export default function ContactPage() {
                 {locale === "fr" ? "Support général" : "General support"}
               </div>
               <div className="mt-1 text-sm text-muted-strong">
-                support@findely.app
+                contact@findely.app
               </div>
             </div>
           </a>
@@ -52,6 +52,29 @@ export default function ContactPage() {
             </div>
           </a>
         </div>
+
+        <div className="mt-10">
+          <h2 className="text-lg font-semibold text-foreground">
+            {locale === "fr" ? "Liens utiles" : "Quick links"}
+          </h2>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <a href="/app" className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-4 py-2 text-sm text-muted-strong transition-colors hover:text-foreground">
+              Dashboard
+            </a>
+            <a href="/pricing" className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-4 py-2 text-sm text-muted-strong transition-colors hover:text-foreground">
+              {locale === "fr" ? "Tarifs" : "Pricing"}
+            </a>
+            <a href="/developers" className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-4 py-2 text-sm text-muted-strong transition-colors hover:text-foreground">
+              {locale === "fr" ? "Documentation API" : "API Docs"}
+            </a>
+          </div>
+        </div>
+
+        <p className="mt-10 text-xs text-muted">
+          {locale === "fr"
+            ? "Cette page est une version bêta et peut être mise à jour."
+            : "This page is a basic beta version and may be updated."}
+        </p>
       </section>
     </PublicShell>
   );

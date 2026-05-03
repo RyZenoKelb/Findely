@@ -139,10 +139,10 @@ export function Solution() {
           <div className="bg-radial-cyan pointer-events-none absolute inset-0" />
           <div className="relative grid grid-cols-2 gap-4">
             {[
-              { k: "Sources", v: "Multi" },
-              { k: "Scoring", v: "0–100" },
-              { k: "Cleaning", v: "Auto" },
-              { k: "Export", v: "CSV" },
+              { k: t.solution.statSources ?? "Sources", v: "Multi" },
+              { k: t.solution.statScoring ?? "Scoring", v: "0–100" },
+              { k: t.solution.statCleaning ?? "Cleaning", v: "Auto" },
+              { k: t.solution.statExport ?? "Export", v: "CSV" },
             ].map((s) => (
               <div
                 key={s.k}
@@ -158,11 +158,11 @@ export function Solution() {
             ))}
           </div>
           <div className="relative mt-5 flex flex-wrap gap-2 text-xs">
-            <Badge tone="accent">No website</Badge>
-            <Badge tone="accent">High opportunity</Badge>
-            <Badge tone="success">Outreach ready</Badge>
-            <Badge tone="muted">Local business</Badge>
-            <Badge tone="warning">Missing contact</Badge>
+            <Badge tone="accent">{t.solution.badgeNoWebsite ?? "No website"}</Badge>
+            <Badge tone="accent">{t.solution.badgeHighOpportunity ?? "High opportunity"}</Badge>
+            <Badge tone="success">{t.solution.badgeOutreachReady ?? "Outreach ready"}</Badge>
+            <Badge tone="muted">{t.solution.badgeLocalBusiness ?? "Local business"}</Badge>
+            <Badge tone="warning">{t.solution.badgeMissingContact ?? "Missing contact"}</Badge>
           </div>
         </div>
       </div>
@@ -313,6 +313,27 @@ const SAAS_LANDING_PLANS = [
     href: "/app/search",
   },
   {
+    key: "starter" as const,
+    price: "€19",
+    features: [
+      "500 leads / month",
+      "50 searches / month",
+      "CSV export",
+      "Saved lists & searches",
+      "Google Places",
+    ],
+    featuresFr: [
+      "500 leads / mois",
+      "50 recherches / mois",
+      "Export CSV",
+      "Listes & recherches enregistrées",
+      "Google Places",
+    ],
+    cta: "Start Starter",
+    ctaFr: "Commencer Starter",
+    href: "/app/search",
+  },
+  {
     key: "pro" as const,
     price: "€49",
     features: [
@@ -340,14 +361,14 @@ const SAAS_LANDING_PLANS = [
     features: [
       "12,000 leads / month",
       "1,000 searches / month",
-      "All sources + API access",
+      "All sources + light API access",
       "Advanced scoring",
       "Priority support",
     ],
     featuresFr: [
       "12 000 leads / mois",
       "1 000 recherches / mois",
-      "Toutes sources + accès API",
+      "Toutes sources + accès API léger",
       "Scoring avancé",
       "Support prioritaire",
     ],
@@ -359,19 +380,21 @@ const SAAS_LANDING_PLANS = [
 
 export function Pricing() {
   const { t, locale } = useI18n();
-  const names: Record<"free" | "pro" | "agency", string> =
+  const names: Record<"free" | "starter" | "pro" | "agency", string> =
     locale === "fr"
-      ? { free: "Gratuit", pro: "Pro", agency: "Agence" }
-      : { free: "Free", pro: "Pro", agency: "Agency" };
-  const descs: Record<"free" | "pro" | "agency", string> =
+      ? { free: "Gratuit", starter: "Starter", pro: "Pro", agency: "Agence" }
+      : { free: "Free", starter: "Starter", pro: "Pro", agency: "Agency" };
+  const descs: Record<"free" | "starter" | "pro" | "agency", string> =
     locale === "fr"
       ? {
           free: "Pour découvrir Findely sans engagement.",
+          starter: "Pour les freelances qui démarrent l’outbound.",
           pro: "Pour les agences qui font de l’outbound chaque semaine.",
           agency: "Pour les équipes qui opèrent à l’échelle.",
         }
       : {
           free: "Try Findely with no commitment.",
+          starter: "For freelancers starting their outbound.",
           pro: "For agencies running weekly outbound.",
           agency: "For teams operating at scale.",
         };
@@ -383,13 +406,13 @@ export function Pricing() {
       subtitle={t.pricing.subtitle}
       center
     >
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
         {SAAS_LANDING_PLANS.map((p) => (
           <div
             key={p.key}
-            className={`relative flex flex-col rounded-2xl border p-8 transition-all ${
+            className={`relative flex flex-col rounded-2xl border p-6 transition-all ${
               p.highlighted
-                ? "border-accent/50 bg-gradient-to-b from-accent/[0.10] via-accent/[0.04] to-transparent shadow-[0_0_80px_-20px_rgba(99,102,241,0.35)] lg:scale-[1.03]"
+                ? "border-accent/50 bg-gradient-to-b from-accent/[0.10] via-accent/[0.04] to-transparent shadow-[0_0_80px_-20px_rgba(99,102,241,0.35)] lg:scale-[1.02]"
                 : "border-white/[0.08] bg-[#141416] hover:border-white/[0.12] hover:shadow-lg"
             }`}
           >

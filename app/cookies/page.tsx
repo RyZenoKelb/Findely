@@ -49,6 +49,11 @@ export default function CookiesPage() {
               </tbody>
             </table>
           </div>
+          <p className="mt-8 text-xs text-muted">
+            {locale === "fr"
+              ? "Cette page est une version bêta et peut être mise à jour."
+              : "This page is a basic beta version and may be updated."}
+          </p>
         </div>
       </section>
     </PublicShell>
