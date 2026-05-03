@@ -74,28 +74,49 @@ function typeToCategory(types?: string[]): string | undefined {
 async function textSearch(
   query: string,
   apiKey: string,
-  language?: string
+  language?: string,
+  maxResults = 20
 ): Promise<PlacesTextSearchResult[]> {
-  const url = new URL(TEXT_SEARCH_URL);
-  url.searchParams.set("query", query);
-  url.searchParams.set("key", apiKey);
-  if (language) url.searchParams.set("language", language);
+  const allResults: PlacesTextSearchResult[] = [];
+  let pageToken: string | undefined;
 
-  const res = await fetch(url.toString(), { cache: "no-store" });
-  if (!res.ok) throw new Error(`Places text search HTTP ${res.status}`);
-  const data = (await res.json()) as {
-    status?: string;
-    error_message?: string;
-    results?: PlacesTextSearchResult[];
-  };
-  if (data.status && data.status !== "OK" && data.status !== "ZERO_RESULTS") {
-    throw new Error(
-      `Places text search: ${data.status}${
-        data.error_message ? ` — ${data.error_message}` : ""
-      }`
-    );
+  while (allResults.length < maxResults) {
+    const url = new URL(TEXT_SEARCH_URL);
+    url.searchParams.set("query", query);
+    url.searchParams.set("key", apiKey);
+    if (language) url.searchParams.set("language", language);
+    if (pageToken) url.searchParams.set("pagetoken", pageToken);
+
+    const res = await fetch(url.toString(), { cache: "no-store" });
+    if (!res.ok) throw new Error(`Places text search HTTP ${res.status}`);
+    const data = (await res.json()) as {
+      status?: string;
+      error_message?: string;
+      results?: PlacesTextSearchResult[];
+      next_page_token?: string;
+    };
+    if (
+      data.status &&
+      data.status !== "OK" &&
+      data.status !== "ZERO_RESULTS"
+    ) {
+      throw new Error(
+        `Places text search: ${data.status}${
+          data.error_message ? ` — ${data.error_message}` : ""
+        }`
+      );
+    }
+
+    const results = data.results ?? [];
+    allResults.push(...results);
+
+    if (!data.next_page_token || results.length === 0) break;
+
+    pageToken = data.next_page_token;
+    await new Promise((resolve) => setTimeout(resolve, 2000));
   }
-  return data.results ?? [];
+
+  return allResults.slice(0, maxResults);
 }
 
 async function placeDetails(
@@ -133,6 +154,28 @@ async function placeDetails(
   return data.result ?? null;
 }
 
+const DETAILS_CONCURRENCY = 5;
+
+async function batchDetails(
+  placeIds: string[],
+  apiKey: string,
+  language?: string
+): Promise<(PlacesDetails | null)[]> {
+  const results: (PlacesDetails | null)[] = new Array(placeIds.length).fill(
+    null
+  );
+  for (let i = 0; i < placeIds.length; i += DETAILS_CONCURRENCY) {
+    const batch = placeIds.slice(i, i + DETAILS_CONCURRENCY);
+    const batchResults = await Promise.all(
+      batch.map((id) => placeDetails(id, apiKey, language))
+    );
+    for (let j = 0; j < batchResults.length; j++) {
+      results[i + j] = batchResults[j];
+    }
+  }
+  return results;
+}
+
 export const googleMapsSource: LeadSourceProvider = {
   id: "google_maps",
   name: "Google Places",
@@ -155,12 +198,14 @@ export const googleMapsSource: LeadSourceProvider = {
       params.country ? `, ${params.country}` : ""
     }`;
 
-    const results = await textSearch(query, apiKey, params.language);
+    const results = await textSearch(query, apiKey, params.language, params.limit);
     const limited = results.slice(0, params.limit);
 
     const nowIso = new Date().toISOString();
-    const details = await Promise.all(
-      limited.map((r) => placeDetails(r.place_id, apiKey, params.language))
+    const details = await batchDetails(
+      limited.map((r) => r.place_id),
+      apiKey,
+      params.language
     );
 
     return limited.map((r, i) => {

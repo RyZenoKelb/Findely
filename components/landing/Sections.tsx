@@ -383,36 +383,36 @@ export function Pricing() {
       subtitle={t.pricing.subtitle}
       center
     >
-      <div className="grid gap-5 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3">
         {SAAS_LANDING_PLANS.map((p) => (
           <div
             key={p.key}
-            className={`relative flex flex-col rounded-2xl border p-7 transition-all ${
+            className={`relative flex flex-col rounded-2xl border p-8 transition-all ${
               p.highlighted
-                ? "border-accent/40 bg-gradient-to-b from-accent/[0.08] to-surface shadow-[0_0_60px_-20px_rgba(99,102,241,0.3)] lg:scale-[1.02]"
-                : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.1]"
+                ? "border-accent/50 bg-gradient-to-b from-accent/[0.10] via-accent/[0.04] to-transparent shadow-[0_0_80px_-20px_rgba(99,102,241,0.35)] lg:scale-[1.03]"
+                : "border-white/[0.08] bg-[#141416] hover:border-white/[0.12] hover:shadow-lg"
             }`}
           >
             {p.highlighted ? (
               <Badge
                 tone="accent"
-                className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px]"
+                className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 text-[10px] font-semibold tracking-wide"
               >
                 {t.pricing.mostPopular}
               </Badge>
             ) : null}
-            <div className="text-[13px] font-semibold text-foreground">
+            <div className="text-[15px] font-semibold text-foreground">
               {names[p.key]}
             </div>
-            <p className="mt-1 text-[12px] text-muted">{descs[p.key]}</p>
-            <div className="mt-4 flex items-baseline gap-1">
-              <span className="text-4xl font-semibold tracking-tight text-foreground">
+            <p className="mt-1.5 text-[13px] leading-relaxed text-muted-strong">{descs[p.key]}</p>
+            <div className="mt-5 flex items-baseline gap-1.5">
+              <span className="text-5xl font-bold tracking-tight text-foreground">
                 {p.price}
               </span>
-              <span className="text-[13px] text-muted">{t.pricing.month}</span>
+              <span className="text-sm text-muted">{t.pricing.month}</span>
             </div>
-            <div className="my-5 h-px bg-border" />
-            <ul className="flex-1 space-y-2.5 text-[13px]">
+            <div className="my-6 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+            <ul className="flex-1 space-y-3 text-[13px]">
               {(locale === "fr" ? p.featuresFr : p.features).map((f) => (
                 <li key={f} className="flex items-start gap-2.5 text-foreground">
                   <CheckCircle2
@@ -423,10 +423,10 @@ export function Pricing() {
                 </li>
               ))}
             </ul>
-            <div className="mt-6">
+            <div className="mt-8">
               <LinkButton
                 href={p.href}
-                size="md"
+                size="lg"
                 variant={p.highlighted ? "primary" : "outline"}
                 className="w-full"
               >

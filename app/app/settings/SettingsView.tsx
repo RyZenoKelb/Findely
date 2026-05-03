@@ -229,23 +229,15 @@ export function SettingsView({ plan, email }: SettingsViewProps) {
             title={t.settings.profile}
             description={t.settings.profileDesc ?? t.settings.profileSub}
           >
-            <div className="grid items-start gap-4 md:grid-cols-2">
-              <div>
-                <Label>{t.settings.name}</Label>
-                <div className="mt-1">
-                  <EditableChip
-                    value={draft.profileName}
-                    onChange={(v) => patch("profileName", v)}
-                    size="lg"
-                    ariaLabel={t.settings.name}
-                  />
-                </div>
-              </div>
-              <div>
-                <Label>{t.settings.email}</Label>
-                <div className="mt-1 rounded-lg border border-white/[0.06] bg-white/[0.04] px-3 py-2 text-sm text-foreground">
-                  {email ?? (locale === "fr" ? "Session démo" : "Demo session")}
-                </div>
+            <div>
+              <Label>{t.settings.name}</Label>
+              <div className="mt-1">
+                <EditableChip
+                  value={draft.profileName}
+                  onChange={(v) => patch("profileName", v)}
+                  size="lg"
+                  ariaLabel={t.settings.name}
+                />
               </div>
             </div>
           </SettingsSection>

@@ -477,7 +477,7 @@ function SortMenu({
         Sort: {labels[sort].label}
       </Button>
       {open ? (
-        <div className="absolute right-0 z-20 mt-2 w-52 overflow-hidden rounded-lg border border-white/[0.06] bg-white/[0.02] shadow-xl">
+        <div className="absolute right-0 z-40 mt-2 w-52 overflow-hidden rounded-lg border border-white/[0.08] bg-[#1c1c20] shadow-2xl">
           {(["score", "name", "source"] as SortKey[]).map((k) => (
             <button
               key={k}
@@ -486,7 +486,7 @@ function SortMenu({
                 setOpen(false);
               }}
               className={cn(
-                "flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-white/[0.04]",
+                "flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-white/[0.06]",
                 sort === k ? "text-foreground" : "text-muted-strong"
               )}
             >
@@ -557,7 +557,7 @@ function RowMenu({
         <MoreHorizontal size={14} />
       </button>
       {open ? (
-        <div className="absolute right-0 top-8 z-20 w-56 overflow-hidden rounded-lg border border-white/[0.06] bg-white/[0.02] shadow-xl">
+        <div className="absolute right-0 top-8 z-40 w-56 overflow-hidden rounded-lg border border-white/[0.08] bg-[#1c1c20] shadow-2xl">
           <MenuItem
             label="View details"
             icon={<ExternalLink size={12} />}
@@ -630,7 +630,7 @@ function RowMenu({
                   onAddedToList(l.name);
                   onToggle(false);
                 }}
-                className="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-muted-strong hover:bg-white/[0.04] hover:text-foreground"
+                className="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-muted-strong hover:bg-white/[0.08] hover:text-foreground"
               >
                 {l.name}
                 <span className="text-[10px] text-muted">
@@ -660,7 +660,7 @@ function MenuItem({
     <button
       onClick={onClick}
       disabled={disabled}
-      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-muted-strong hover:bg-white/[0.04] hover:text-foreground disabled:opacity-40"
+      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-muted-strong hover:bg-white/[0.08] hover:text-foreground disabled:opacity-40"
     >
       {icon} {label}
     </button>
