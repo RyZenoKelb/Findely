@@ -6,6 +6,7 @@
   --surface: #141518;
   --surface-2: #1a1b1f;
   --surface-3: #242529;
+  --popover: #1c1c20;
   --border: rgba(255, 255, 255, 0.07);
   --border-strong: rgba(255, 255, 255, 0.14);
   --foreground: #fafafa;
@@ -30,6 +31,7 @@
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-surface-3: var(--surface-3);
+  --color-popover: var(--popover);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
   --color-foreground: var(--foreground);

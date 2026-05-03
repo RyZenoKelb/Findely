@@ -141,12 +141,12 @@ export function LeadTable({
     );
     setLeads(updates);
     saveLeads(updates.filter((l) => selected.has(l.id)));
-    setToast(`Marked ${selected.size} as contacted`);
+    setToast(`${t.table.markedContacted ?? "Marked as contacted"} (${selected.size})`);
   }
 
   function copyValue(value: string | null | undefined, label: string) {
     if (!value) return;
-    navigator.clipboard?.writeText(value).then(() => setToast(`Copied ${label}`));
+    navigator.clipboard?.writeText(value).then(() => setToast(`${t.table.copiedToast ?? "Copied"} ${label}`));
   }
 
   const selectedLeads = leads.filter((l) => selected.has(l.id));
@@ -394,7 +394,7 @@ export function LeadTable({
                         updateLead({ ...lead, status: "contacted" })
                       }
                       onAddedToList={(name) => {
-                        setToast(`Saved to ${name}`);
+                        setToast(`${t.table.savedToList ?? "Saved to"} ${name}`);
                         updateLead({
                           ...lead,
                           status: lead.status ?? "saved",
@@ -452,6 +452,7 @@ function SortMenu({
   sort: SortKey;
   onChange: (s: SortKey) => void;
 }) {
+  const { t } = useI18n();
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
@@ -462,9 +463,9 @@ function SortMenu({
     return () => document.removeEventListener("mousedown", h);
   }, []);
   const labels: Record<SortKey, { label: string; icon: React.ReactNode }> = {
-    score: { label: "Highest score", icon: <ArrowDownWideNarrow size={12} /> },
-    name: { label: "Name A–Z", icon: <ArrowDownAZ size={12} /> },
-    source: { label: "Source", icon: <ArrowUpDown size={12} /> },
+    score: { label: t.table.sortScore, icon: <ArrowDownWideNarrow size={12} /> },
+    name: { label: t.table.sortName, icon: <ArrowDownAZ size={12} /> },
+    source: { label: t.table.sortSource, icon: <ArrowUpDown size={12} /> },
   };
   return (
     <div ref={ref} className="relative">
@@ -474,10 +475,10 @@ function SortMenu({
         leftIcon={labels[sort].icon}
         onClick={() => setOpen((s) => !s)}
       >
-        Sort: {labels[sort].label}
+        {t.table.sortLabel ?? "Sort"}: {labels[sort].label}
       </Button>
       {open ? (
-        <div className="absolute right-0 z-40 mt-2 w-52 overflow-hidden rounded-lg border border-white/[0.08] bg-[#1c1c20] shadow-2xl">
+        <div className="absolute right-0 z-40 mt-2 w-52 overflow-hidden rounded-lg border border-white/[0.08] bg-popover shadow-2xl">
           {(["score", "name", "source"] as SortKey[]).map((k) => (
             <button
               key={k}
@@ -521,6 +522,7 @@ function RowMenu({
   onAddedToList: (name: string) => void;
   onOpen: () => void;
 }) {
+  const { t } = useI18n();
   const rawLists = React.useSyncExternalStore(
     subscribeToLocalStorage,
     () => getRawSnapshot(STORAGE_KEYS.lists),
@@ -557,9 +559,9 @@ function RowMenu({
         <MoreHorizontal size={14} />
       </button>
       {open ? (
-        <div className="absolute right-0 top-8 z-40 w-56 overflow-hidden rounded-lg border border-white/[0.08] bg-[#1c1c20] shadow-2xl">
+        <div className="absolute right-0 top-8 z-40 w-56 overflow-hidden rounded-lg border border-white/[0.08] bg-popover shadow-2xl">
           <MenuItem
-            label="View details"
+            label={t.table.viewDetails ?? "View details"}
             icon={<ExternalLink size={12} />}
             onClick={() => {
               onOpen();
@@ -567,7 +569,7 @@ function RowMenu({
             }}
           />
           <MenuItem
-            label="Copy phone"
+            label={t.table.copyPhone ?? "Copy phone"}
             icon={<Phone size={12} />}
             disabled={!lead.phone}
             onClick={() => {
@@ -576,7 +578,7 @@ function RowMenu({
             }}
           />
           <MenuItem
-            label="Copy website"
+            label={t.table.copyWebsite ?? "Copy website"}
             icon={<Copy size={12} />}
             disabled={!lead.website}
             onClick={() => {
@@ -586,7 +588,7 @@ function RowMenu({
           />
           {lead.website ? (
             <MenuItem
-              label="Open website"
+              label={t.table.openWebsite ?? "Open website"}
               icon={<ExternalLink size={12} />}
               onClick={() => {
                 if (lead.website)
@@ -597,7 +599,7 @@ function RowMenu({
           ) : null}
           {lead.mapsUrl ? (
             <MenuItem
-              label="Open in Maps"
+              label={t.table.openMaps ?? "Open in Maps"}
               icon={<MapPin size={12} />}
               onClick={() => {
                 if (lead.mapsUrl)
@@ -607,7 +609,7 @@ function RowMenu({
             />
           ) : null}
           <MenuItem
-            label="Mark contacted"
+            label={t.table.markContacted}
             icon={<Check size={12} />}
             onClick={() => {
               onMarkContacted();
@@ -615,11 +617,11 @@ function RowMenu({
             }}
           />
           <div className="border-t border-white/[0.06] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
-            <ListPlus size={10} className="inline-block" /> Add to list
+            <ListPlus size={10} className="inline-block" /> {t.table.addToList ?? "Add to list"}
           </div>
           {lists.length === 0 ? (
             <div className="px-3 pb-2 text-xs text-muted">
-              No lists yet — create one from the drawer.
+              {t.table.noListsMenu ?? "No lists yet — create one from the drawer."}
             </div>
           ) : (
             lists.map((l) => (

@@ -152,6 +152,7 @@ export interface Dict {
     sortScore: string;
     sortName: string;
     sortSource: string;
+    sortLabel?: string;
     exportCsv: string;
     markContacted: string;
     clear: string;
@@ -160,6 +161,16 @@ export interface Dict {
     clickRow: string;
     leadsFound: string;
     noMatch: string;
+    viewDetails?: string;
+    copyPhone?: string;
+    copyWebsite?: string;
+    openWebsite?: string;
+    openMaps?: string;
+    addToList?: string;
+    noListsMenu?: string;
+    copiedToast?: string;
+    markedContacted?: string;
+    savedToList?: string;
   };
   drawer: {
     about: string;
@@ -598,6 +609,7 @@ const en: Dict = {
     sortScore: "Highest score",
     sortName: "Name A–Z",
     sortSource: "Source",
+    sortLabel: "Sort",
     exportCsv: "Export CSV",
     markContacted: "Mark contacted",
     clear: "Clear",
@@ -606,6 +618,16 @@ const en: Dict = {
     clickRow: "Click a row to view lead details",
     leadsFound: "leads",
     noMatch: "No leads match these filters.",
+    viewDetails: "View details",
+    copyPhone: "Copy phone",
+    copyWebsite: "Copy website",
+    openWebsite: "Open website",
+    openMaps: "Open in Maps",
+    addToList: "Add to list",
+    noListsMenu: "No lists yet — create one from the drawer.",
+    copiedToast: "Copied",
+    markedContacted: "Marked as contacted",
+    savedToList: "Saved to",
   },
   drawer: {
     about: "About",
@@ -1106,6 +1128,7 @@ const fr: Dict = {
     sortScore: "Meilleur score",
     sortName: "Nom A–Z",
     sortSource: "Source",
+    sortLabel: "Tri",
     exportCsv: "Exporter CSV",
     markContacted: "Marquer contacté",
     clear: "Effacer",
@@ -1114,6 +1137,16 @@ const fr: Dict = {
     clickRow: "Cliquez une ligne pour voir les détails",
     leadsFound: "leads",
     noMatch: "Aucun lead ne correspond.",
+    viewDetails: "Voir les détails",
+    copyPhone: "Copier le téléphone",
+    copyWebsite: "Copier le site",
+    openWebsite: "Ouvrir le site",
+    openMaps: "Ouvrir dans Maps",
+    addToList: "Ajouter à une liste",
+    noListsMenu: "Aucune liste — créez-en une depuis le panneau.",
+    copiedToast: "Copié",
+    markedContacted: "Marqué contacté",
+    savedToList: "Enregistré dans",
   },
   drawer: {
     about: "À propos",

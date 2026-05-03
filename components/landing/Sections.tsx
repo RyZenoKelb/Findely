@@ -294,19 +294,19 @@ export function HowItWorks() {
 
 const SAAS_LANDING_PLANS = [
   {
-    key: "starter" as const,
-    price: "$0",
+    key: "free" as const,
+    price: "€0",
     features: [
       "100 leads / month",
+      "5 searches / month",
+      "Limited CSV exports",
       "1 source",
-      "CSV export",
-      "Local lists",
     ],
     featuresFr: [
       "100 leads / mois",
+      "5 recherches / mois",
+      "Exports CSV limités",
       "1 source",
-      "Export CSV",
-      "Listes locales",
     ],
     cta: "Start free",
     ctaFr: "Commencer gratuitement",
@@ -314,20 +314,20 @@ const SAAS_LANDING_PLANS = [
   },
   {
     key: "pro" as const,
-    price: "$39",
+    price: "€49",
     features: [
-      "2,000 leads / month",
+      "3,000 leads / month",
+      "300 searches / month",
       "All sources",
-      "Lead scoring",
-      "Saved searches",
-      "Priority support",
+      "Lead scoring & signals",
+      "Unlimited exports",
     ],
     featuresFr: [
-      "2 000 leads / mois",
+      "3 000 leads / mois",
+      "300 recherches / mois",
       "Toutes les sources",
-      "Scoring de leads",
-      "Recherches enregistrées",
-      "Support prioritaire",
+      "Scoring & signaux",
+      "Exports illimités",
     ],
     cta: "Start Pro",
     ctaFr: "Commencer Pro",
@@ -336,42 +336,42 @@ const SAAS_LANDING_PLANS = [
   },
   {
     key: "agency" as const,
-    price: "$129",
+    price: "€129",
     features: [
-      "15,000 leads / month",
-      "All sources + custom",
+      "12,000 leads / month",
+      "1,000 searches / month",
+      "All sources + API access",
       "Advanced scoring",
-      "Team seats",
-      "Account manager",
+      "Priority support",
     ],
     featuresFr: [
-      "15 000 leads / mois",
-      "Toutes sources + custom",
+      "12 000 leads / mois",
+      "1 000 recherches / mois",
+      "Toutes sources + accès API",
       "Scoring avancé",
-      "Sièges équipe",
-      "Account manager",
+      "Support prioritaire",
     ],
-    cta: "Talk to sales",
-    ctaFr: "Contacter l’équipe",
-    href: "mailto:sales@findely.app",
+    cta: "Start Agency",
+    ctaFr: "Commencer Agence",
+    href: "/app/search",
   },
 ];
 
 export function Pricing() {
   const { t, locale } = useI18n();
-  const names: Record<"starter" | "pro" | "agency", string> =
+  const names: Record<"free" | "pro" | "agency", string> =
     locale === "fr"
-      ? { starter: "Starter", pro: "Pro", agency: "Agence" }
-      : { starter: "Starter", pro: "Pro", agency: "Agency" };
-  const descs: Record<"starter" | "pro" | "agency", string> =
+      ? { free: "Gratuit", pro: "Pro", agency: "Agence" }
+      : { free: "Free", pro: "Pro", agency: "Agency" };
+  const descs: Record<"free" | "pro" | "agency", string> =
     locale === "fr"
       ? {
-          starter: "Pour les freelances qui testent Findely.",
+          free: "Pour découvrir Findely sans engagement.",
           pro: "Pour les agences qui font de l’outbound chaque semaine.",
           agency: "Pour les équipes qui opèrent à l’échelle.",
         }
       : {
-          starter: "For freelancers trying Findely on the side.",
+          free: "Try Findely with no commitment.",
           pro: "For agencies running weekly outbound.",
           agency: "For teams operating at scale.",
         };
@@ -694,11 +694,18 @@ export function Footer() {
     { href: "/signup", label: locale === "fr" ? "Créer un compte" : "Sign up" },
   ];
 
+  const legalLinks = [
+    { href: "/privacy", label: locale === "fr" ? "Confidentialité" : "Privacy" },
+    { href: "/terms", label: locale === "fr" ? "Conditions" : "Terms" },
+    { href: "/cookies", label: "Cookies" },
+    { href: "/contact", label: "Contact" },
+  ];
+
   return (
     <footer className="border-t border-white/[0.06]">
       <div className="mx-auto max-w-7xl px-5 py-14 lg:px-8">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          <div>
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="lg:col-span-1">
             <Logo href="/" />
             <p className="mt-3 max-w-xs text-[13px] leading-relaxed text-muted-strong">
               {locale === "fr"
@@ -740,6 +747,20 @@ export function Footer() {
             </h4>
             <ul className="mt-3 space-y-2">
               {accountLinks.map((l) => (
+                <li key={l.href}>
+                  <a href={l.href} className="text-[13px] text-muted-strong transition-colors hover:text-foreground">
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-muted">
+              {locale === "fr" ? "Légal" : "Legal"}
+            </h4>
+            <ul className="mt-3 space-y-2">
+              {legalLinks.map((l) => (
                 <li key={l.href}>
                   <a href={l.href} className="text-[13px] text-muted-strong transition-colors hover:text-foreground">
                     {l.label}
