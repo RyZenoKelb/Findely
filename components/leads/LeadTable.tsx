@@ -153,8 +153,8 @@ export function LeadTable({
 
   if (leads.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-border bg-surface/50 p-10 text-center">
-        <div className="mx-auto inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-surface-2 text-muted">
+      <div className="rounded-xl border border-dashed border-white/[0.06] bg-white/[0.02] p-10 text-center">
+        <div className="mx-auto inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.04] text-muted">
           <Search size={16} />
         </div>
         <h3 className="mt-4 text-base font-semibold text-foreground">
@@ -166,8 +166,8 @@ export function LeadTable({
   }
 
   return (
-    <div className="relative rounded-xl border border-border bg-surface">
-      <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3">
+    <div className="relative rounded-xl border border-white/[0.06] bg-white/[0.02]">
+      <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.06] px-4 py-3">
         <div className="relative min-w-[220px] flex-1">
           <Search
             size={14}
@@ -195,7 +195,7 @@ export function LeadTable({
                 "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs transition-colors",
                 chipOn && chip === c.key
                   ? "border-accent/40 bg-accent/10 text-foreground"
-                  : "border-border bg-surface-2 text-muted-strong hover:bg-surface-3"
+                  : "border-white/[0.06] bg-white/[0.04] text-muted-strong hover:bg-white/[0.06]"
               )}
             >
               {c.label}
@@ -210,7 +210,7 @@ export function LeadTable({
       </div>
 
       {selected.size > 0 ? (
-        <div className="flex flex-wrap items-center gap-2 border-b border-border bg-accent/5 px-4 py-2 text-xs">
+        <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.06] bg-accent/5 px-4 py-2 text-xs">
           <span className="text-foreground">
             {selected.size} {t.table.selectedOfTotal} {filtered.length}
           </span>
@@ -251,7 +251,7 @@ export function LeadTable({
             <col className="w-[56px]" />
           </colgroup>
           <thead>
-            <tr className="border-b border-border bg-surface-2/60 text-left text-[11px] uppercase tracking-wide text-muted">
+            <tr className="border-b border-white/[0.06] bg-white/[0.03] text-left text-[11px] uppercase tracking-wide text-muted">
               <th className="px-3 py-2">
                 <Checkbox
                   checked={allSelected}
@@ -275,7 +275,7 @@ export function LeadTable({
                 <tr
                   key={lead.id}
                   className={cn(
-                    "group cursor-pointer border-b border-border transition-colors hover:bg-surface-2/60",
+                    "group cursor-pointer border-b border-white/[0.06] transition-colors hover:bg-white/[0.03]",
                     isSel && "bg-accent/[0.04]"
                   )}
                   onClick={() => setOpenId(lead.id)}
@@ -302,7 +302,7 @@ export function LeadTable({
                             ? "border-success/40 bg-success/10 text-success"
                             : lead.priorityLevel === "medium"
                               ? "border-accent/40 bg-accent/10 text-accent-cyan"
-                              : "border-border bg-surface-2"
+                              : "border-white/[0.06] bg-white/[0.04]"
                         )}
                         title={lead.priorityLabel}
                       >
@@ -313,7 +313,7 @@ export function LeadTable({
                           <span className="truncate">{lead.name}</span>
                           {lead.opportunityLabel ? (
                             <span
-                              className="inline-flex items-center rounded-full border border-border bg-white/5 px-1.5 py-0.5 text-[10px] font-normal text-muted-strong"
+                              className="inline-flex items-center rounded-full border border-white/[0.06] bg-white/[0.04] px-1.5 py-0.5 text-[10px] font-normal text-muted-strong"
                               title={lead.opportunityReason}
                             >
                               {lead.opportunityLabel}
@@ -420,7 +420,7 @@ export function LeadTable({
         </table>
       </div>
 
-      <div className="flex items-center justify-between gap-4 border-t border-border px-4 py-2 text-xs text-muted">
+      <div className="flex items-center justify-between gap-4 border-t border-white/[0.06] px-4 py-2 text-xs text-muted">
         <span>
           {t.table.showing} {filtered.length} / {leads.length} {t.table.leadsFound}
         </span>
@@ -477,7 +477,7 @@ function SortMenu({
         Sort: {labels[sort].label}
       </Button>
       {open ? (
-        <div className="absolute right-0 z-20 mt-2 w-52 overflow-hidden rounded-lg border border-border bg-surface shadow-xl">
+        <div className="absolute right-0 z-20 mt-2 w-52 overflow-hidden rounded-lg border border-white/[0.06] bg-white/[0.02] shadow-xl">
           {(["score", "name", "source"] as SortKey[]).map((k) => (
             <button
               key={k}
@@ -486,7 +486,7 @@ function SortMenu({
                 setOpen(false);
               }}
               className={cn(
-                "flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-surface-2",
+                "flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-white/[0.04]",
                 sort === k ? "text-foreground" : "text-muted-strong"
               )}
             >
@@ -551,13 +551,13 @@ function RowMenu({
     >
       <button
         onClick={() => onToggle(!open)}
-        className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-transparent text-muted-strong hover:border-border hover:bg-surface-2"
+        className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-transparent text-muted-strong hover:border-white/[0.08] hover:bg-white/[0.04]"
         aria-label="Row actions"
       >
         <MoreHorizontal size={14} />
       </button>
       {open ? (
-        <div className="absolute right-0 top-8 z-20 w-56 overflow-hidden rounded-lg border border-border bg-surface shadow-xl">
+        <div className="absolute right-0 top-8 z-20 w-56 overflow-hidden rounded-lg border border-white/[0.06] bg-white/[0.02] shadow-xl">
           <MenuItem
             label="View details"
             icon={<ExternalLink size={12} />}
@@ -614,7 +614,7 @@ function RowMenu({
               onToggle(false);
             }}
           />
-          <div className="border-t border-border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
+          <div className="border-t border-white/[0.06] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
             <ListPlus size={10} className="inline-block" /> Add to list
           </div>
           {lists.length === 0 ? (
@@ -630,7 +630,7 @@ function RowMenu({
                   onAddedToList(l.name);
                   onToggle(false);
                 }}
-                className="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-muted-strong hover:bg-surface-2 hover:text-foreground"
+                className="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-muted-strong hover:bg-white/[0.04] hover:text-foreground"
               >
                 {l.name}
                 <span className="text-[10px] text-muted">
@@ -660,7 +660,7 @@ function MenuItem({
     <button
       onClick={onClick}
       disabled={disabled}
-      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-muted-strong hover:bg-surface-2 hover:text-foreground disabled:opacity-40"
+      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-muted-strong hover:bg-white/[0.04] hover:text-foreground disabled:opacity-40"
     >
       {icon} {label}
     </button>

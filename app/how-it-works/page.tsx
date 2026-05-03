@@ -23,12 +23,12 @@ export default function HowItWorksPage() {
       />
 
       <section className="mx-auto max-w-4xl px-5 py-12 lg:px-8">
-        <ol className="relative border-l border-border-strong pl-10">
+        <ol className="relative border-l border-white/[0.08] pl-10">
           {t.howItWorks.steps.map((s, i) => {
             const Icon = ICONS[i % ICONS.length];
             return (
               <li key={s.title} className="relative mb-16 last:mb-0">
-                <span className="absolute -left-[3.25rem] top-0 flex h-12 w-12 items-center justify-center rounded-xl border border-border-strong bg-surface text-accent-cyan ring-4 ring-background">
+                <span className="absolute -left-[3.25rem] top-0 flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.02] text-accent-cyan ring-4 ring-background">
                   <Icon size={18} />
                 </span>
                 <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent-cyan">
@@ -47,7 +47,7 @@ export default function HowItWorksPage() {
       </section>
 
       <section className="mx-auto max-w-5xl px-5 pb-20 lg:px-8">
-        <div className="glow-accent relative overflow-hidden rounded-2xl border border-border-strong bg-surface p-8">
+        <div className="glow-accent relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] p-8">
           <div className="bg-radial-cyan pointer-events-none absolute inset-0" />
           <div className="relative grid gap-6 lg:grid-cols-2 lg:items-center">
             <div>
@@ -71,7 +71,7 @@ export default function HowItWorksPage() {
               {t.solution.bullets.map((b) => (
                 <li
                   key={b}
-                  className="rounded-lg border border-border bg-white/5 px-4 py-2.5 text-sm text-foreground"
+                  className="rounded-lg border border-white/[0.06] bg-white/[0.04] px-4 py-2.5 text-sm text-foreground"
                 >
                   · {b}
                 </li>

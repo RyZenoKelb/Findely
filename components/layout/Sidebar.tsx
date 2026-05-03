@@ -19,11 +19,6 @@ import { useI18n } from "@/lib/i18n";
 import { getPlanLimits, type Plan } from "@/lib/plans";
 import { cn } from "@/lib/utils";
 
-/**
- * Path-segment-aware active-route matcher.
- * Returns true only when `pathname === href` or `pathname` starts with
- * `href + "/"` — preventing `/app/search` from matching `/app/searches`.
- */
 function isRouteActive(pathname: string, href: string): boolean {
   if (pathname === href) return true;
   if (href === "/app") return false;
@@ -85,15 +80,16 @@ export function Sidebar({ userEmail = null, userPlan = null }: SidebarProps = {}
   ];
 
   return (
-    <aside className="hidden h-dvh w-[248px] shrink-0 flex-col border-r border-border bg-surface lg:flex">
-      <div className="flex h-16 items-center border-b border-border px-5">
-        <Logo href="/app" />
+    <aside className="hidden h-dvh w-[240px] shrink-0 flex-col border-r border-white/[0.06] bg-background lg:flex">
+      <div className="flex h-14 items-center border-b border-white/[0.06] px-5">
+        <Logo href="/" />
       </div>
+
       <nav className="flex-1 overflow-y-auto scrollbar-thin px-3 py-4">
-        <div className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted">
+        <div className="mb-2 px-3 text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
           {t.sidebar.workspace}
         </div>
-        <ul className="flex flex-col gap-0.5">
+        <ul className="flex flex-col gap-px">
           {LINKS.map(({ href, label, icon: Icon }) => {
             const active = isRouteActive(pathname ?? "", href);
             return (
@@ -101,16 +97,22 @@ export function Sidebar({ userEmail = null, userPlan = null }: SidebarProps = {}
                 <Link
                   href={href}
                   className={cn(
-                    "relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all",
+                    "relative flex items-center gap-2.5 rounded-md px-3 py-[7px] text-[13px] font-medium transition-colors",
                     active
-                      ? "bg-gradient-to-r from-accent/15 to-transparent text-foreground"
-                      : "text-muted-strong hover:bg-surface-2 hover:text-foreground"
+                      ? "bg-white/[0.06] text-foreground"
+                      : "text-muted-strong hover:bg-white/[0.04] hover:text-foreground"
                   )}
                 >
-                  <Icon size={15} className={active ? "text-accent-strong" : undefined} />
+                  <Icon
+                    size={15}
+                    className={cn(
+                      "flex-none transition-colors",
+                      active ? "text-accent-strong" : ""
+                    )}
+                  />
                   {label}
                   {active ? (
-                    <span className="absolute inset-y-1.5 left-0 w-0.5 rounded-full bg-accent-strong" />
+                    <span className="absolute inset-y-1.5 left-0 w-[2px] rounded-full bg-accent" />
                   ) : null}
                 </Link>
               </li>
@@ -118,14 +120,18 @@ export function Sidebar({ userEmail = null, userPlan = null }: SidebarProps = {}
           })}
         </ul>
       </nav>
-      <div className="border-t border-border p-4">
+
+      <div className="border-t border-white/[0.06] p-3">
         {userEmail && userPlan ? (
-          <div className="rounded-xl border border-border bg-gradient-to-br from-accent/[0.08] to-transparent p-4">
-            <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-              <Sparkles size={14} className="text-accent-cyan" />
+          <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
+            <div className="flex items-center gap-2 text-[13px] font-medium text-foreground">
+              <Sparkles size={12} className="text-accent-cyan" />
               {planLabel(userPlan, t)}
             </div>
-            <p className="mt-1 truncate text-xs text-muted-strong" title={userEmail}>
+            <p
+              className="mt-1 truncate text-[11px] text-muted"
+              title={userEmail}
+            >
               {userEmail}
             </p>
             <div className="mt-3 flex gap-2">
@@ -133,43 +139,33 @@ export function Sidebar({ userEmail = null, userPlan = null }: SidebarProps = {}
                 href="/app/usage"
                 size="sm"
                 variant="outline"
-                className="flex-1"
+                className="flex-1 text-[11px]"
               >
                 {t.sidebar.viewUsage}
               </LinkButton>
               <Link
                 href="/signout"
                 aria-label={t.auth?.signOut ?? "Sign out"}
-                className="inline-flex h-8 w-8 flex-none items-center justify-center rounded-lg border border-border bg-surface-2 text-muted-strong transition-colors hover:bg-surface-3 hover:text-foreground"
+                className="inline-flex h-8 w-8 flex-none items-center justify-center rounded-md border border-white/[0.06] text-muted-strong transition-colors hover:bg-white/[0.04] hover:text-foreground"
               >
-                <LogOut size={13} />
+                <LogOut size={12} />
               </Link>
             </div>
-            {(() => {
-              const limits = getPlanLimits(userPlan);
-              if (!Number.isFinite(limits.monthlyLeads)) return null;
-              return (
-                <p className="mt-2 text-[10px] uppercase tracking-[0.16em] text-muted">
-                  {limits.monthlyLeads.toLocaleString()} {t.usage.leads}/
-                  {t.usage.thisCycle.toLowerCase()}
-                </p>
-              );
-            })()}
           </div>
         ) : (
-          <div className="rounded-xl border border-border bg-gradient-to-br from-accent/[0.08] to-transparent p-4">
-            <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-              <Sparkles size={14} className="text-accent-cyan" />
+          <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
+            <div className="flex items-center gap-2 text-[13px] font-medium text-foreground">
+              <Sparkles size={12} className="text-accent-cyan" />
               {t.sidebar.starterPlan}
             </div>
-            <p className="mt-1 text-xs text-muted-strong">
+            <p className="mt-1 text-[11px] text-muted">
               {t.sidebar.upgradeCopy}
             </p>
             <LinkButton
               href="/app/usage"
               size="sm"
               variant="outline"
-              className="mt-3 w-full"
+              className="mt-3 w-full text-[11px]"
             >
               {t.sidebar.viewUsage}
             </LinkButton>

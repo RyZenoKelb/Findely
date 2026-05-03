@@ -69,8 +69,8 @@ const ERROR_TABLE: [string, string, string][] = [
 
 function CodeBlock({ code, label }: { code: string; label: string }) {
   return (
-    <figure className="rounded-xl border border-border bg-surface">
-      <figcaption className="border-b border-border px-4 py-2 text-[11px] font-medium uppercase tracking-[0.18em] text-muted">
+    <figure className="rounded-xl border border-white/[0.06] bg-white/[0.02]">
+      <figcaption className="border-b border-white/[0.06] px-4 py-2 text-[11px] font-medium uppercase tracking-[0.18em] text-muted">
         {label}
       </figcaption>
       <pre className="overflow-x-auto px-4 py-3 font-mono text-[12.5px] leading-relaxed text-foreground">
@@ -89,7 +89,7 @@ export default function DevelopersPage() {
       <section className="relative overflow-hidden">
         <div className="bg-mesh pointer-events-none absolute inset-0" />
         <div className="relative mx-auto max-w-4xl px-5 py-20 lg:py-28">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border-strong bg-surface-2 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-accent-cyan">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-accent-cyan">
             <Code2 size={12} />
             {d?.gettingStarted ?? "Getting started"}
           </div>
@@ -132,7 +132,7 @@ export default function DevelopersPage() {
               <a
                 key={href}
                 href={href}
-                className="inline-flex items-center gap-1 rounded-full border border-border bg-surface-2 px-2.5 py-1 text-muted-strong transition-colors hover:border-accent/40 hover:text-foreground"
+                className="inline-flex items-center gap-1 rounded-full border border-white/[0.06] bg-white/[0.04] px-2.5 py-1 text-muted-strong transition-colors hover:border-accent/40 hover:text-foreground"
               >
                 {label}
               </a>
@@ -151,10 +151,10 @@ export default function DevelopersPage() {
             {d?.overviewBody ??
               "Findely exposes two endpoints. POST /api/v1/search runs a scored, deduplicated lead search. GET /api/v1/usage returns your cycle counters and credit balance. Both take a Bearer token."}
           </p>
-          <div className="mt-4 overflow-x-auto rounded-xl border border-border bg-surface">
+          <div className="mt-4 overflow-x-auto rounded-xl border border-white/[0.06] bg-white/[0.02]">
             <table className="w-full border-collapse text-sm">
               <thead>
-                <tr className="border-b border-border text-left text-[11px] uppercase tracking-[0.15em] text-muted">
+                <tr className="border-b border-white/[0.06] text-left text-[11px] uppercase tracking-[0.15em] text-muted">
                   <th className="px-4 py-3">Plan</th>
                   <th className="px-4 py-3">Credits / month</th>
                   <th className="px-4 py-3">Price</th>
@@ -167,7 +167,7 @@ export default function DevelopersPage() {
                     return (
                       <tr
                         key={id}
-                        className="border-b border-border last:border-b-0"
+                        className="border-b border-white/[0.06] last:border-b-0"
                       >
                         <td className="px-4 py-3 font-medium text-foreground">
                           {p.label}
@@ -195,7 +195,7 @@ export default function DevelopersPage() {
             {d?.authTitle ?? "Authentication"}
           </h2>
           <p className="mt-2 text-sm text-muted-strong">{d?.authBody ?? ""}</p>
-          <pre className="mt-3 overflow-x-auto rounded-xl border border-border bg-surface px-4 py-3 font-mono text-[12.5px] text-foreground">
+          <pre className="mt-3 overflow-x-auto rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 font-mono text-[12.5px] text-foreground">
             <code>Authorization: Bearer findely_live_...</code>
           </pre>
         </div>
@@ -241,10 +241,10 @@ export default function DevelopersPage() {
           <h2 className="text-xl font-semibold text-foreground">
             {d?.errorsTitle ?? "Errors"}
           </h2>
-          <div className="mt-3 overflow-x-auto rounded-xl border border-border bg-surface">
+          <div className="mt-3 overflow-x-auto rounded-xl border border-white/[0.06] bg-white/[0.02]">
             <table className="w-full border-collapse text-sm">
               <thead>
-                <tr className="border-b border-border text-left text-[11px] uppercase tracking-[0.15em] text-muted">
+                <tr className="border-b border-white/[0.06] text-left text-[11px] uppercase tracking-[0.15em] text-muted">
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Code</th>
                   <th className="px-4 py-3">Description</th>
@@ -254,7 +254,7 @@ export default function DevelopersPage() {
                 {ERROR_TABLE.map(([status, code, desc]) => (
                   <tr
                     key={status + code}
-                    className="border-b border-border last:border-b-0"
+                    className="border-b border-white/[0.06] last:border-b-0"
                   >
                     <td className="px-4 py-3 font-mono text-foreground">{status}</td>
                     <td className="px-4 py-3 font-mono text-muted-strong">{code}</td>
@@ -266,7 +266,7 @@ export default function DevelopersPage() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2 rounded-2xl border border-border bg-surface p-5">
+        <div className="flex flex-wrap gap-2 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
           <LinkButton
             href="/app/api-keys"
             size="md"

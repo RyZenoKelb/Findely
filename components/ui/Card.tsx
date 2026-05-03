@@ -12,7 +12,7 @@ export function Card({
   return (
     <Tag
       className={cn(
-        "rounded-xl border border-border bg-surface bg-panel",
+        "rounded-xl border border-white/[0.06] bg-white/[0.02]",
         className
       )}
       {...rest}
@@ -29,7 +29,7 @@ export function CardHeader({
   return (
     <div
       className={cn(
-        "flex items-start justify-between gap-4 border-b border-border px-5 py-4",
+        "flex items-start justify-between gap-4 border-b border-white/[0.06] px-5 py-4",
         className
       )}
     >
@@ -64,7 +64,7 @@ export function CardFooter({
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-4 border-t border-border px-5 py-3 text-xs text-muted",
+        "flex items-center justify-between gap-4 border-t border-white/[0.06] px-5 py-3 text-xs text-muted",
         className
       )}
     >

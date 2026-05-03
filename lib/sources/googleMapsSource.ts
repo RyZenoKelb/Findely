@@ -156,7 +156,7 @@ export const googleMapsSource: LeadSourceProvider = {
     }`;
 
     const results = await textSearch(query, apiKey, params.language);
-    const limited = results.slice(0, Math.min(params.limit, 20));
+    const limited = results.slice(0, params.limit);
 
     const nowIso = new Date().toISOString();
     const details = await Promise.all(

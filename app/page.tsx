@@ -1,28 +1,30 @@
+import { PublicBackground } from "@/components/landing/Backgrounds";
 import { Hero } from "@/components/landing/Hero";
 import {
   ClosingBand,
   Comparison,
-  LogoStrip,
   SplitNarrative,
   StatBand,
   Testimonial,
   WorkflowStrip,
 } from "@/components/landing/LandingSections";
 import { NavBar } from "@/components/landing/NavBar";
-import { Footer } from "@/components/landing/Sections";
+import { Features, Pricing, Footer } from "@/components/landing/Sections";
 
 export default function LandingPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <div className="relative flex min-h-screen flex-col text-foreground">
+      <PublicBackground />
       <NavBar />
-      <main className="flex-1">
+      <main className="relative z-10 flex-1">
         <Hero />
-        <LogoStrip />
+        <WorkflowStrip />
         <SplitNarrative />
         <StatBand />
-        <WorkflowStrip />
         <Comparison />
+        <Features compact />
         <Testimonial />
+        <Pricing />
         <ClosingBand />
       </main>
       <Footer />

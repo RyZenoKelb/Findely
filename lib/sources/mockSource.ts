@@ -226,7 +226,7 @@ export const mockSource: LeadSourceProvider = {
     const rnd = mulberry32(seed);
 
     const bucket = inferBucket(businessType);
-    const count = Math.max(8, Math.min(80, limit));
+    const count = Math.max(8, limit);
     const nowIso = new Date().toISOString();
 
     const websiteRate =

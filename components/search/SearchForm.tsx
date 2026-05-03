@@ -116,7 +116,7 @@ function Section({
   hint?: string;
 }) {
   return (
-    <div className="grid gap-5 border-b border-border px-6 py-6 md:grid-cols-[160px_1fr] md:gap-8 md:px-8">
+    <div className="grid gap-5 border-b border-white/[0.06] px-6 py-6 md:grid-cols-[160px_1fr] md:gap-8 md:px-8">
       <div>
         <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-accent-cyan">
           <span className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-accent/30 bg-accent/10 text-[10px] font-semibold">
@@ -285,9 +285,9 @@ export function SearchForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="overflow-hidden rounded-2xl border border-border-strong bg-surface shadow-[0_20px_60px_-30px_rgba(0,0,0,0.6)]"
+      className="overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] shadow-[0_20px_60px_-30px_rgba(0,0,0,0.6)]"
     >
-      <div className="flex items-center justify-between gap-4 border-b border-border bg-gradient-to-r from-accent/[0.08] to-transparent px-6 py-4 md:px-8">
+      <div className="flex items-center justify-between gap-4 border-b border-white/[0.06] bg-gradient-to-r from-accent/[0.08] to-transparent px-6 py-4 md:px-8">
         <div className="flex items-center gap-2">
           <Sparkles size={14} className="text-accent-cyan" />
           <span className="text-sm font-semibold text-foreground">
@@ -423,7 +423,7 @@ export function SearchForm({
                   "flex w-full items-start gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
                   active
                     ? "border-accent/50 bg-accent/10"
-                    : "border-border bg-white/[0.02] hover:border-border-strong hover:bg-white/5",
+                    : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.1] hover:bg-white/[0.04]",
                   !selectable && "cursor-not-allowed opacity-70"
                 )}
               >
@@ -432,7 +432,7 @@ export function SearchForm({
                     "mt-0.5 flex h-5 w-5 flex-none items-center justify-center rounded-md border",
                     active
                       ? "border-accent/50 bg-accent text-white"
-                      : "border-border-strong bg-white/5 text-muted"
+                      : "border-white/[0.08] bg-white/[0.04] text-muted"
                   )}
                 >
                   {active ? <Check size={12} /> : null}
@@ -530,7 +530,7 @@ export function SearchForm({
                     "inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs transition-colors",
                     active
                       ? "border-accent/40 bg-accent/10 text-foreground"
-                      : "border-border bg-white/[0.02] text-muted-strong hover:bg-white/5"
+                      : "border-white/[0.06] bg-white/[0.02] text-muted-strong hover:bg-white/[0.04]"
                   )}
                 >
                   {filterLabel(k, t, locale)}
@@ -541,7 +541,7 @@ export function SearchForm({
         </div>
       </Section>
 
-      <div className="border-b border-border">
+      <div className="border-b border-white/[0.06]">
         <button
           type="button"
           onClick={() => setAdvancedOpen((s) => !s)}
@@ -577,28 +577,28 @@ export function SearchForm({
                 }
               />
             </div>
-            <label className="flex items-center gap-2 rounded-lg border border-border bg-white/[0.02] px-3 py-2 text-sm">
+            <label className="flex items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-sm">
               <Checkbox
                 checked={state.requirePhone}
                 onCheckedChange={(c) => patch("requirePhone", c)}
               />
               {t.searchForm.requirePhone}
             </label>
-            <label className="flex items-center gap-2 rounded-lg border border-border bg-white/[0.02] px-3 py-2 text-sm">
+            <label className="flex items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-sm">
               <Checkbox
                 checked={state.requireWebsite}
                 onCheckedChange={(c) => patch("requireWebsite", c)}
               />
               {t.searchForm.requireWebsite}
             </label>
-            <label className="flex items-center gap-2 rounded-lg border border-border bg-white/[0.02] px-3 py-2 text-sm">
+            <label className="flex items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-sm">
               <Checkbox
                 checked={state.includeOnlyContactable}
                 onCheckedChange={(c) => patch("includeOnlyContactable", c)}
               />
               {t.searchForm.onlyContactable}
             </label>
-            <label className="flex items-center gap-2 rounded-lg border border-border bg-white/[0.02] px-3 py-2 text-sm md:col-span-2 lg:col-span-4">
+            <label className="flex items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-sm md:col-span-2 lg:col-span-4">
               <Checkbox
                 checked={state.excludeSeen}
                 onCheckedChange={(c) => patch("excludeSeen", c)}

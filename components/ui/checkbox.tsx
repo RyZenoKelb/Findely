@@ -46,7 +46,7 @@ export const Checkbox = React.forwardRef<
       }}
       className={cn(
         checkboxVariants({ size }),
-        "border-border-strong bg-surface-2 hover:border-accent/50",
+        "border-white/[0.08] bg-white/[0.04] hover:border-accent/50",
         className
       )}
       {...props}

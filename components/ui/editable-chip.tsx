@@ -89,10 +89,10 @@ export function EditableChip({
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border border-border-strong bg-gradient-to-br from-surface-2 to-surface-3 transition-all",
-        "shadow-[inset_0_0_0_1px_rgba(100,140,255,0.12),0_8px_24px_-20px_rgba(47,123,255,0.6)]",
+        "inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-gradient-to-br from-white/[0.04] to-white/[0.06] transition-all",
+        "shadow-[inset_0_0_0_1px_rgba(99,102,241,0.1),0_8px_24px_-20px_rgba(99,102,241,0.4)]",
         editing &&
-          "border-accent/50 from-surface to-surface-2 ring-2 ring-accent/30",
+          "border-accent/50 from-white/[0.02] to-white/[0.04] ring-2 ring-accent/30",
         disabled && "opacity-60",
         s.h,
         s.px,

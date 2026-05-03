@@ -61,7 +61,7 @@ export default function UseCasesPage() {
                 className={`grid items-start gap-8 lg:grid-cols-[1fr_2fr] lg:gap-16 ${flipped ? "lg:[&>div:first-child]:order-2" : ""}`}
               >
                 <div>
-                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-border-strong bg-accent/10 text-accent-cyan">
+                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-accent/10 text-accent-cyan">
                     <Icon size={22} />
                   </div>
                   <div className="mt-4 font-mono text-[11px] uppercase tracking-[0.2em] text-accent-cyan">
@@ -80,7 +80,7 @@ export default function UseCasesPage() {
                     {chips.map((chip) => (
                       <span
                         key={chip}
-                        className="rounded-full border border-border bg-white/5 px-3 py-1 text-xs text-muted-strong"
+                        className="rounded-full border border-white/[0.06] bg-white/[0.04] px-3 py-1 text-xs text-muted-strong"
                       >
                         {chip}
                       </span>

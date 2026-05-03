@@ -131,7 +131,7 @@ export default function ListsView({
         </div>
 
         {activeLeads.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border bg-surface/50 p-10 text-center">
+          <div className="rounded-xl border border-dashed border-white/[0.06] bg-white/[0.02] p-10 text-center">
             <h3 className="text-base font-semibold text-foreground">
               {locale === "fr" ? "Cette liste est vide." : "This list is empty."}
             </h3>
@@ -176,7 +176,7 @@ export default function ListsView({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border border-border bg-surface p-5">
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
         <div className="flex items-center gap-2">
           <Plus size={14} className="text-accent-strong" />
           <h3 className="text-sm font-semibold text-foreground">
@@ -209,7 +209,7 @@ export default function ListsView({
         {lists.map((l) => (
           <div
             key={l.id}
-            className="group flex flex-col rounded-xl border border-border bg-surface bg-panel p-5 transition-colors hover:border-border-strong"
+            className="group flex flex-col rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 transition-colors hover:border-white/[0.1]"
           >
             <div className="flex items-start justify-between gap-2">
               <button
@@ -218,7 +218,7 @@ export default function ListsView({
               >
                 {displayListName(l.name, locale)}
               </button>
-              <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] font-medium text-muted-strong">
+              <span className="rounded-full border border-white/[0.06] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-muted-strong">
                 {l.leadIds.length}
               </span>
             </div>
@@ -236,7 +236,7 @@ export default function ListsView({
               <div className="flex gap-1">
                 <button
                   onClick={() => handleDelete(l)}
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border text-muted-strong hover:border-danger/40 hover:bg-danger/10 hover:text-danger"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/[0.06] text-muted-strong hover:border-danger/40 hover:bg-danger/10 hover:text-danger"
                   aria-label={
                     locale === "fr" ? "Supprimer la liste" : "Delete list"
                   }
@@ -248,7 +248,7 @@ export default function ListsView({
           </div>
         ))}
         {lists.length === 0 ? (
-          <div className="col-span-full rounded-xl border border-dashed border-border bg-surface/50 p-10 text-center text-sm text-muted">
+          <div className="col-span-full rounded-xl border border-dashed border-white/[0.06] bg-white/[0.02] p-10 text-center text-sm text-muted">
             {locale === "fr"
               ? "Aucune liste pour l’instant. Créez-en une ci-dessus."
               : "No lists yet. Create one above to get started."}

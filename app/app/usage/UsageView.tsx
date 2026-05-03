@@ -47,7 +47,7 @@ function Bar({ value, max }: { value: number; max: number }) {
   const pct = Math.min(100, (value / max) * 100);
   const tone = pct >= 90 ? "bg-danger" : pct >= 70 ? "bg-warning" : "bg-accent";
   return (
-    <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-3">
+    <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
       <div className={cn("h-full", tone)} style={{ width: `${pct}%` }} />
     </div>
   );
@@ -172,7 +172,7 @@ export function UsageView({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-surface p-5">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
         <div className="flex items-center gap-3">
           <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 text-accent-strong">
             <Sparkles size={16} />
@@ -228,7 +228,7 @@ export function UsageView({
         />
       </section>
 
-      <section className="rounded-xl border border-border bg-surface p-5">
+      <section className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Gauge size={14} className="text-muted" />
@@ -299,7 +299,7 @@ export function UsageView({
         </div>
       </section>
 
-      <section className="rounded-xl border border-border bg-surface p-5">
+      <section className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-xl">
             <div className="flex items-center gap-2">
@@ -374,10 +374,10 @@ export function UsageView({
             <div
               key={id}
               className={cn(
-                "relative rounded-xl border bg-surface p-5",
+                "relative rounded-xl border bg-white/[0.02] p-5",
                 isHighlight
                   ? "border-accent/40 bg-gradient-to-b from-accent/[0.06] to-transparent"
-                  : "border-border"
+                  : "border-white/[0.06]"
               )}
             >
               <div className="flex items-center justify-between">
@@ -411,21 +411,21 @@ export function UsageView({
       </section>
 
       {exportsHistory.length > 0 ? (
-        <section className="rounded-xl border border-border bg-surface p-5">
+        <section className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
           <div className="flex items-center gap-2">
             <Download size={14} className="text-muted" />
             <h3 className="text-sm font-semibold text-foreground">
               {locale === "fr" ? "Exports récents" : "Recent exports"}
             </h3>
           </div>
-          <ul className="mt-4 divide-y divide-border">
+          <ul className="mt-4 divide-y divide-white/[0.06]">
             {exportsHistory.map((e) => (
               <li
                 key={e.id}
                 className="flex items-center justify-between py-2.5 text-sm"
               >
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex rounded-md border border-border bg-surface-2 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+                  <span className="inline-flex rounded-md border border-white/[0.06] bg-white/[0.04] px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
                     {e.type}
                   </span>
                   <span className="text-foreground">

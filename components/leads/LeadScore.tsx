@@ -37,7 +37,7 @@ export function LeadScore({
     <div className={cn("flex items-center gap-2", className)}>
       <div
         className={cn(
-          "relative overflow-hidden rounded-full bg-surface-3",
+          "relative overflow-hidden rounded-full bg-white/[0.06]",
           compact ? "h-1 w-12" : "h-1.5 w-16"
         )}
       >

@@ -157,7 +157,7 @@ export function ApiKeysPanel({
       </header>
 
       <section className="grid gap-4 md:grid-cols-[1.2fr_1fr]">
-        <div className="rounded-xl border border-border bg-surface p-5">
+        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
           <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
             <Sparkles size={14} className="text-accent-cyan" />
             {a?.howItWorksTitle ??
@@ -200,7 +200,7 @@ export function ApiKeysPanel({
           </div>
         </div>
 
-        <div className="rounded-xl border border-border bg-gradient-to-br from-accent/[0.08] to-transparent p-5">
+        <div className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-accent/[0.08] to-transparent p-5">
           <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
             <Zap size={14} className="text-accent-cyan" />
             {a?.currentUsageTitle ??
@@ -275,7 +275,7 @@ export function ApiKeysPanel({
       ) : (
         <form
           onSubmit={handleCreate}
-          className="rounded-xl border border-border bg-surface p-5"
+          className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5"
         >
           <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
             <Plus size={14} className="text-accent-cyan" />
@@ -313,7 +313,7 @@ export function ApiKeysPanel({
             {a?.oneTimeWarning ?? "Copy this now."}
           </div>
           <div className="mt-3 flex items-center gap-2">
-            <code className="flex-1 truncate rounded-lg border border-border bg-surface-2 px-3 py-2 font-mono text-xs text-foreground">
+            <code className="flex-1 truncate rounded-lg border border-white/[0.06] bg-white/[0.04] px-3 py-2 font-mono text-xs text-foreground">
               {justCreated}
             </code>
             <Button type="button" size="sm" variant="outline" onClick={handleCopy}>
@@ -335,7 +335,7 @@ export function ApiKeysPanel({
       ) : null}
 
       {canUseApi ? (
-        <div className="flex items-start gap-3 rounded-xl border border-border bg-surface-2 p-4 text-sm">
+        <div className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.04] p-4 text-sm">
           <ShieldCheck size={14} className="mt-0.5 flex-none text-accent-cyan" />
           <div>
             <div className="font-semibold text-foreground">
@@ -362,7 +362,7 @@ export function ApiKeysPanel({
         </span>
       </div>
 
-      <div className="rounded-xl border border-border bg-surface">
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02]">
         {rows.length === 0 ? (
           <div className="p-6 text-sm text-muted-strong">
             {a?.noKeys ?? "No API keys yet."}
@@ -371,7 +371,7 @@ export function ApiKeysPanel({
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-sm">
               <thead>
-                <tr className="border-b border-border text-left text-[11px] uppercase tracking-[0.15em] text-muted">
+                <tr className="border-b border-white/[0.06] text-left text-[11px] uppercase tracking-[0.15em] text-muted">
                   <th className="px-4 py-3">{a?.colName ?? "Name"}</th>
                   <th className="px-4 py-3">{a?.colPrefix ?? "Prefix"}</th>
                   <th className="px-4 py-3">{a?.colCreated ?? "Created"}</th>
@@ -386,7 +386,7 @@ export function ApiKeysPanel({
                   return (
                     <tr
                       key={row.id}
-                      className="border-b border-border last:border-b-0"
+                      className="border-b border-white/[0.06] last:border-b-0"
                     >
                       <td className="px-4 py-3 font-medium text-foreground">
                         {row.name}
@@ -419,7 +419,7 @@ export function ApiKeysPanel({
                             type="button"
                             onClick={() => handleRevoke(row.id)}
                             disabled={pending}
-                            className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-2 px-2.5 py-1 text-xs text-muted-strong transition-colors hover:border-danger/40 hover:text-danger"
+                            className="inline-flex items-center gap-1 rounded-md border border-white/[0.06] bg-white/[0.04] px-2.5 py-1 text-xs text-muted-strong transition-colors hover:border-danger/40 hover:text-danger"
                           >
                             <Trash2 size={11} />
                             {a?.revoke ?? "Revoke"}

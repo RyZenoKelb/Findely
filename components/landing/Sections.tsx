@@ -39,6 +39,7 @@ function SectionShell({
   subtitle,
   children,
   className,
+  center,
 }: {
   id?: string;
   eyebrow: string;
@@ -46,21 +47,23 @@ function SectionShell({
   subtitle?: string;
   children: React.ReactNode;
   className?: string;
+  center?: boolean;
 }) {
   return (
     <section
       id={id}
       className={`relative mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-28 ${className ?? ""}`}
     >
-      <div className="mb-12 max-w-2xl">
-        <div className="text-xs font-medium uppercase tracking-[0.18em] text-accent-cyan">
+      <div className={center ? "mb-14 text-center" : "mb-12 max-w-2xl"}>
+        <div className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.18em] text-accent-cyan">
+          <span className="inline-block h-px w-5 bg-accent-cyan/50" />
           {eyebrow}
         </div>
-        <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+        <h2 className={`mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl ${center ? "mx-auto max-w-3xl" : ""}`}>
           {title}
         </h2>
         {subtitle ? (
-          <p className="mt-3 text-[15px] leading-relaxed text-muted-strong">
+          <p className={`mt-3 text-[15px] leading-relaxed text-muted-strong ${center ? "mx-auto max-w-2xl" : ""}`}>
             {subtitle}
           </p>
         ) : null}
@@ -83,7 +86,7 @@ export function Problem() {
         {t.problem.items.map((it) => (
           <div
             key={it.title}
-            className="rounded-xl border border-border bg-surface bg-panel p-5"
+            className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5"
           >
             <div className="inline-flex rounded-md bg-danger/10 p-2 text-danger">
               <Target size={16} />
@@ -111,7 +114,7 @@ export function Solution() {
       subtitle={t.solution.subtitle}
     >
       <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
-        <div className="rounded-2xl border border-border bg-surface p-6">
+        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
           <ul className="space-y-3">
             {t.solution.bullets.map((b) => (
               <li key={b} className="flex items-start gap-3 text-sm">
@@ -132,7 +135,7 @@ export function Solution() {
             </LinkButton>
           </div>
         </div>
-        <div className="relative overflow-hidden rounded-2xl border border-border bg-surface p-6">
+        <div className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
           <div className="bg-radial-cyan pointer-events-none absolute inset-0" />
           <div className="relative grid grid-cols-2 gap-4">
             {[
@@ -143,12 +146,12 @@ export function Solution() {
             ].map((s) => (
               <div
                 key={s.k}
-                className="rounded-xl border border-border bg-surface-2 p-4"
+                className="rounded-xl border border-white/[0.06] bg-white/[0.04] p-4"
               >
                 <div className="text-xs uppercase tracking-wide text-muted">
                   {s.k}
                 </div>
-                <div className="mt-1 bg-gradient-to-r from-foreground to-accent-cyan bg-clip-text text-2xl font-semibold text-transparent">
+                <div className="mt-1 bg-gradient-to-r from-foreground to-accent bg-clip-text text-2xl font-semibold text-transparent">
                   {s.v}
                 </div>
               </div>
@@ -194,9 +197,9 @@ export function UseCases({ compact }: { compact?: boolean } = {}) {
           return (
             <div
               key={c.title}
-              className="group relative overflow-hidden rounded-xl border border-border bg-surface bg-panel p-5 transition-all hover:border-border-strong hover:-translate-y-0.5"
+              className="group relative overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 transition-all hover:border-white/[0.1] hover:-translate-y-0.5"
             >
-              <div className="inline-flex rounded-md border border-border bg-surface-2 p-2 text-accent-cyan">
+              <div className="inline-flex rounded-md border border-white/[0.06] bg-white/[0.04] p-2 text-accent-cyan">
                 <Icon size={16} />
               </div>
               <h3 className="mt-4 text-[15px] font-semibold text-foreground">
@@ -240,15 +243,15 @@ export function Features({ compact }: { compact?: boolean } = {}) {
           return (
             <div
               key={item.title}
-              className="rounded-xl border border-border bg-surface bg-panel p-5 transition-all hover:border-border-strong"
+              className="group rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 transition-all hover:border-white/[0.1] hover:-translate-y-0.5"
             >
-              <div className="inline-flex rounded-md bg-accent/10 p-2 text-accent-cyan">
+              <div className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-accent/10 text-accent-cyan transition-colors group-hover:bg-accent/15">
                 <Icon size={16} />
               </div>
-              <h3 className="mt-4 text-[15px] font-semibold text-foreground">
+              <h3 className="mt-3 text-[14px] font-semibold text-foreground">
                 {item.title}
               </h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted-strong">
+              <p className="mt-1.5 text-[13px] leading-relaxed text-muted-strong">
                 {item.body}
               </p>
             </div>
@@ -271,7 +274,7 @@ export function HowItWorks() {
         {t.howItWorks.steps.map((s, i) => (
           <div
             key={s.title}
-            className="relative rounded-xl border border-border bg-surface bg-panel p-5"
+            className="relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-5"
           >
             <div className="font-mono text-xs text-accent-cyan">
               {String(i + 1).padStart(2, "0")}
@@ -378,38 +381,40 @@ export function Pricing() {
       eyebrow={t.pricing.eyebrow}
       title={t.pricing.title}
       subtitle={t.pricing.subtitle}
+      center
     >
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-5 lg:grid-cols-3">
         {SAAS_LANDING_PLANS.map((p) => (
           <div
             key={p.key}
-            className={`relative rounded-2xl border bg-surface p-6 ${
+            className={`relative flex flex-col rounded-2xl border p-7 transition-all ${
               p.highlighted
-                ? "border-accent/40 bg-gradient-to-b from-accent/[0.1] to-transparent glow-accent"
-                : "border-border"
+                ? "border-accent/40 bg-gradient-to-b from-accent/[0.08] to-surface shadow-[0_0_60px_-20px_rgba(99,102,241,0.3)] lg:scale-[1.02]"
+                : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.1]"
             }`}
           >
             {p.highlighted ? (
               <Badge
                 tone="accent"
-                className="absolute right-5 top-5 text-[10px]"
+                className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px]"
               >
                 {t.pricing.mostPopular}
               </Badge>
             ) : null}
-            <div className="text-sm font-medium text-muted-strong">
+            <div className="text-[13px] font-semibold text-foreground">
               {names[p.key]}
             </div>
-            <div className="mt-3 flex items-baseline gap-1">
-              <span className="text-4xl font-semibold text-foreground">
+            <p className="mt-1 text-[12px] text-muted">{descs[p.key]}</p>
+            <div className="mt-4 flex items-baseline gap-1">
+              <span className="text-4xl font-semibold tracking-tight text-foreground">
                 {p.price}
               </span>
-              <span className="text-sm text-muted">{t.pricing.month}</span>
+              <span className="text-[13px] text-muted">{t.pricing.month}</span>
             </div>
-            <p className="mt-2 text-sm text-muted-strong">{descs[p.key]}</p>
-            <ul className="mt-5 space-y-2 text-sm">
+            <div className="my-5 h-px bg-border" />
+            <ul className="flex-1 space-y-2.5 text-[13px]">
               {(locale === "fr" ? p.featuresFr : p.features).map((f) => (
-                <li key={f} className="flex items-start gap-2 text-foreground">
+                <li key={f} className="flex items-start gap-2.5 text-foreground">
                   <CheckCircle2
                     size={14}
                     className="mt-0.5 flex-none text-accent-cyan"
@@ -446,7 +451,7 @@ export function PricingFaq() {
         {t.pricing.faq.map((f) => (
           <div
             key={f.q}
-            className="rounded-xl border border-border bg-surface p-5"
+            className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5"
           >
             <div className="text-sm font-semibold text-foreground">{f.q}</div>
             <p className="mt-2 text-sm leading-relaxed text-muted-strong">
@@ -507,7 +512,7 @@ export function ApiPricing() {
       <div className="absolute inset-x-0 top-0 mx-auto h-px max-w-4xl bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
       <div className="mb-10 flex flex-col items-start gap-4 md:flex-row md:items-end md:justify-between">
         <div className="max-w-2xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border-strong bg-surface-2 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-accent-cyan">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-accent-cyan">
             <Code2 size={12} />
             {a?.eyebrow ?? "API pricing"}
           </div>
@@ -518,7 +523,7 @@ export function ApiPricing() {
             {a?.subtitle ?? ""}
           </p>
         </div>
-        <div className="rounded-2xl border border-border bg-surface p-5 md:max-w-sm">
+        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 md:max-w-sm">
           <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
             <Zap size={14} className="text-accent-cyan" />
             {a?.creditModelTitle ?? "How credits work"}
@@ -541,10 +546,10 @@ export function ApiPricing() {
         {cards.map((c) => (
           <div
             key={c.key}
-            className={`relative rounded-2xl border bg-surface p-6 ${
+            className={`relative rounded-2xl border bg-white/[0.02] p-6 ${
               c.highlighted
                 ? "border-accent/40 bg-gradient-to-b from-accent/[0.1] to-transparent glow-accent"
-                : "border-border"
+                : "border-white/[0.06]"
             }`}
           >
             {c.highlighted ? (
@@ -567,7 +572,7 @@ export function ApiPricing() {
               ) : null}
             </div>
             <p className="mt-2 text-sm text-muted-strong">{c.blurb}</p>
-            <div className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-2 px-2.5 py-1 font-mono text-xs text-foreground">
+            <div className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-white/[0.06] bg-white/[0.04] px-2.5 py-1 font-mono text-xs text-foreground">
               <Zap size={12} className="text-accent-cyan" />
               {formatNumber(c.credits)} {a?.monthlyCredits ?? "credits / month"}
             </div>
@@ -625,7 +630,7 @@ export function ApiPricingFaq() {
         {faq.map((f) => (
           <div
             key={f.q}
-            className="rounded-xl border border-border bg-surface p-5"
+            className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5"
           >
             <div className="text-sm font-semibold text-foreground">{f.q}</div>
             <p className="mt-2 text-sm leading-relaxed text-muted-strong">
@@ -641,7 +646,7 @@ export function ApiPricingFaq() {
 export function FinalCTA() {
   const { t } = useI18n();
   return (
-    <section className="relative overflow-hidden border-t border-border">
+    <section className="relative overflow-hidden border-t border-white/[0.06]">
       <div className="bg-radial-fade pointer-events-none absolute inset-0" />
       <div className="relative mx-auto max-w-4xl px-5 py-24 text-center lg:px-8">
         <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
@@ -668,20 +673,88 @@ export function FinalCTA() {
 }
 
 export function Footer() {
+  const { locale } = useI18n();
+
+  const productLinks = [
+    { href: "/features", label: locale === "fr" ? "Fonctionnalités" : "Features" },
+    { href: "/pricing", label: locale === "fr" ? "Tarifs" : "Pricing" },
+    { href: "/how-it-works", label: locale === "fr" ? "Comment ça marche" : "How it works" },
+    { href: "/use-cases", label: locale === "fr" ? "Cas d'usage" : "Use cases" },
+  ];
+
+  const developerLinks = [
+    { href: "/developers", label: locale === "fr" ? "Documentation API" : "API docs" },
+    { href: "/app/api-keys", label: locale === "fr" ? "Clés API" : "API keys" },
+  ];
+
+  const accountLinks = [
+    { href: "/app", label: "Dashboard" },
+    { href: "/app/search", label: locale === "fr" ? "Nouvelle recherche" : "New search" },
+    { href: "/signin", label: locale === "fr" ? "Connexion" : "Sign in" },
+    { href: "/signup", label: locale === "fr" ? "Créer un compte" : "Sign up" },
+  ];
+
   return (
-    <footer className="border-t border-border bg-surface/60">
-      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-10 text-sm text-muted md:flex-row md:items-center md:justify-between lg:px-8">
-        <div className="flex items-center gap-3">
-          <Logo href="/" />
-          <span className="hidden text-muted md:inline">
-            · Find targeted leads in seconds.
-          </span>
+    <footer className="border-t border-white/[0.06]">
+      <div className="mx-auto max-w-7xl px-5 py-14 lg:px-8">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <Logo href="/" />
+            <p className="mt-3 max-w-xs text-[13px] leading-relaxed text-muted-strong">
+              {locale === "fr"
+                ? "Trouvez des leads qualifiés en quelques secondes. Multi-sources, scorés, exportés en CSV."
+                : "Find targeted leads in seconds. Multi-source, scored, exported to CSV."}
+            </p>
+          </div>
+          <div>
+            <h4 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-muted">
+              {locale === "fr" ? "Produit" : "Product"}
+            </h4>
+            <ul className="mt-3 space-y-2">
+              {productLinks.map((l) => (
+                <li key={l.href}>
+                  <a href={l.href} className="text-[13px] text-muted-strong transition-colors hover:text-foreground">
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-muted">
+              {locale === "fr" ? "Développeurs" : "Developers"}
+            </h4>
+            <ul className="mt-3 space-y-2">
+              {developerLinks.map((l) => (
+                <li key={l.href}>
+                  <a href={l.href} className="text-[13px] text-muted-strong transition-colors hover:text-foreground">
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-muted">
+              {locale === "fr" ? "Compte" : "Account"}
+            </h4>
+            <ul className="mt-3 space-y-2">
+              {accountLinks.map((l) => (
+                <li key={l.href}>
+                  <a href={l.href} className="text-[13px] text-muted-strong transition-colors hover:text-foreground">
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-        <div className="flex items-center gap-5">
-          <span className="inline-flex items-center gap-1.5 text-muted-strong">
-            <MapPin size={12} /> Worldwide
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/[0.06] pt-6 text-[12px] text-muted sm:flex-row">
+          <span>© {new Date().getFullYear()} Findely. {locale === "fr" ? "Tous droits réservés." : "All rights reserved."}</span>
+          <span className="inline-flex items-center gap-1.5">
+            <MapPin size={10} />
+            {locale === "fr" ? "International" : "Worldwide"}
           </span>
-          <span>© {new Date().getFullYear()} Findely</span>
         </div>
       </div>
     </footer>

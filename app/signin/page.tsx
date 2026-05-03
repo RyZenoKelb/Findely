@@ -67,7 +67,7 @@ function SignInForm() {
         <div className="bg-mesh pointer-events-none absolute inset-0" />
         <div className="bg-grid pointer-events-none absolute inset-0 opacity-30" />
         <div className="relative mx-auto flex max-w-md flex-col items-center px-5 py-20 lg:py-28">
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-2 px-3 py-1 text-xs text-muted-strong">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.04] px-3 py-1 text-xs text-muted-strong">
             <Sparkles size={12} className="text-accent-cyan" />
             {t.hero.badge}
           </span>
@@ -80,7 +80,7 @@ function SignInForm() {
 
           <form
             onSubmit={handleSubmit}
-            className="mt-8 w-full rounded-2xl border border-border bg-surface p-6 glow-accent"
+            className="mt-8 w-full rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 glow-accent"
           >
             <div className="space-y-4">
               <div>

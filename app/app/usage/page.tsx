@@ -1,6 +1,6 @@
 import { getCurrentUserProfile } from "@/lib/auth";
 import { recentExports } from "@/lib/data/exports";
-import { getMonthlyUsage } from "@/lib/quota";
+import { getUsageSummary } from "@/lib/quota";
 import { UsageView, type UsageViewProps } from "./UsageView";
 
 export default async function UsagePage() {
@@ -9,17 +9,17 @@ export default async function UsagePage() {
   let dbUsage: UsageViewProps["dbUsage"] = null;
   let exportsHistory: UsageViewProps["exportsHistory"] = [];
   if (profile) {
-    const [usage, recent] = await Promise.all([
-      getMonthlyUsage(profile.id),
+    const [summary, recent] = await Promise.all([
+      getUsageSummary(profile.id, profile.plan),
       recentExports(10),
     ]);
     dbUsage = {
-      searches: usage.searches,
-      leads: usage.leads,
-      exports: usage.exports,
-      apiSearches: usage.apiSearches,
-      apiCredits: usage.apiCredits,
-      cycleEnd: usage.cycleEnd,
+      searches: summary.usage.searches,
+      leads: summary.usage.leads,
+      exports: summary.usage.exports,
+      apiSearches: summary.usage.apiSearches,
+      apiCredits: summary.usage.apiCredits,
+      cycleEnd: summary.usage.cycleEnd,
     };
     exportsHistory = recent.map((e) => ({
       id: e.id,

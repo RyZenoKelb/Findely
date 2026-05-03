@@ -18,21 +18,23 @@ interface BaseProps {
 
 function classes(variant: Variant = "primary", size: Size = "md"): string {
   const base =
-    "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-150 outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap";
+    "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-150 outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap cursor-pointer";
   const sizes: Record<Size, string> = {
-    sm: "h-8 px-3 text-xs",
-    md: "h-10 px-4 text-sm",
-    lg: "h-12 px-5 text-[15px]",
+    sm: "h-8 px-3 text-[12px]",
+    md: "h-9 px-4 text-[13px]",
+    lg: "h-10 px-5 text-[13px]",
   };
   const variants: Record<Variant, string> = {
     primary:
-      "bg-accent text-white hover:bg-accent-strong shadow-[0_8px_24px_-12px_rgba(79,140,255,0.6)]",
+      "bg-accent text-white hover:bg-accent-strong active:scale-[0.98] shadow-[0_1px_2px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.1)]",
     secondary:
-      "bg-surface-2 text-foreground hover:bg-surface-3 border border-border",
-    outline: "border border-border-strong text-foreground hover:bg-surface-2",
-    ghost: "text-muted-strong hover:text-foreground hover:bg-surface-2",
+      "bg-white/[0.04] text-foreground hover:bg-white/[0.06] border border-white/[0.06]",
+    outline:
+      "border border-white/[0.08] text-muted-strong hover:text-foreground hover:bg-white/[0.04]",
+    ghost:
+      "text-muted-strong hover:text-foreground hover:bg-white/[0.04]",
     danger:
-      "bg-danger/10 text-danger hover:bg-danger/20 border border-danger/30",
+      "bg-danger/10 text-danger hover:bg-danger/20 border border-danger/20",
   };
   return cn(base, sizes[size], variants[variant]);
 }

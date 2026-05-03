@@ -203,6 +203,39 @@ export interface Dict {
     themeSystem: string;
     save: string;
     saved: string;
+    eyebrow?: string;
+    subtitle?: string;
+    unsaved?: string;
+    discard?: string;
+    navProfile?: string;
+    navSearch?: string;
+    navExport?: string;
+    navAppearance?: string;
+    navHistory?: string;
+    navDeveloper?: string;
+    navAccount?: string;
+    navDanger?: string;
+    profileDesc?: string;
+    searchDefaultsDesc?: string;
+    exportPrefsDesc?: string;
+    appearanceDesc?: string;
+    historyTitle?: string;
+    historyDesc?: string;
+    historyClearCta?: string;
+    historyToast?: string;
+    developerTitle?: string;
+    developerDesc?: string;
+    developerOpenApi?: string;
+    developerOpenDocs?: string;
+    accountTitle?: string;
+    accountDesc?: string;
+    accountSignOut?: string;
+    dangerTitle?: string;
+    dangerDesc?: string;
+    dangerAck?: string;
+    seenOne?: string;
+    seenMany?: string;
+    planNameLabel?: string;
   };
   usage: {
     currentPlan: string;
@@ -594,7 +627,7 @@ const en: Dict = {
   },
   settings: {
     profile: "Profile",
-    profileSub: "Placeholder — auth not wired up in V1.",
+    profileSub: "Display name and contact info for your workspace.",
     name: "Display name",
     email: "Email",
     searchDefaults: "Search defaults",
@@ -616,6 +649,43 @@ const en: Dict = {
     themeSystem: "Follow system",
     save: "Save settings",
     saved: "Saved",
+    eyebrow: "Workspace settings",
+    subtitle: "Tune Findely to match how your team prospects.",
+    unsaved: "You have unsaved changes",
+    discard: "Discard",
+    navProfile: "Profile",
+    navSearch: "Search defaults",
+    navExport: "Exports",
+    navAppearance: "Appearance",
+    navHistory: "Lead history",
+    navDeveloper: "Developers",
+    navAccount: "Account",
+    navDanger: "Danger zone",
+    profileDesc: "Display name and contact email shown across your workspace.",
+    searchDefaultsDesc:
+      "Defaults applied when you open the search page with no saved query.",
+    exportPrefsDesc: "Control what columns end up in your CSV exports.",
+    appearanceDesc: "Theme and interface language — saved on this device.",
+    historyTitle: "Lead history",
+    historyDesc:
+      "Findely tracks leads you've already seen on this device so new searches don't re-surface them. Clear the history to start fresh.",
+    historyClearCta: "Clear history",
+    historyToast: "Lead history cleared.",
+    developerTitle: "API & developer tools",
+    developerDesc:
+      "Manage API keys and browse the integration docs without leaving settings.",
+    developerOpenApi: "Manage API keys",
+    developerOpenDocs: "API documentation",
+    accountTitle: "Account",
+    accountDesc: "Signed-in session and plan information.",
+    accountSignOut: "Sign out of this device",
+    dangerTitle: "Danger zone",
+    dangerDesc:
+      "Destructive actions affecting local data on this device. Server-side data is not touched.",
+    dangerAck: "This cannot be undone.",
+    seenOne: "previously seen lead",
+    seenMany: "previously seen leads",
+    planNameLabel: "Plan",
   },
   usage: {
     currentPlan: "Current plan",
@@ -1065,7 +1135,7 @@ const fr: Dict = {
   },
   settings: {
     profile: "Profil",
-    profileSub: "Placeholder — auth non branché en V1.",
+    profileSub: "Nom affiché et email de contact de votre espace de travail.",
     name: "Nom affiché",
     email: "Email",
     searchDefaults: "Réglages de recherche",
@@ -1087,6 +1157,45 @@ const fr: Dict = {
     themeSystem: "Suivre le système",
     save: "Enregistrer",
     saved: "Enregistré",
+    eyebrow: "Paramètres de l'espace",
+    subtitle: "Adaptez Findely à la façon dont votre équipe prospecte.",
+    unsaved: "Modifications non enregistrées",
+    discard: "Annuler",
+    navProfile: "Profil",
+    navSearch: "Recherche",
+    navExport: "Exports",
+    navAppearance: "Apparence",
+    navHistory: "Historique",
+    navDeveloper: "Développeurs",
+    navAccount: "Compte",
+    navDanger: "Zone sensible",
+    profileDesc:
+      "Nom affiché et email affichés à travers votre espace de travail.",
+    searchDefaultsDesc:
+      "Valeurs appliquées par défaut lorsque vous ouvrez la page de recherche sans requête.",
+    exportPrefsDesc: "Choisissez ce qui apparaît dans vos exports CSV.",
+    appearanceDesc:
+      "Thème et langue de l'interface — enregistrés sur cet appareil.",
+    historyTitle: "Historique des leads",
+    historyDesc:
+      "Findely mémorise les leads déjà vus sur cet appareil pour éviter de les re-proposer. Effacez l'historique pour repartir à zéro.",
+    historyClearCta: "Effacer l'historique",
+    historyToast: "Historique des leads réinitialisé.",
+    developerTitle: "API & outils développeurs",
+    developerDesc:
+      "Gérez vos clés API et consultez la documentation sans quitter les paramètres.",
+    developerOpenApi: "Gérer les clés API",
+    developerOpenDocs: "Documentation API",
+    accountTitle: "Compte",
+    accountDesc: "Informations de session et de plan.",
+    accountSignOut: "Se déconnecter de cet appareil",
+    dangerTitle: "Zone sensible",
+    dangerDesc:
+      "Actions destructives sur les données locales de cet appareil. Les données serveur ne sont pas modifiées.",
+    dangerAck: "Cette action est irréversible.",
+    seenOne: "lead déjà vu",
+    seenMany: "leads déjà vus",
+    planNameLabel: "Plan",
   },
   usage: {
     currentPlan: "Plan actuel",

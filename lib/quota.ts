@@ -249,6 +249,46 @@ export async function assertAndReserveSearch(
   return { eventId };
 }
 
+export interface UsageSummary {
+  plan: Plan;
+  usage: MonthlyUsage;
+  limits: ReturnType<typeof getPlanLimits>;
+  /** Counters mirror MonthlyUsage; kept as a stable shape the UI can bind to. */
+  display: {
+    searches: number;
+    leads: number;
+    exports: number;
+    apiSearches: number;
+    apiCredits: number;
+  };
+}
+
+/**
+ * Single source of truth for usage surfaces (/app overview, /app/usage,
+ * sidebar). Returns aggregated DB counters + plan limits together, so the
+ * different views cannot drift.
+ */
+export async function getUsageSummary(
+  userId: string,
+  plan: Plan | string | null | undefined
+): Promise<UsageSummary> {
+  const normalized = normalizePlan(plan);
+  const limits = getPlanLimits(normalized);
+  const usage = await getMonthlyUsage(userId);
+  return {
+    plan: normalized,
+    usage,
+    limits,
+    display: {
+      searches: usage.searches,
+      leads: usage.leads,
+      exports: usage.exports,
+      apiSearches: usage.apiSearches,
+      apiCredits: usage.apiCredits,
+    },
+  };
+}
+
 /** Records one usage event. Silently no-ops if Supabase is not configured. */
 export async function recordUsageEvent(
   userId: string,

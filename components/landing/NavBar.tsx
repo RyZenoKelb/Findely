@@ -36,15 +36,15 @@ export function NavBar() {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-40 transition-all duration-300",
+        "fixed inset-x-0 top-0 z-40 transition-all duration-200",
         scrolled
-          ? "border-b border-border-strong/50 bg-background/80 backdrop-blur-xl"
+          ? "border-b border-white/[0.06] bg-background/80 backdrop-blur-xl"
           : "border-b border-transparent bg-transparent"
       )}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 lg:px-8">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-5 lg:px-8">
         <Logo href="/" />
-        <nav className="hidden items-center gap-1 text-sm md:flex">
+        <nav className="hidden items-center gap-0.5 md:flex">
           {links.map((l) => {
             const active = pathname === l.href;
             return (
@@ -52,7 +52,7 @@ export function NavBar() {
                 key={l.href}
                 href={l.href}
                 className={cn(
-                  "rounded-lg px-3 py-1.5 font-medium transition-colors",
+                  "rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors",
                   active
                     ? "text-foreground"
                     : "text-muted-strong hover:text-foreground"
@@ -63,7 +63,7 @@ export function NavBar() {
             );
           })}
         </nav>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <LanguageSwitcher />
           <LinkButton
             href="/signin"
@@ -85,26 +85,26 @@ export function NavBar() {
             type="button"
             aria-label="Menu"
             onClick={() => setMobileOpen((o) => !o)}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-white/5 text-muted-strong md:hidden"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/[0.06] text-muted-strong md:hidden"
           >
-            {mobileOpen ? <X size={16} /> : <Menu size={16} />}
+            {mobileOpen ? <X size={15} /> : <Menu size={15} />}
           </button>
         </div>
       </div>
       {mobileOpen ? (
-        <div className="border-t border-border bg-background/95 px-5 pb-4 pt-2 backdrop-blur-xl md:hidden">
-          <nav className="flex flex-col gap-1 text-sm">
+        <div className="border-t border-white/[0.06] bg-background/95 px-5 pb-4 pt-2 backdrop-blur-xl md:hidden">
+          <nav className="flex flex-col gap-0.5 text-[13px]">
             {links.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
                 onClick={() => setMobileOpen(false)}
-                className="rounded-lg px-3 py-2 text-muted-strong hover:bg-white/5 hover:text-foreground"
+                className="rounded-md px-3 py-2 text-muted-strong hover:bg-white/[0.04] hover:text-foreground"
               >
                 {l.label}
               </Link>
             ))}
-            <div className="mt-2 flex gap-2">
+            <div className="mt-3 flex gap-2">
               <LinkButton
                 href="/signin"
                 variant="outline"

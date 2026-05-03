@@ -17,7 +17,7 @@ interface AuroraTextProps {
 export const AuroraText = memo(function AuroraText({
   children,
   className = "",
-  colors = ["#2F7BFF", "#60A5FA", "#22D3EE", "#00D4FF", "#A5B4FC"],
+  colors = ["#6366f1", "#818cf8", "#f59e0b", "#fbbf24", "#a5b4fc"],
   speed = 1,
 }: AuroraTextProps) {
   const gradientStyle: React.CSSProperties = {

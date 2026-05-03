@@ -37,8 +37,8 @@ export function LanguageSwitcher({
           "inline-flex items-center gap-1.5 rounded-lg border font-medium transition-colors",
           size === "sm" ? "h-8 px-2.5 text-xs" : "h-9 px-3 text-sm",
           variant === "outline"
-            ? "border-border-strong bg-surface-2 text-foreground hover:bg-surface-3"
-            : "border-transparent text-muted-strong hover:bg-surface-2 hover:text-foreground"
+            ? "border-white/[0.08] bg-white/[0.04] text-foreground hover:bg-white/[0.06]"
+            : "border-transparent text-muted-strong hover:bg-white/[0.04] hover:text-foreground"
         )}
         aria-label="Change language"
         aria-haspopup="listbox"
@@ -50,7 +50,7 @@ export function LanguageSwitcher({
       {open ? (
         <div
           role="listbox"
-          className="absolute right-0 z-30 mt-2 w-40 overflow-hidden rounded-lg border border-border bg-surface shadow-xl"
+          className="absolute right-0 z-30 mt-2 w-40 overflow-hidden rounded-lg border border-white/[0.06] bg-white/[0.02] shadow-xl"
         >
           {LOCALES.map((l) => (
             <button
@@ -63,7 +63,7 @@ export function LanguageSwitcher({
                 setOpen(false);
               }}
               className={cn(
-                "flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-surface-2",
+                "flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-white/[0.04]",
                 l.code === locale ? "text-foreground" : "text-muted-strong"
               )}
             >

@@ -33,7 +33,7 @@ export function LogoStrip() {
       ? "Compatible avec les outils que vous utilisez déjà"
       : "Built to plug into the modern outreach stack";
   return (
-    <section className="border-y border-border bg-background-2/40">
+    <section className="border-y border-white/[0.06] bg-white/[0.02]">
       <div className="mx-auto max-w-7xl px-5 py-10 lg:px-8">
         <p className="text-center text-[11px] font-medium uppercase tracking-[0.2em] text-muted">
           {label}
@@ -68,18 +68,18 @@ function splitCopy(locale: Locale) {
         points: [
           "Une seule recherche, plusieurs sources",
           "Doublons détectés et fusionnés automatiquement",
-          "Signal « sans site » surfacé en un coup d’œil",
+          "Signal « sans site » surfacé en un coup d'œil",
         ],
         cta: "Lancer une recherche",
       }
     : {
         eyebrow: "Stop copy-pasting",
-        title: "Your team shouldn’t scrape by hand.",
+        title: "Your team shouldn't scrape by hand.",
         body: "Findely blends Google Places with public directories and ships you clean, scored lists — in seconds, not days.",
         points: [
           "One search, multiple sources",
           "Duplicates detected and merged automatically",
-          "‘No website’ signal surfaced at a glance",
+          "'No website' signal surfaced at a glance",
         ],
         cta: "Run a search",
       };
@@ -127,9 +127,9 @@ export function SplitNarrative() {
 
         <div className="beam-host relative">
           <div className="bg-aurora pointer-events-none absolute -inset-8" />
-          <div className="glow-accent relative overflow-hidden rounded-2xl border border-border-strong bg-surface p-6">
-            <BorderBeam duration={12} size={220} colorFrom="#22D3EE" colorTo="#2F7BFF" />
-            <div className="relative z-[2] flex items-center justify-between border-b border-border pb-4 text-xs text-muted">
+          <div className="glow-accent relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6">
+            <BorderBeam duration={12} size={220} colorFrom="#6366f1" colorTo="#f59e0b" />
+            <div className="relative z-[2] flex items-center justify-between border-b border-white/[0.06] pb-4 text-xs text-muted">
               <span className="inline-flex items-center gap-2 text-foreground">
                 <Sparkles size={12} className="text-accent-cyan" />
                 {locale === "fr" ? "Pipeline en direct" : "Live pipeline"}
@@ -161,7 +161,7 @@ export function SplitNarrative() {
               ].map((s) => (
                 <div
                   key={s.k}
-                  className="flex items-center justify-between rounded-lg border border-border bg-white/5 px-4 py-3"
+                  className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.04] px-4 py-3"
                 >
                   <span className="text-sm text-muted-strong">{s.k}</span>
                   <NumberTicker
@@ -211,12 +211,12 @@ export function StatBand() {
   ];
 
   return (
-    <section className="relative overflow-hidden border-y border-border">
+    <section className="relative overflow-hidden border-y border-white/[0.06]">
       <div className="bg-spotlight pointer-events-none absolute inset-0" />
-      <div className="relative mx-auto grid max-w-7xl grid-cols-2 divide-x divide-border px-5 py-14 text-center sm:grid-cols-4 lg:px-8">
+      <div className="relative mx-auto grid max-w-7xl grid-cols-2 divide-x divide-white/[0.06] px-5 py-14 text-center sm:grid-cols-4 lg:px-8">
         {values.map((v, i) => (
           <div key={labels[i]} className="group relative px-4">
-            <div className="text-gradient text-3xl font-semibold tracking-tight transition-[text-shadow] duration-500 group-hover:[text-shadow:0_0_28px_rgba(47,123,255,0.55)] sm:text-4xl">
+            <div className="text-gradient text-3xl font-semibold tracking-tight transition-[text-shadow] duration-500 group-hover:[text-shadow:0_0_28px_rgba(99,102,241,0.55)] sm:text-4xl">
               {v.kind === "ticker" ? (
                 <NumberTicker
                   value={v.value}
@@ -252,51 +252,65 @@ export function WorkflowStrip() {
       ? {
           eyebrow: "Le flux",
           title: "De la niche au CSV, sans rupture.",
+          subtitle:
+            "Quatre étapes. Un seul outil. Votre prochaine liste est prête en moins d'une minute.",
           steps: [
-            { n: "Recherche", body: "niche + localisation" },
-            { n: "Fusion", body: "sources, dédup, nettoyage" },
-            { n: "Scoring", body: "0–100 selon votre objectif" },
-            { n: "Action", body: "liste, CSV, outreach" },
+            { n: "Recherche", body: "Niche + localisation", icon: Search },
+            { n: "Fusion", body: "Dédup multi-sources", icon: Sparkles },
+            { n: "Score", body: "0–100 par objectif", icon: Zap },
+            { n: "Export", body: "CSV prêt outreach", icon: ArrowRight },
           ],
         }
       : {
           eyebrow: "The flow",
           title: "From niche to CSV, without friction.",
+          subtitle:
+            "Four steps. One tool. Your next list is ready in under a minute.",
           steps: [
-            { n: "Search", body: "niche + location" },
-            { n: "Merge", body: "sources, dedup, cleanup" },
-            { n: "Score", body: "0–100 per objective" },
-            { n: "Act", body: "list, CSV, outreach" },
+            { n: "Search", body: "Niche + location", icon: Search },
+            { n: "Merge", body: "Multi-source dedup", icon: Sparkles },
+            { n: "Score", body: "0–100 per objective", icon: Zap },
+            { n: "Export", body: "Outreach-ready CSV", icon: ArrowRight },
           ],
         };
   return (
-    <section className="relative mx-auto max-w-7xl px-5 py-24 lg:px-8 lg:py-32">
-      <div className="max-w-2xl">
-        <div className="text-xs font-medium uppercase tracking-[0.2em] text-accent-cyan">
-          {c.eyebrow}
-        </div>
-        <h2 className="mt-4 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-          {c.title}
-        </h2>
-      </div>
-      <div className="mt-12 flex flex-col gap-0 overflow-hidden rounded-2xl border border-border-strong bg-surface/60 md:flex-row md:divide-x md:divide-border">
-        {c.steps.map((s, i) => (
-          <div key={s.n} className="relative flex-1 p-6 md:p-8">
-            <div className="font-mono text-[11px] text-accent-cyan">
-              {String(i + 1).padStart(2, "0")}
-            </div>
-            <div className="mt-3 text-xl font-semibold tracking-tight text-foreground">
-              {s.n}
-            </div>
-            <div className="mt-1 text-sm text-muted-strong">{s.body}</div>
-            {i < c.steps.length - 1 ? (
-              <ArrowRight
-                size={14}
-                className="absolute right-3 top-1/2 hidden -translate-y-1/2 text-muted md:block"
-              />
-            ) : null}
+    <section className="relative overflow-hidden border-y border-white/[0.06]">
+      <div className="bg-spotlight pointer-events-none absolute inset-0" />
+      <div className="relative mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-28">
+        <div className="text-center">
+          <div className="text-xs font-medium uppercase tracking-[0.2em] text-accent-cyan">
+            {c.eyebrow}
           </div>
-        ))}
+          <h2 className="mx-auto mt-4 max-w-2xl text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+            {c.title}
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-[14px] text-muted-strong">
+            {c.subtitle}
+          </p>
+        </div>
+        <div className="relative mt-14 grid gap-0 sm:grid-cols-4">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-1/2 hidden h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent sm:block"
+          />
+          {c.steps.map((s, i) => {
+            const Icon = s.icon;
+            return (
+              <div key={s.n} className="relative flex flex-col items-center text-center">
+                <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.02] shadow-[0_0_40px_-12px_rgba(99,102,241,0.3)]">
+                  <Icon size={20} className="text-accent-cyan" />
+                </div>
+                <div className="mt-4 text-[11px] font-mono text-accent-cyan/80">
+                  {String(i + 1).padStart(2, "0")}
+                </div>
+                <div className="mt-1 text-lg font-semibold tracking-tight text-foreground">
+                  {s.n}
+                </div>
+                <div className="mt-1 text-[13px] text-muted-strong">{s.body}</div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
@@ -310,7 +324,7 @@ export function Comparison() {
     locale === "fr"
       ? {
           eyebrow: "Avant · Après",
-          title: "La différence est brutale.",
+          title: "Le même effort, des résultats incomparables.",
           before: {
             title: "Sans Findely",
             items: [
@@ -332,7 +346,7 @@ export function Comparison() {
         }
       : {
           eyebrow: "Before · After",
-          title: "The difference is brutal.",
+          title: "Same effort, incomparable results.",
           before: {
             title: "Without Findely",
             items: [
@@ -353,44 +367,46 @@ export function Comparison() {
           },
         };
   return (
-    <section className="relative border-y border-border">
-      <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8 lg:py-32">
-        <div className="max-w-2xl">
+    <section className="relative">
+      <div className="mx-auto max-w-6xl px-5 py-24 lg:px-8 lg:py-32">
+        <div className="text-center">
           <div className="text-xs font-medium uppercase tracking-[0.2em] text-accent-cyan">
             {c.eyebrow}
           </div>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+          <h2 className="mx-auto mt-4 max-w-2xl text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             {c.title}
           </h2>
         </div>
-        <div className="mt-10 grid gap-0 overflow-hidden rounded-2xl border border-border-strong md:grid-cols-2">
-          <div className="bg-background-2/60 p-8">
-            <div className="inline-flex rounded-md bg-danger/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-danger">
+        <div className="mt-12 grid gap-4 md:grid-cols-2">
+          <div className="rounded-2xl border border-danger/20 bg-danger/[0.03] p-7">
+            <div className="inline-flex items-center gap-2 rounded-lg bg-danger/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-danger">
+              <span className="h-1.5 w-1.5 rounded-full bg-danger" />
               {c.before.title}
             </div>
-            <ul className="mt-6 space-y-3 text-sm">
-              {c.before.items.map((i) => (
+            <ul className="mt-6 space-y-4">
+              {c.before.items.map((item) => (
                 <li
-                  key={i}
-                  className="flex items-start gap-2 text-muted-strong line-through decoration-danger/50"
+                  key={item}
+                  className="flex items-start gap-3 text-[14px] text-muted-strong"
                 >
-                  <span className="mt-1 inline-block h-1 w-1 flex-none rounded-full bg-danger/70" />
-                  {i}
+                  <span className="mt-1.5 inline-block h-1.5 w-1.5 flex-none rounded-full bg-danger/60" />
+                  <span className="line-through decoration-danger/40">{item}</span>
                 </li>
               ))}
             </ul>
           </div>
-          <div className="bg-gradient-to-br from-accent/[0.08] to-transparent p-8 md:border-l md:border-border">
-            <div className="inline-flex rounded-md bg-accent/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-accent-cyan">
+          <div className="rounded-2xl border border-accent/25 bg-accent/[0.04] p-7">
+            <div className="inline-flex items-center gap-2 rounded-md bg-accent/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-accent-cyan">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent-cyan" />
               {c.after.title}
             </div>
-            <ul className="mt-6 space-y-3 text-sm">
-              {c.after.items.map((i) => (
-                <li key={i} className="flex items-start gap-2 text-foreground">
-                  <span className="mt-0.5 inline-flex h-4 w-4 flex-none items-center justify-center rounded-full bg-accent/20 text-accent-cyan">
-                    <Check size={10} />
+            <ul className="mt-6 space-y-4">
+              {c.after.items.map((item) => (
+                <li key={item} className="flex items-start gap-3 text-[14px] text-foreground">
+                  <span className="mt-0.5 inline-flex h-5 w-5 flex-none items-center justify-center rounded-full bg-accent/15 text-accent-cyan">
+                    <Check size={11} />
                   </span>
-                  {i}
+                  {item}
                 </li>
               ))}
             </ul>
@@ -409,7 +425,7 @@ export function Testimonial() {
     locale === "fr"
       ? {
           quote:
-            "J’ai fait plus de RDV en deux semaines qu’en deux mois. Findely a viré le travail ingrat de ma semaine.",
+            "J'ai fait plus de RDV en deux semaines qu'en deux mois. Findely a viré le travail ingrat de ma semaine.",
           name: "Léa M.",
           role: "Fondatrice, agence web",
         }
@@ -420,16 +436,28 @@ export function Testimonial() {
           role: "Founder, web agency",
         };
   return (
-    <section className="relative overflow-hidden">
-      <div className="bg-aurora pointer-events-none absolute inset-0 opacity-60" />
-      <div className="relative mx-auto max-w-4xl px-5 py-24 text-center lg:px-8 lg:py-28">
-        <Quote size={28} className="mx-auto text-accent-cyan" />
-        <p className="mt-6 text-2xl font-medium leading-snug tracking-tight text-foreground sm:text-3xl">
-          “{c.quote}”
+    <section className="relative overflow-hidden border-y border-white/[0.06]">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 50% 60% at 50% 50%, rgba(99,102,241,0.12), transparent 60%)",
+        }}
+      />
+      <div className="relative mx-auto max-w-3xl px-5 py-20 text-center lg:px-8 lg:py-24">
+        <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.06] bg-white/[0.04]">
+          <Quote size={16} className="text-accent-cyan" />
+        </div>
+        <p className="mt-6 text-xl font-medium leading-snug tracking-tight text-foreground sm:text-2xl lg:text-3xl">
+          &ldquo;{c.quote}&rdquo;
         </p>
-        <div className="mt-6 text-sm text-muted-strong">
-          <span className="font-medium text-foreground">{c.name}</span> ·{" "}
-          {c.role}
+        <div className="mt-6 flex items-center justify-center gap-3">
+          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-accent to-accent-cyan" />
+          <div className="text-left text-sm">
+            <div className="font-medium text-foreground">{c.name}</div>
+            <div className="text-[12px] text-muted">{c.role}</div>
+          </div>
         </div>
       </div>
     </section>
@@ -439,17 +467,13 @@ export function Testimonial() {
 /* Closing CTA */
 
 export function ClosingBand() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   return (
-    <section className="relative overflow-hidden border-t border-border">
+    <section className="relative overflow-hidden border-t border-white/[0.06]">
       <div className="bg-spotlight pointer-events-none absolute inset-0" />
       <div className="bg-grid pointer-events-none absolute inset-0" />
       <div className="relative mx-auto flex max-w-5xl flex-col items-center px-5 py-24 text-center lg:px-8 lg:py-28">
-        <span className="inline-flex items-center gap-2 rounded-full border border-border-strong bg-white/5 px-3 py-1 text-xs text-muted-strong">
-          <Zap size={12} className="text-accent-cyan" />
-          Ready in 60 seconds
-        </span>
-        <h2 className="mt-5 max-w-3xl text-3xl font-semibold tracking-tight text-foreground sm:text-5xl">
+        <h2 className="max-w-3xl text-3xl font-semibold tracking-tight text-foreground sm:text-5xl">
           {t.finalCta.title}
         </h2>
         <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted-strong">

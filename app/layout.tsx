@@ -50,7 +50,7 @@ export default function RootLayout({
       className={`${poppins.variable} ${jetbrains.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-screen bg-background text-foreground font-sans">
+      <body className="min-h-screen text-foreground font-sans">
         <I18nProvider>{children}</I18nProvider>
       </body>
     </html>

@@ -70,28 +70,28 @@ export function HeroPreview() {
   const { locale } = useI18n();
   return (
     <div className="beam-host relative">
-      <div className="glow-accent-strong relative overflow-hidden rounded-2xl border border-border-strong bg-surface">
-        <BorderBeam duration={10} size={260} colorFrom="#22D3EE" colorTo="#2F7BFF" />
+      <div className="glow-accent-strong relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02]">
+        <BorderBeam duration={10} size={260} colorFrom="#6366f1" colorTo="#f59e0b" />
         <div className="scan-line" aria-hidden />
 
-        <div className="relative z-[2] flex items-center gap-3 border-b border-border px-5 py-3 text-xs text-muted">
+        <div className="relative z-[2] flex items-center gap-3 border-b border-white/[0.06] px-5 py-3 text-xs text-muted">
           <div className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-white/20" />
             <span className="h-2 w-2 rounded-full bg-white/20" />
             <span className="h-2 w-2 rounded-full bg-white/20" />
           </div>
-          <div className="ml-auto inline-flex items-center gap-2 rounded-md border border-border bg-white/5 px-2.5 py-1 text-[11px] text-muted-strong">
+          <div className="ml-auto inline-flex items-center gap-2 rounded-md border border-white/[0.06] bg-white/5 px-2.5 py-1 text-[11px] text-muted-strong">
             <Search size={11} />
             findely.app / search
           </div>
         </div>
 
-        <div className="relative z-[2] flex flex-wrap items-center gap-3 border-b border-border px-6 py-4 text-sm">
-          <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-white/5 px-3 py-1.5">
+        <div className="relative z-[2] flex flex-wrap items-center gap-3 border-b border-white/[0.06] px-6 py-4 text-sm">
+          <div className="inline-flex items-center gap-2 rounded-lg border border-white/[0.06] bg-white/5 px-3 py-1.5">
             <Search size={13} className="text-muted" />
             <span className="text-foreground">restaurants</span>
           </div>
-          <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-white/5 px-3 py-1.5">
+          <div className="inline-flex items-center gap-2 rounded-lg border border-white/[0.06] bg-white/5 px-3 py-1.5">
             <MapPin size={13} className="text-muted" />
             <span className="text-foreground">Paris, France</span>
           </div>

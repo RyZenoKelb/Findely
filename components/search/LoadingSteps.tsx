@@ -33,7 +33,7 @@ export function LoadingSteps({ running }: { running: boolean }) {
   if (!running) return null;
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-5">
+    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
       <div className="flex items-center gap-2 text-sm font-medium text-foreground">
         <Loader2 size={14} className="animate-spin text-accent" />
         Finding leads…
@@ -57,7 +57,7 @@ export function LoadingSteps({ running }: { running: boolean }) {
                     ? "border-success/40 bg-success/10 text-success"
                     : current
                       ? "border-accent/40 bg-accent/10 text-accent-strong"
-                      : "border-border bg-surface-2 text-muted"
+                      : "border-white/[0.06] bg-white/[0.04] text-muted"
                 )}
               >
                 {done ? (

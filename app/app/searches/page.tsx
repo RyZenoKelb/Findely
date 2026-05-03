@@ -49,7 +49,7 @@ export default function SearchesPage() {
 
   if (searches.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-border bg-surface/50 p-10 text-center">
+      <div className="rounded-xl border border-dashed border-white/[0.06] bg-white/[0.02] p-10 text-center">
         <h3 className="text-base font-semibold text-foreground">
           {locale === "fr"
             ? "Aucune recherche enregistrée."
@@ -69,8 +69,8 @@ export default function SearchesPage() {
   }
 
   return (
-    <div className="rounded-xl border border-border bg-surface">
-      <div className="flex items-center justify-between gap-2 border-b border-border px-5 py-3">
+    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02]">
+      <div className="flex items-center justify-between gap-2 border-b border-white/[0.06] px-5 py-3">
         <div className="flex items-center gap-2">
           <Clock size={14} className="text-muted" />
           <h3 className="text-sm font-semibold text-foreground">
@@ -85,7 +85,7 @@ export default function SearchesPage() {
         </div>
       </div>
 
-      <ul className="divide-y divide-border">
+      <ul className="divide-y divide-white/[0.06]">
         {searches.map((s) => (
           <li key={s.id} className="px-5 py-4">
             <div className="flex flex-wrap items-center justify-between gap-3">

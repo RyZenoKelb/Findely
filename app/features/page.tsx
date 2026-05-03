@@ -32,7 +32,7 @@ function DiscoveryChart() {
       {labels.map((l, i) => (
         <div
           key={l}
-          className="flex items-center gap-3 rounded-lg border border-border bg-white/5 px-4 py-2.5"
+          className="flex items-center gap-3 rounded-lg border border-white/[0.06] bg-white/[0.04] px-4 py-2.5"
         >
           <span className="inline-flex h-6 w-6 items-center justify-center rounded bg-accent/15 text-[11px] font-mono text-accent-cyan">
             {String(i + 1).padStart(2, "0")}
@@ -85,7 +85,7 @@ function SignalsChart() {
         <span
           key={s.label}
           className={cn(
-            "inline-flex items-center gap-1.5 rounded-full border border-border bg-white/5 px-3 py-1 text-xs",
+            "inline-flex items-center gap-1.5 rounded-full border border-white/[0.06] bg-white/[0.04] px-3 py-1 text-xs",
             s.tone
           )}
         >
@@ -116,7 +116,7 @@ function FiltersChart() {
           </span>
         ))}
       </div>
-      <div className="rounded-lg border border-border bg-white/5 p-4 text-xs">
+      <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-4 text-xs">
         <div className="flex items-center justify-between">
           <span className="text-muted">Minimum score</span>
           <span className="font-mono text-foreground">≥ 75</span>
@@ -132,8 +132,8 @@ function FiltersChart() {
 
 function ExportChart() {
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-white/5 font-mono text-[11px] text-muted-strong">
-      <div className="border-b border-border bg-black/20 px-3 py-2 text-foreground">
+    <div className="overflow-hidden rounded-lg border border-white/[0.06] bg-white/[0.04] font-mono text-[11px] text-muted-strong">
+      <div className="border-b border-white/[0.06] bg-black/20 px-3 py-2 text-foreground">
         findely-leads.csv
       </div>
       <pre className="overflow-x-auto px-3 py-3 leading-relaxed">
@@ -158,7 +158,7 @@ function ListsChart() {
       {lists.map((l) => (
         <div
           key={l.name}
-          className="flex items-center justify-between rounded-lg border border-border bg-white/5 px-4 py-2.5 text-sm"
+          className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.04] px-4 py-2.5 text-sm"
         >
           <span className="text-foreground">{l.name}</span>
           <span className="font-mono text-xs text-muted">{l.n}</span>
@@ -233,7 +233,7 @@ export default function FeaturesPage() {
                 </div>
                 <div className="relative">
                   <div className="bg-aurora pointer-events-none absolute -inset-8 opacity-60" />
-                  <div className="glow-accent relative rounded-2xl border border-border-strong bg-surface p-6">
+                  <div className="glow-accent relative rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6">
                     {b.chart}
                   </div>
                 </div>

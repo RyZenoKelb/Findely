@@ -20,7 +20,7 @@ export function AppShell({
       <Sidebar userEmail={userEmail} userPlan={userPlan} />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <Topbar />
-        <main className="flex-1 overflow-y-auto scrollbar-thin px-5 py-6 lg:px-8 lg:py-8">
+        <main className="flex-1 overflow-y-auto scrollbar-thin px-5 py-5 lg:px-8 lg:py-6">
           {children}
         </main>
       </div>

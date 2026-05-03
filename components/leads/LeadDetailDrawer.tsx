@@ -178,8 +178,8 @@ export function LeadDetailDrawer({
         onClick={onClose}
         aria-label="Close"
       />
-      <aside className="relative flex h-full w-full max-w-[520px] flex-col overflow-hidden border-l border-border bg-surface">
-        <div className="flex items-start justify-between gap-4 border-b border-border p-5">
+      <aside className="relative flex h-full w-full max-w-[520px] flex-col overflow-hidden border-l border-white/[0.06] bg-background">
+        <div className="flex items-start justify-between gap-4 border-b border-white/[0.06] p-5">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
               <Building2 size={12} /> {lead.category ?? "Business"} ·{" "}
@@ -202,7 +202,7 @@ export function LeadDetailDrawer({
           </div>
           <button
             onClick={onClose}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-strong hover:bg-surface-2"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.06] text-muted-strong hover:bg-white/[0.04]"
             aria-label="Close drawer"
           >
             <X size={16} />
@@ -241,7 +241,7 @@ export function LeadDetailDrawer({
           </section>
 
           {lead.description ? (
-            <section className="border-t border-border px-5 py-4">
+            <section className="border-t border-white/[0.06] px-5 py-4">
               <div className="text-xs font-medium uppercase tracking-wide text-muted">
                 About
               </div>
@@ -251,7 +251,7 @@ export function LeadDetailDrawer({
             </section>
           ) : null}
 
-          <section className="border-t border-border px-5 py-4">
+          <section className="border-t border-white/[0.06] px-5 py-4">
             <div className="text-xs font-medium uppercase tracking-wide text-muted">
               Signals
             </div>
@@ -265,13 +265,13 @@ export function LeadDetailDrawer({
           </section>
 
           {lead.opportunityType || lead.priorityLevel ? (
-            <section className="border-t border-border px-5 py-4">
+            <section className="border-t border-white/[0.06] px-5 py-4">
               <div className="text-xs font-medium uppercase tracking-wide text-muted">
                 Intelligence
               </div>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
                 {lead.priorityLevel ? (
-                  <div className="rounded-lg border border-border bg-surface-2 p-3">
+                  <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-3">
                     <div className="text-[11px] uppercase tracking-wide text-muted">
                       {locale === "fr" ? "Priorité" : "Priority"}
                     </div>
@@ -290,7 +290,7 @@ export function LeadDetailDrawer({
                   </div>
                 ) : null}
                 {lead.opportunityType ? (
-                  <div className="rounded-lg border border-border bg-surface-2 p-3">
+                  <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-3">
                     <div className="text-[11px] uppercase tracking-wide text-muted">
                       {locale === "fr" ? "Opportunité" : "Opportunity"}
                     </div>
@@ -303,7 +303,7 @@ export function LeadDetailDrawer({
                   </div>
                 ) : null}
                 {lead.dataQualityLevel ? (
-                  <div className="rounded-lg border border-border bg-surface-2 p-3">
+                  <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-3">
                     <div className="text-[11px] uppercase tracking-wide text-muted">
                       {locale === "fr" ? "Qualité des données" : "Data quality"}
                     </div>
@@ -313,7 +313,7 @@ export function LeadDetailDrawer({
                   </div>
                 ) : null}
                 {lead.contactReadinessLevel ? (
-                  <div className="rounded-lg border border-border bg-surface-2 p-3">
+                  <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-3">
                     <div className="text-[11px] uppercase tracking-wide text-muted">
                       {locale === "fr"
                         ? "Prêt à contacter"
@@ -337,7 +337,7 @@ export function LeadDetailDrawer({
               </div>
 
               {lead.scoreBreakdown && lead.scoreBreakdown.length > 0 ? (
-                <details className="group mt-3 rounded-lg border border-border bg-surface-2/60 px-3 py-2 text-xs">
+                <details className="group mt-3 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-xs">
                   <summary className="flex cursor-pointer list-none items-center justify-between text-muted-strong transition-colors hover:text-foreground">
                     <span className="inline-flex items-center gap-2">
                       <span className="font-mono text-[10px] text-accent-cyan">
@@ -351,7 +351,7 @@ export function LeadDetailDrawer({
                       ▾
                     </span>
                   </summary>
-                  <ul className="mt-2 divide-y divide-border/70">
+                  <ul className="mt-2 divide-y divide-white/[0.06]/70">
                     {lead.scoreBreakdown.map((f, i) => (
                       <li
                         key={`${f.label}-${i}`}
@@ -378,16 +378,16 @@ export function LeadDetailDrawer({
             </section>
           ) : null}
 
-          <section className="border-t border-border px-5 py-4">
+          <section className="border-t border-white/[0.06] px-5 py-4">
             <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted">
               <Sparkles size={12} /> {t.drawer.outreachAngle}
             </div>
-            <p className="mt-2 rounded-lg border border-border bg-surface-2 p-3 text-sm leading-relaxed text-foreground">
+            <p className="mt-2 rounded-lg border border-white/[0.06] bg-white/[0.04] p-3 text-sm leading-relaxed text-foreground">
               {angle}
             </p>
           </section>
 
-          <section className="border-t border-border px-5 py-4">
+          <section className="border-t border-white/[0.06] px-5 py-4">
             <Label htmlFor="notes">{t.drawer.notes}</Label>
             <Textarea
               id="notes"
@@ -410,7 +410,7 @@ export function LeadDetailDrawer({
             </div>
           </section>
 
-          <section className="border-t border-border px-5 py-4">
+          <section className="border-t border-white/[0.06] px-5 py-4">
             <div className="text-xs font-medium uppercase tracking-wide text-muted">
               {t.drawer.status}
             </div>
@@ -423,7 +423,7 @@ export function LeadDetailDrawer({
                     "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs transition-colors",
                     status === s.value
                       ? "border-accent/40 bg-accent/10 text-foreground"
-                      : "border-border bg-surface-2 text-muted-strong hover:bg-surface-3"
+                      : "border-white/[0.06] bg-white/[0.04] text-muted-strong hover:bg-white/[0.06]"
                   )}
                 >
                   {status === s.value ? (
@@ -437,7 +437,7 @@ export function LeadDetailDrawer({
             </div>
           </section>
 
-          <section className="border-t border-border px-5 py-4">
+          <section className="border-t border-white/[0.06] px-5 py-4">
             <div className="flex items-center justify-between">
               <div className="text-xs font-medium uppercase tracking-wide text-muted">
                 {t.drawer.saveToList}
@@ -459,7 +459,7 @@ export function LeadDetailDrawer({
                   <button
                     key={l.id}
                     onClick={() => handleAddToList(l.id)}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-2.5 py-1 text-xs text-muted-strong hover:border-accent/40 hover:text-foreground"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.06] bg-white/[0.04] px-2.5 py-1 text-xs text-muted-strong hover:border-accent/40 hover:text-foreground"
                   >
                     {displayListName(l.name, locale)}
                     <span className="text-[10px] text-muted">
@@ -472,7 +472,7 @@ export function LeadDetailDrawer({
           </section>
         </div>
 
-        <div className="flex items-center justify-between gap-2 border-t border-border px-5 py-3">
+        <div className="flex items-center justify-between gap-2 border-t border-white/[0.06] px-5 py-3">
           <Button
             variant="ghost"
             size="sm"
@@ -523,7 +523,7 @@ function Row({
   copied?: boolean;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-surface-2 p-3">
+    <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-3">
       <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-muted">
         {icon} {label}
       </div>
@@ -549,7 +549,7 @@ function Row({
         {value && onCopy ? (
           <button
             onClick={onCopy}
-            className="inline-flex h-6 w-6 flex-none items-center justify-center rounded-md border border-border text-muted-strong hover:bg-surface-3"
+            className="inline-flex h-6 w-6 flex-none items-center justify-center rounded-md border border-white/[0.06] text-muted-strong hover:bg-white/[0.06]"
             aria-label={`Copy ${label}`}
           >
             {copied ? <Check size={12} /> : <Copy size={12} />}

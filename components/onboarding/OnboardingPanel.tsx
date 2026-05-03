@@ -117,7 +117,7 @@ export function OnboardingPanel({
   return (
     <section
       className={cn(
-        "relative overflow-hidden rounded-2xl border border-border-strong bg-gradient-to-br from-accent/[0.08] via-surface to-surface p-6 glow-accent",
+        "relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-accent/[0.08] via-surface to-surface p-6 glow-accent",
         className
       )}
     >
@@ -125,7 +125,7 @@ export function OnboardingPanel({
         type="button"
         onClick={handleDismiss}
         aria-label={o.skip}
-        className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-md text-muted hover:bg-white/5 hover:text-foreground"
+        className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-md text-muted hover:bg-white/[0.04] hover:text-foreground"
       >
         <X size={14} />
       </button>
@@ -146,7 +146,7 @@ export function OnboardingPanel({
               key={tpl.title}
               href={href(tpl)}
               onClick={handleDismiss}
-              className="group relative flex flex-col rounded-xl border border-border bg-surface-2/60 p-4 transition-colors hover:border-border-strong hover:bg-surface-2"
+              className="group relative flex flex-col rounded-xl border border-white/[0.06] bg-white/[0.03] p-4 transition-colors hover:border-white/[0.1] hover:bg-white/[0.04]"
             >
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-accent/15 text-accent-strong">
                 <Icon size={14} />
