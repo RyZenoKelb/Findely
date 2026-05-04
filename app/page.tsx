@@ -27,7 +27,9 @@ export default function LandingPage() {
         <Pricing />
         <ClosingBand />
       </main>
-      <Footer />
+      <div className="relative z-10">
+        <Footer />
+      </div>
     </div>
   );
 }

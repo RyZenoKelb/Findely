@@ -33,6 +33,10 @@ export const metadata: Metadata = {
     "outbound sales",
   ],
   authors: [{ name: "Findely" }],
+  icons: {
+    icon: "/brand/findely-app-icon.png",
+    apple: "/brand/findely-app-icon.png",
+  },
   openGraph: {
     title: "Findely — Find targeted leads in seconds",
     description:

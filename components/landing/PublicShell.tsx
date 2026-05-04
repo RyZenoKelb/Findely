@@ -8,7 +8,9 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
       <PublicBackground />
       <NavBar />
       <main className="relative z-10 flex-1">{children}</main>
-      <Footer />
+      <div className="relative z-10">
+        <Footer />
+      </div>
     </div>
   );
 }
