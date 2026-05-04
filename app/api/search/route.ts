@@ -180,15 +180,9 @@ export async function POST(request: Request) {
   const requestedButMissing = requestedSources.filter(
     (id) => !providers.some((p) => p.id === id)
   );
-  const googleRequested = requestedSources.includes("google_maps");
-  const googleDelivered = providersWithResults.some(
-    (p) => p.id === "google_maps"
-  );
-  // If Google Places was asked for but produced nothing (error, missing key, no
-  // results), silently fall back to the mock provider so the UI still works.
-  let fallbackUsed = googleRequested && !googleDelivered;
+  let fallbackUsed = false;
   let supplementedLeads = rawLeads;
-  if (fallbackUsed || rawLeads.length === 0) {
+  if (rawLeads.length === 0) {
     try {
       const { mockSource } = await import("@/lib/sources/mockSource");
       const mockLeads = await mockSource.search({
