@@ -118,15 +118,14 @@ export function localizedSource(
         return {
           name: "Recherche Google",
           description:
-            "Résultats de recherche organiques pour votre niche et votre zone.",
-          badge: "Bientôt",
+            "Résultats organiques pour votre niche et votre zone.",
         };
+      case "business_directories":
       case "directory":
         return {
           name: "Annuaires professionnels",
           description:
-            "Pages Jaunes, annuaires locaux et annuaires sectoriels.",
-          badge: "Bientôt",
+            "Fiches issues d'annuaires professionnels publics.",
         };
       case "mock":
         return {
@@ -148,15 +147,15 @@ export function localizedSource(
       case "google_search":
         return {
           name: "Google Search",
-          description: "Organic search results for your niche and location.",
-          badge: "Soon",
+          description:
+            "Organic search results for your niche and location.",
         };
+      case "business_directories":
       case "directory":
         return {
-          name: "Business directories",
+          name: "Business Directories",
           description:
-            "Yellow Pages, local directories, and industry directories.",
-          badge: "Soon",
+            "Directory listings from public business directories.",
         };
       case "mock":
         return {

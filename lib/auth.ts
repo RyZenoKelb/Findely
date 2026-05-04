@@ -60,7 +60,9 @@ export async function getCurrentUserProfile(): Promise<UserProfile | null> {
     .maybeSingle();
 
   if (error || !data) return null;
-  return { ...data, plan: normalizePlan(data.plan) };
+  const planOverride = process.env.FINDELY_DEV_PLAN_OVERRIDE;
+  const plan = planOverride ? normalizePlan(planOverride) : normalizePlan(data.plan);
+  return { ...data, plan };
 }
 
 /** Shortcut — returns the plan id, defaulting to "free". */
