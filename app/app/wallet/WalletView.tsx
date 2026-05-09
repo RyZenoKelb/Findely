@@ -28,16 +28,13 @@ import {
 
 export default function WalletView() {
   const { locale } = useI18n();
-  const [credits, setCredits] = React.useState(0);
+  const [credits, setCredits] = React.useState(() =>
+    typeof window !== "undefined" ? getBalance().credits : 0
+  );
   const [transactions, setTransactions] = React.useState<WalletTransaction[]>(
-    []
+    () => (typeof window !== "undefined" ? getTransactions() : [])
   );
   const [purchaseToast, setPurchaseToast] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    setCredits(getBalance().credits);
-    setTransactions(getTransactions());
-  }, []);
 
   React.useEffect(() => {
     if (!purchaseToast) return;
@@ -73,6 +70,13 @@ export default function WalletView() {
             ? "Gérez vos crédits et rechargez votre solde."
             : "Manage your credits and top up your balance."}
         </p>
+      </div>
+
+      {/* Simulation banner */}
+      <div className="rounded-lg border border-warning/30 bg-warning/10 px-4 py-2.5 text-xs text-warning">
+        {locale === "fr"
+          ? "Mode simulation — les crédits réels seront activés avec Stripe/Supabase. Les boutons ci-dessous simulent un achat sans paiement réel."
+          : "Simulation mode — real credits will be enabled with Stripe/Supabase. Buttons below simulate a purchase without real payment."}
       </div>
 
       {/* Balance card */}
@@ -177,7 +181,7 @@ export default function WalletView() {
                   variant={pack.popular ? "primary" : "outline"}
                   onClick={() => handlePurchase(pack)}
                 >
-                  {locale === "fr" ? "Acheter" : "Buy"}
+                  {locale === "fr" ? "Simuler l'achat" : "Simulate"}
                 </Button>
               </div>
               <div className="mt-1 text-[10px] text-muted">

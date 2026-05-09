@@ -113,6 +113,8 @@ export interface Dict {
     upgradeCopy: string;
     viewUsage: string;
     workspace: string;
+    geoSearch?: string;
+    wallet?: string;
   };
   topbar: {
     demo: string;
@@ -580,6 +582,8 @@ const en: Dict = {
     upgradeCopy: "Upgrade to Pro for all sources and unlimited scoring.",
     viewUsage: "View usage",
     workspace: "Workspace",
+    geoSearch: "Geo Search",
+    wallet: "Wallet",
   },
   topbar: {
     demo: "Demo mode",
@@ -1108,6 +1112,8 @@ const fr: Dict = {
     upgradeCopy: "Passez à Pro pour toutes les sources et un scoring illimité.",
     viewUsage: "Voir l’usage",
     workspace: "Espace de travail",
+    geoSearch: "Recherche géo",
+    wallet: "Wallet",
   },
   topbar: {
     demo: "Mode démo",

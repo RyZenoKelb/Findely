@@ -3,7 +3,6 @@
 import {
   Building2,
   Filter,
-  Globe,
   RotateCcw,
   Share2,
   Sparkles,
@@ -37,10 +36,14 @@ export function AdvancedFiltersDrawer({
 }: Props) {
   const { locale } = useI18n();
   const [local, setLocal] = React.useState<AdvancedFilterState>(filters);
-
-  React.useEffect(() => {
-    if (open) setLocal(filters);
-  }, [open, filters]);
+  const [prevOpen, setPrevOpen] = React.useState(open);
+  if (open && !prevOpen) {
+    setPrevOpen(true);
+    setLocal(filters);
+  }
+  if (!open && prevOpen) {
+    setPrevOpen(false);
+  }
 
   function patch<K extends keyof AdvancedFilterState>(
     key: K,
@@ -90,6 +93,7 @@ export function AdvancedFiltersDrawer({
         </div>
 
         <div className="flex-1 overflow-y-auto scrollbar-thin px-5 py-5 space-y-6">
+          {/* Active filters — these work now */}
           <FilterGroup
             icon={<Building2 size={13} />}
             title={locale === "fr" ? "Données business" : "Business Data"}
@@ -106,109 +110,11 @@ export function AdvancedFiltersDrawer({
               onChange={(v) => patch("hasPhone", v)}
               locale={locale}
             />
-            <TriSelect
-              label="Email"
-              value={local.hasEmail}
-              onChange={(v) => patch("hasEmail", v)}
-              locale={locale}
-              disabled
-              hint={
-                locale === "fr"
-                  ? "Disponible avec enrichissement"
-                  : "Available with enrichment"
-              }
-            />
-            <div>
-              <Label className="text-xs text-muted-strong">
-                {locale === "fr" ? "Type de téléphone" : "Phone type"}
-              </Label>
-              <div className="mt-1 flex flex-wrap gap-1">
-                {(["all", "landline", "mobile", "other"] as const).map(
-                  (v) => (
-                    <ChipButton
-                      key={v}
-                      active={local.phoneType === v}
-                      onClick={() => patch("phoneType", v)}
-                      disabled={v !== "all"}
-                    >
-                      {v === "all"
-                        ? locale === "fr"
-                          ? "Tous"
-                          : "All"
-                        : v === "landline"
-                          ? locale === "fr"
-                            ? "Fixe"
-                            : "Landline"
-                          : v === "mobile"
-                            ? "Mobile"
-                            : locale === "fr"
-                              ? "Autre"
-                              : "Other"}
-                    </ChipButton>
-                  )
-                )}
-              </div>
-              <p className="mt-1 text-[10px] text-muted">
-                {locale === "fr"
-                  ? "Disponible avec enrichissement"
-                  : "Available with site enrichment"}
-              </p>
-            </div>
-            <TriSelect
-              label={
-                locale === "fr"
-                  ? "Fermé définitivement"
-                  : "Permanently closed"
-              }
-              value={local.permanentlyClosed}
-              onChange={(v) => patch("permanentlyClosed", v)}
-              locale={locale}
-              disabled
-              hint={
-                locale === "fr"
-                  ? "Disponible avec enrichissement"
-                  : "Available with enrichment"
-              }
-            />
-          </FilterGroup>
-
-          <FilterGroup
-            icon={<Share2 size={13} />}
-            title={
-              locale === "fr" ? "Présence en ligne" : "Online Presence"
-            }
-          >
-            {(
-              [
-                { key: "hasFacebook", label: "Facebook" },
-                { key: "hasInstagram", label: "Instagram" },
-                { key: "hasYouTube", label: "YouTube" },
-                { key: "hasTwitter", label: "Twitter / X" },
-                { key: "hasLinkedIn", label: "LinkedIn" },
-                { key: "hasTikTok", label: "TikTok" },
-              ] as const
-            ).map(({ key, label }) => (
-              <TriSelect
-                key={key}
-                label={label}
-                value={local[key]}
-                onChange={(v) => patch(key, v)}
-                locale={locale}
-                disabled
-                hint={
-                  locale === "fr"
-                    ? "Disponible avec enrichissement"
-                    : "Available with enrichment"
-                }
-              />
-            ))}
           </FilterGroup>
 
           <FilterGroup
             icon={<Star size={13} />}
-            title={
-              locale === "fr" ? "Qualité & signaux" : "Quality & Signals"
-            }
+            title={locale === "fr" ? "Qualité & signaux" : "Quality & Signals"}
           >
             <RangeRow
               label={locale === "fr" ? "Note Google" : "Google Rating"}
@@ -244,19 +150,13 @@ export function AdvancedFiltersDrawer({
               placeholder={{ min: "0", max: "100" }}
             />
             <TriSelect
-              label={
-                locale === "fr" ? "Prêt à contacter" : "Outreach ready"
-              }
+              label={locale === "fr" ? "Prêt à contacter" : "Outreach ready"}
               value={local.outreachReady}
               onChange={(v) => patch("outreachReady", v)}
               locale={locale}
             />
             <TriSelect
-              label={
-                locale === "fr"
-                  ? "Présence web à améliorer"
-                  : "Needs web presence"
-              }
+              label={locale === "fr" ? "Présence web à améliorer" : "Needs web presence"}
               value={local.needsWebPresence}
               onChange={(v) => patch("needsWebPresence", v)}
               locale={locale}
@@ -268,68 +168,15 @@ export function AdvancedFiltersDrawer({
               locale={locale}
             />
             <TriSelect
-              label={
-                locale === "fr" ? "Contact manquant" : "Missing contact"
-              }
+              label={locale === "fr" ? "Contact manquant" : "Missing contact"}
               value={local.missingContact}
               onChange={(v) => patch("missingContact", v)}
               locale={locale}
             />
           </FilterGroup>
 
-          <FilterGroup
-            icon={<Globe size={13} />}
-            title={
-              locale === "fr"
-                ? "Détection site web"
-                : "Website Detection"
-            }
-          >
-            <TriSelect
-              label={
-                locale === "fr"
-                  ? "Formulaire de contact"
-                  : "Contact form"
-              }
-              value={local.hasContactForm}
-              onChange={(v) => patch("hasContactForm", v)}
-              locale={locale}
-              disabled
-              hint={
-                locale === "fr"
-                  ? "Disponible avec enrichissement"
-                  : "Available with enrichment"
-              }
-            />
-            <TriSelect
-              label={
-                locale === "fr"
-                  ? "Pixel publicitaire"
-                  : "Ad pixel detected"
-              }
-              value={local.hasAdPixel}
-              onChange={(v) => patch("hasAdPixel", v)}
-              locale={locale}
-              disabled
-              hint={
-                locale === "fr"
-                  ? "Disponible avec enrichissement"
-                  : "Available with enrichment"
-              }
-            />
-            <div>
-              <Label className="text-xs text-muted-strong">
-                {locale === "fr"
-                  ? "Technologies détectées"
-                  : "Detected technologies"}
-              </Label>
-              <p className="mt-1 text-[10px] text-muted">
-                {locale === "fr"
-                  ? "Disponible avec enrichissement du site"
-                  : "Available with site enrichment"}
-              </p>
-            </div>
-          </FilterGroup>
+          {/* Unavailable filters — clearly separated */}
+          <EnrichmentSection locale={locale} />
         </div>
 
         <div className="flex items-center justify-between gap-3 border-t border-white/[0.06] px-5 py-4">
@@ -353,6 +200,71 @@ export function AdvancedFiltersDrawer({
         </div>
       </aside>
     </>
+  );
+}
+
+function EnrichmentSection({ locale }: { locale: "en" | "fr" }) {
+  const [open, setOpen] = React.useState(false);
+
+  const items = [
+    locale === "fr" ? "Email" : "Email",
+    locale === "fr" ? "Type de téléphone" : "Phone type",
+    locale === "fr" ? "Fermé définitivement" : "Permanently closed",
+    "Facebook",
+    "Instagram",
+    "YouTube",
+    "Twitter / X",
+    "LinkedIn",
+    "TikTok",
+    locale === "fr" ? "Formulaire de contact" : "Contact form",
+    locale === "fr" ? "Pixel publicitaire" : "Ad pixel",
+    locale === "fr" ? "Technologies du site" : "Site technologies",
+  ];
+
+  return (
+    <div className="rounded-xl border border-dashed border-white/[0.06] bg-white/[0.01]">
+      <button
+        type="button"
+        onClick={() => setOpen((s) => !s)}
+        className="flex w-full items-center justify-between px-4 py-3 text-left"
+      >
+        <div className="flex items-center gap-2">
+          <Share2 size={12} className="text-muted" />
+          <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted">
+            {locale === "fr"
+              ? "Enrichissement requis"
+              : "Enrichment Required"}
+          </span>
+          <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] text-muted">
+            {items.length}
+          </span>
+        </div>
+        <span className="text-[10px] text-muted">
+          {open
+            ? locale === "fr" ? "Masquer" : "Hide"
+            : locale === "fr" ? "Voir" : "Show"}
+        </span>
+      </button>
+      {open ? (
+        <div className="border-t border-white/[0.04] px-4 pb-4 pt-3">
+          <p className="mb-3 text-[11px] leading-relaxed text-muted">
+            {locale === "fr"
+              ? "Ces filtres nécessitent un module d'enrichissement (scraping site, réseaux sociaux). Ils seront activés dans une prochaine version."
+              : "These filters require an enrichment module (site scraping, social networks). They will be enabled in a future release."}
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {items.map((item) => (
+              <span
+                key={item}
+                className="inline-flex items-center gap-1 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1 text-[11px] text-muted opacity-60"
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -482,31 +394,3 @@ function RangeRow({
   );
 }
 
-function ChipButton({
-  active,
-  disabled,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  disabled?: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={cn(
-        "rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors",
-        active
-          ? "border-accent/40 bg-accent/15 text-accent-cyan"
-          : "border-white/[0.06] bg-white/[0.02] text-muted-strong",
-        disabled && "cursor-not-allowed opacity-50"
-      )}
-    >
-      {children}
-    </button>
-  );
-}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, RotateCcw, X } from "lucide-react";
+import { Download, X } from "lucide-react";
 import * as React from "react";
 import { Button } from "@/components/ui/Button";
 import { Input, Label } from "@/components/ui/Field";
@@ -14,46 +14,46 @@ import { cn } from "@/lib/utils";
 
 export interface ExportColumn {
   key: string;
-  label: string;
+  label: { en: string; fr: string };
   group: string;
   defaultOn: boolean;
   getValue: (lead: Lead) => string;
 }
 
 const EXPORT_COLUMNS: ExportColumn[] = [
-  { key: "name", label: "Name", group: "core", defaultOn: true, getValue: (l) => l.name },
-  { key: "category", label: "Category", group: "core", defaultOn: true, getValue: (l) => l.category ?? "" },
-  { key: "placeId", label: "Google Place ID", group: "core", defaultOn: false, getValue: (l) => l.id },
-  { key: "mapsUrl", label: "Google Maps URL", group: "core", defaultOn: true, getValue: (l) => l.mapsUrl ?? "" },
-  { key: "phone", label: "Phone", group: "contact", defaultOn: true, getValue: (l) => l.phone ?? "" },
-  { key: "website", label: "Website", group: "contact", defaultOn: true, getValue: (l) => l.website ?? "" },
-  { key: "address", label: "Address", group: "contact", defaultOn: true, getValue: (l) => l.address ?? "" },
-  { key: "geo", label: "Coordinates", group: "contact", defaultOn: false, getValue: (l) => l.geo ? `${l.geo.lat},${l.geo.lng}` : "" },
-  { key: "rating", label: "Rating", group: "quality", defaultOn: true, getValue: (l) => typeof l.rating === "number" ? String(l.rating) : "" },
-  { key: "ratingCount", label: "Review Count", group: "quality", defaultOn: true, getValue: (l) => typeof l.ratingCount === "number" ? String(l.ratingCount) : "" },
-  { key: "score", label: "Score Findely", group: "quality", defaultOn: true, getValue: (l) => String(l.score) },
-  { key: "priorityLabel", label: "Priority", group: "quality", defaultOn: true, getValue: (l) => l.priorityLabel ?? "" },
-  { key: "dataQuality", label: "Data Quality", group: "quality", defaultOn: false, getValue: (l) => l.dataQualityLabel ?? "" },
-  { key: "contactReadiness", label: "Contact Readiness", group: "quality", defaultOn: false, getValue: (l) => l.contactReadinessLabel ?? "" },
-  { key: "opportunityType", label: "Opportunity Type", group: "opportunity", defaultOn: true, getValue: (l) => l.opportunityType ?? "" },
-  { key: "opportunityReason", label: "Opportunity Reason", group: "opportunity", defaultOn: false, getValue: (l) => l.opportunityReason ?? "" },
-  { key: "recommendedAction", label: "Recommended Action", group: "opportunity", defaultOn: true, getValue: (l) => l.recommendedAction ?? "" },
-  { key: "signals", label: "Signals", group: "signals", defaultOn: true, getValue: (l) => l.signals.join("|") },
-  { key: "source", label: "Source", group: "meta", defaultOn: true, getValue: (l) => l.source },
-  { key: "dataType", label: "Data Type", group: "meta", defaultOn: false, getValue: (l) => leadDataType(l) },
-  { key: "status", label: "Status", group: "meta", defaultOn: true, getValue: (l) => l.status ?? "new" },
-  { key: "notes", label: "Notes", group: "meta", defaultOn: false, getValue: (l) => l.notes ?? "" },
-  { key: "createdAt", label: "Created At", group: "meta", defaultOn: false, getValue: (l) => l.createdAt },
-  { key: "exportedAt", label: "Exported At", group: "meta", defaultOn: false, getValue: (l) => l.exportedAt ?? "" },
+  { key: "name", label: { en: "Name", fr: "Nom" }, group: "core", defaultOn: true, getValue: (l) => l.name },
+  { key: "category", label: { en: "Category", fr: "Catégorie" }, group: "core", defaultOn: true, getValue: (l) => l.category ?? "" },
+  { key: "placeId", label: { en: "Google Place ID", fr: "Google Place ID" }, group: "core", defaultOn: false, getValue: (l) => l.id },
+  { key: "mapsUrl", label: { en: "Google Maps URL", fr: "Lien Google Maps" }, group: "core", defaultOn: true, getValue: (l) => l.mapsUrl ?? "" },
+  { key: "phone", label: { en: "Phone", fr: "Téléphone" }, group: "contact", defaultOn: true, getValue: (l) => l.phone ?? "" },
+  { key: "website", label: { en: "Website", fr: "Site internet" }, group: "contact", defaultOn: true, getValue: (l) => l.website ?? "" },
+  { key: "address", label: { en: "Address", fr: "Adresse" }, group: "contact", defaultOn: true, getValue: (l) => l.address ?? "" },
+  { key: "geo", label: { en: "Coordinates", fr: "Coordonnées" }, group: "contact", defaultOn: false, getValue: (l) => l.geo ? `${l.geo.lat},${l.geo.lng}` : "" },
+  { key: "rating", label: { en: "Rating", fr: "Note" }, group: "quality", defaultOn: true, getValue: (l) => typeof l.rating === "number" ? String(l.rating) : "" },
+  { key: "ratingCount", label: { en: "Review Count", fr: "Nombre d'avis" }, group: "quality", defaultOn: true, getValue: (l) => typeof l.ratingCount === "number" ? String(l.ratingCount) : "" },
+  { key: "score", label: { en: "Score Findely", fr: "Score Findely" }, group: "quality", defaultOn: true, getValue: (l) => String(l.score) },
+  { key: "priorityLabel", label: { en: "Priority", fr: "Priorité" }, group: "quality", defaultOn: true, getValue: (l) => l.priorityLabel ?? "" },
+  { key: "dataQuality", label: { en: "Data Quality", fr: "Qualité données" }, group: "quality", defaultOn: false, getValue: (l) => l.dataQualityLabel ?? "" },
+  { key: "contactReadiness", label: { en: "Contact Readiness", fr: "Prêt au contact" }, group: "quality", defaultOn: false, getValue: (l) => l.contactReadinessLabel ?? "" },
+  { key: "opportunityType", label: { en: "Opportunity Type", fr: "Type d'opportunité" }, group: "opportunity", defaultOn: true, getValue: (l) => l.opportunityType ?? "" },
+  { key: "opportunityReason", label: { en: "Opportunity Reason", fr: "Raison d'opportunité" }, group: "opportunity", defaultOn: false, getValue: (l) => l.opportunityReason ?? "" },
+  { key: "recommendedAction", label: { en: "Recommended Action", fr: "Action recommandée" }, group: "opportunity", defaultOn: true, getValue: (l) => l.recommendedAction ?? "" },
+  { key: "signals", label: { en: "Signals", fr: "Signaux" }, group: "signals", defaultOn: true, getValue: (l) => l.signals.join("|") },
+  { key: "source", label: { en: "Source", fr: "Source" }, group: "meta", defaultOn: true, getValue: (l) => l.source },
+  { key: "dataType", label: { en: "Data Type", fr: "Type de donnée" }, group: "meta", defaultOn: false, getValue: (l) => leadDataType(l) },
+  { key: "status", label: { en: "Status", fr: "Statut" }, group: "meta", defaultOn: true, getValue: (l) => l.status ?? "new" },
+  { key: "notes", label: { en: "Notes", fr: "Notes" }, group: "meta", defaultOn: false, getValue: (l) => l.notes ?? "" },
+  { key: "createdAt", label: { en: "Created At", fr: "Créé le" }, group: "meta", defaultOn: false, getValue: (l) => l.createdAt },
+  { key: "exportedAt", label: { en: "Exported At", fr: "Exporté le" }, group: "meta", defaultOn: false, getValue: (l) => l.exportedAt ?? "" },
 ];
 
-const GROUPS = [
-  { key: "core", label: "Core" },
-  { key: "contact", label: "Contact" },
-  { key: "quality", label: "Quality" },
-  { key: "opportunity", label: "Opportunity" },
-  { key: "signals", label: "Signals" },
-  { key: "meta", label: "Metadata" },
+const GROUPS: { key: string; label: { en: string; fr: string } }[] = [
+  { key: "core", label: { en: "Core", fr: "Essentiel" } },
+  { key: "contact", label: { en: "Contact", fr: "Contact" } },
+  { key: "quality", label: { en: "Quality", fr: "Qualité" } },
+  { key: "opportunity", label: { en: "Opportunity", fr: "Opportunité" } },
+  { key: "signals", label: { en: "Signals", fr: "Signaux" } },
+  { key: "meta", label: { en: "Metadata", fr: "Métadonnées" } },
 ];
 
 interface Props {
@@ -92,12 +92,14 @@ export function AdvancedExportDrawer({
   const [limit, setLimit] = React.useState<number | null>(null);
   const [onlySelected, setOnlySelected] = React.useState(false);
   const [excludeExported, setExcludeExported] = React.useState(false);
-
-  React.useEffect(() => {
-    if (open) {
-      setFilename(buildExportFilename({ businessType, location }));
-    }
-  }, [open, businessType, location]);
+  const [prevOpen, setPrevOpen] = React.useState(open);
+  if (open && !prevOpen) {
+    setPrevOpen(true);
+    setFilename(buildExportFilename({ businessType, location }));
+  }
+  if (!open && prevOpen) {
+    setPrevOpen(false);
+  }
 
   function toggleColumn(key: string) {
     setColumns((prev) => {
@@ -131,7 +133,7 @@ export function AdvancedExportDrawer({
     }
 
     const activeCols = EXPORT_COLUMNS.filter((c) => columns.has(c.key));
-    const headers = activeCols.map((c) => c.label);
+    const headers = activeCols.map((c) => c.label[locale]);
     const rows = data.map((lead) =>
       activeCols.map((c) => csvEscape(c.getValue(lead))).join(",")
     );
@@ -281,7 +283,7 @@ export function AdvancedExportDrawer({
                   className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3"
                 >
                   <div className="mb-2 text-[10px] font-medium uppercase tracking-wide text-muted">
-                    {group.label}
+                    {group.label[locale]}
                   </div>
                   <div className="grid grid-cols-2 gap-1.5">
                     {groupCols.map((col) => (
@@ -298,7 +300,7 @@ export function AdvancedExportDrawer({
                           checked={columns.has(col.key)}
                           onCheckedChange={() => toggleColumn(col.key)}
                         />
-                        {col.label}
+                        {col.label[locale]}
                       </label>
                     ))}
                   </div>

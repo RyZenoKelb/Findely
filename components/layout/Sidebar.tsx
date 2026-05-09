@@ -64,7 +64,7 @@ export function Sidebar({ userEmail = null, userPlan = null }: SidebarProps = {}
     { href: "/app/search", label: t.sidebar.newSearch, icon: Search },
     {
       href: "/app/geo",
-      label: (t.sidebar as Record<string, string>).geoSearch ?? "Geo Search",
+      label: t.sidebar.geoSearch ?? "Geo Search",
       icon: MapPin,
     },
     { href: "/app/lists", label: t.sidebar.leadLists, icon: ListChecks },
@@ -76,7 +76,7 @@ export function Sidebar({ userEmail = null, userPlan = null }: SidebarProps = {}
     { href: "/app/usage", label: t.sidebar.usage, icon: Gauge },
     {
       href: "/app/wallet",
-      label: (t.sidebar as Record<string, string>).wallet ?? "Wallet",
+      label: t.sidebar.wallet ?? "Wallet",
       icon: CreditCard,
     },
     ...(canUseApi

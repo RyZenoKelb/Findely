@@ -19,11 +19,10 @@ import {
   type GeoZone,
   type LatLng,
   circleAreaKm2,
-  pointInZone,
   polygonAreaKm2,
 } from "@/lib/geo";
 import { useI18n } from "@/lib/i18n";
-import type { Lead, SearchResponse } from "@/lib/leadTypes";
+import type { Lead } from "@/lib/leadTypes";
 import { annotateSeen, markSeen } from "@/lib/seenLeads";
 import { bumpUsage, saveLeads } from "@/lib/storage";
 import { cn } from "@/lib/utils";
@@ -39,7 +38,6 @@ interface GeoState {
   center: LatLng | null;
   radiusKm: number;
   polygonPoints: LatLng[];
-  zone: GeoZone | null;
 }
 
 const DEFAULT_STATE: GeoState = {
@@ -51,7 +49,6 @@ const DEFAULT_STATE: GeoState = {
   center: null,
   radiusKm: 5,
   polygonPoints: [],
-  zone: null,
 };
 
 export default function GeoSearchView({ authed }: { authed: boolean }) {
@@ -60,6 +57,12 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
   const [leads, setLeads] = React.useState<Lead[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [geoMeta, setGeoMeta] = React.useState<{
+    total: number;
+    rawResultsCount: number;
+    filteredByZoneCount: number;
+    durationMs: number;
+  } | null>(null);
   const [mapReady, setMapReady] = React.useState(false);
   const mapRef = React.useRef<HTMLDivElement>(null);
   const googleMapRef = React.useRef<google.maps.Map | null>(null);
@@ -73,11 +76,12 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
 
   React.useEffect(() => {
     if (typeof window === "undefined") return;
-    const apiKey = getGoogleMapsKey();
-    if (!apiKey) return;
+    const key = getGoogleMapsKey();
+    if (!key) return;
 
     if (window.google?.maps) {
-      setMapReady(true);
+      // Already loaded — schedule outside effect body to satisfy lint
+      queueMicrotask(() => setMapReady(true));
       return;
     }
 
@@ -90,7 +94,7 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
     }
 
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=drawing,geometry,places`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=drawing,geometry,places`;
     script.async = true;
     script.defer = true;
     script.onload = () => setMapReady(true);
@@ -129,6 +133,16 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
     });
   }, [mapReady]);
 
+  const computedZone = React.useMemo<GeoZone | null>(() => {
+    if (state.drawMode === "radius" && state.center) {
+      return { type: "radius", circle: { center: state.center, radiusKm: state.radiusKm } };
+    }
+    if (state.drawMode === "polygon" && state.polygonPoints.length >= 3) {
+      return { type: "polygon", polygon: { points: state.polygonPoints } };
+    }
+    return null;
+  }, [state.center, state.radiusKm, state.polygonPoints, state.drawMode]);
+
   React.useEffect(() => {
     if (!googleMapRef.current) return;
 
@@ -164,12 +178,6 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
       markerRef.current = marker;
 
       googleMapRef.current.fitBounds(circle.getBounds()!);
-
-      const zone: GeoZone = {
-        type: "radius",
-        circle: { center: state.center, radiusKm: state.radiusKm },
-      };
-      setState((s) => ({ ...s, zone }));
     } else if (
       state.drawMode === "polygon" &&
       state.polygonPoints.length >= 3
@@ -188,16 +196,7 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
       const bounds = new google.maps.LatLngBounds();
       state.polygonPoints.forEach((p) => bounds.extend(p));
       googleMapRef.current.fitBounds(bounds);
-
-      const zone: GeoZone = {
-        type: "polygon",
-        polygon: { points: state.polygonPoints },
-      };
-      setState((s) => ({ ...s, zone }));
-    } else {
-      setState((s) => ({ ...s, zone: null }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.center, state.radiusKm, state.polygonPoints, state.drawMode]);
 
   async function geocodeLocation() {
@@ -225,7 +224,6 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
       ...s,
       center: null,
       polygonPoints: [],
-      zone: null,
     }));
   }
 
@@ -238,7 +236,7 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
       );
       return;
     }
-    if (!state.zone) {
+    if (!computedZone) {
       setError(
         locale === "fr"
           ? "Définissez une zone sur la carte"
@@ -249,46 +247,55 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
 
     setLoading(true);
     setError(null);
+    setGeoMeta(null);
 
     try {
-      const searchLocation =
-        state.location.trim() ||
-        (state.center
-          ? `${state.center.lat.toFixed(4)},${state.center.lng.toFixed(4)}`
-          : "");
+      const zonePayload =
+        computedZone!.type === "radius"
+          ? { type: "radius" as const, center: computedZone!.circle.center, radiusKm: computedZone!.circle.radiusKm }
+          : { type: "polygon" as const, points: computedZone!.polygon.points };
 
-      const res = await fetch("/api/search", {
+      const res = await fetch("/api/search/geo", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           businessType: state.businessType.trim(),
-          location: searchLocation,
+          zone: zonePayload,
           country: state.country || undefined,
           language: state.language || undefined,
-          objective: "local",
-          filters: [],
-          sources: ["google_maps"],
-          limit: 60,
+          limit: 40,
         }),
       });
 
       if (!res.ok) {
-        setError(`Search failed (${res.status})`);
+        const err = await res.json().catch(() => null);
+        setError(
+          err?.error ??
+            (locale === "fr"
+              ? `Erreur serveur (${res.status})`
+              : `Server error (${res.status})`)
+        );
         return;
       }
 
-      const data = (await res.json()) as SearchResponse;
+      const data = (await res.json()) as {
+        leads: Lead[];
+        meta: {
+          total: number;
+          rawResultsCount: number;
+          filteredByZoneCount: number;
+          zone: Record<string, unknown>;
+          sourcesUsed: string[];
+          durationMs: number;
+        };
+      };
 
-      const zone = state.zone;
-      const geoFiltered = data.leads.filter((lead) => {
-        if (!lead.geo) return false;
-        return pointInZone(lead.geo, zone);
-      });
+      setGeoMeta(data.meta);
 
-      const annotated = annotateSeen(geoFiltered);
-      markSeen(geoFiltered);
+      const annotated = annotateSeen(data.leads);
+      markSeen(data.leads);
       saveLeads(annotated as Lead[]);
-      bumpUsage({ searchesRun: 1, leadsFound: geoFiltered.length });
+      bumpUsage({ searchesRun: 1, leadsFound: data.leads.length });
 
       setLeads(annotated as Lead[]);
     } catch {
@@ -303,12 +310,12 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
   }
 
   const areaDisplay = React.useMemo(() => {
-    if (!state.zone) return null;
-    if (state.zone.type === "radius") {
-      return circleAreaKm2(state.zone.circle.radiusKm).toFixed(1);
+    if (!computedZone) return null;
+    if (computedZone.type === "radius") {
+      return circleAreaKm2(computedZone.circle.radiusKm).toFixed(1);
     }
-    return polygonAreaKm2(state.zone.polygon.points).toFixed(1);
-  }, [state.zone]);
+    return polygonAreaKm2(computedZone.polygon.points).toFixed(1);
+  }, [computedZone]);
 
   const apiKey = getGoogleMapsKey();
 
@@ -426,10 +433,10 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
             </div>
 
             <div className="flex flex-wrap items-center gap-3 text-xs text-muted">
-              {state.zone ? (
+              {computedZone ? (
                 <>
                   <Badge tone="accent">
-                    {state.zone.type === "radius"
+                    {computedZone?.type === "radius"
                       ? `${state.radiusKm} km`
                       : `${state.polygonPoints.length} points`}
                   </Badge>
@@ -549,7 +556,7 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
               className="w-full"
               leftIcon={<Search size={14} />}
               onClick={handleSearch}
-              disabled={loading || !state.zone}
+              disabled={loading || !computedZone}
             >
               {loading
                 ? locale === "fr"
@@ -565,15 +572,34 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
 
       <LoadingSteps running={loading} />
 
+      {!loading && geoMeta && geoMeta.rawResultsCount > 0 && leads.length === 0 ? (
+        <div className="rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-warning">
+          {locale === "fr"
+            ? `Google a renvoyé ${geoMeta.rawResultsCount} résultats, mais aucun ne se trouve dans la zone sélectionnée. Essayez d'agrandir la zone ou de déplacer le centre.`
+            : `Google returned ${geoMeta.rawResultsCount} results, but none are within the selected zone. Try expanding the zone or moving the center.`}
+        </div>
+      ) : null}
+
       {!loading && leads.length > 0 ? (
         <div className="space-y-3">
-          <div className="flex items-center gap-2 text-xs text-muted">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-muted">
             <Badge tone="accent">{leads.length}</Badge>
             <span>
               {locale === "fr"
                 ? "leads trouvés dans la zone"
                 : "leads found in zone"}
             </span>
+            {geoMeta ? (
+              <>
+                <span className="text-muted">·</span>
+                <span>
+                  {geoMeta.rawResultsCount}{" "}
+                  {locale === "fr" ? "résultats bruts" : "raw results"}
+                </span>
+                <span className="text-muted">·</span>
+                <span>{geoMeta.durationMs} ms</span>
+              </>
+            ) : null}
           </div>
           <LeadTable
             leads={leads}
@@ -587,7 +613,6 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
 }
 
 function getGoogleMapsKey(): string | null {
-  if (typeof window === "undefined") return null;
   const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY;
   if (!key || key === "your_key_here") return null;
   return key;
