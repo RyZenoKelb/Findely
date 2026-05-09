@@ -180,6 +180,7 @@ export interface Dict {
     copiedToast?: string;
     markedContacted?: string;
     savedToList?: string;
+    advancedFilters?: string;
   };
   drawer: {
     about: string;

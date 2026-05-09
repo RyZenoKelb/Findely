@@ -8,6 +8,7 @@ import {
   Check,
   Copy,
   ExternalLink,
+  Filter,
   ListPlus,
   MapPin,
   MoreHorizontal,
@@ -21,11 +22,19 @@ import { Button } from "@/components/ui/Button";
 import { DemoBadge } from "@/components/ui/DemoBadge";
 import { Input } from "@/components/ui/Field";
 import { Checkbox } from "@/components/ui/checkbox";
+import { AdvancedExportDrawer } from "./AdvancedExportDrawer";
+import { AdvancedFiltersDrawer } from "./AdvancedFiltersDrawer";
 import { ExportButton } from "./ExportButton";
 import { LeadDetailDrawer } from "./LeadDetailDrawer";
 import { LeadScore } from "./LeadScore";
 import { SignalBadges } from "./SignalBadge";
 import type { Lead, LeadFilterKey, LeadList } from "@/lib/leadTypes";
+import {
+  type AdvancedFilterState,
+  DEFAULT_ADVANCED_FILTERS,
+  applyAdvancedFilters,
+  countActiveFilters,
+} from "@/lib/advancedFilters";
 import { applyFilters } from "@/lib/leadFilters";
 import { useI18n } from "@/lib/i18n";
 import {
@@ -55,7 +64,7 @@ export function LeadTable({
   /** Forwarded to the detail drawer so "save to list" hits the DB when true. */
   authed?: boolean;
 }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [leads, setLeads] = React.useState<Lead[]>(initial);
   const [prevInitial, setPrevInitial] = React.useState<Lead[]>(initial);
   // Reset internal `leads` whenever the parent passes a new array identity —
@@ -84,6 +93,12 @@ export function LeadTable({
   const [openId, setOpenId] = React.useState<string | null>(null);
   const [toast, setToast] = React.useState<string | null>(null);
   const [listMenuFor, setListMenuFor] = React.useState<string | null>(null);
+  const [advFilters, setAdvFilters] = React.useState<AdvancedFilterState>(
+    DEFAULT_ADVANCED_FILTERS
+  );
+  const [advDrawerOpen, setAdvDrawerOpen] = React.useState(false);
+  const [exportDrawerOpen, setExportDrawerOpen] = React.useState(false);
+  const advFilterCount = countActiveFilters(advFilters);
 
   React.useEffect(() => {
     if (!toast) return;
@@ -95,6 +110,7 @@ export function LeadTable({
     const q = query.trim().toLowerCase();
     let base = leads;
     if (chipOn) base = applyFilters(base, [chip]);
+    base = applyAdvancedFilters(base, advFilters);
     if (q) {
       base = base.filter(
         (l) =>
@@ -111,7 +127,7 @@ export function LeadTable({
     if (sort === "source")
       sorted.sort((a, b) => a.source.localeCompare(b.source));
     return sorted;
-  }, [leads, query, chip, chipOn, sort]);
+  }, [leads, query, chip, chipOn, sort, advFilters]);
 
   const allSelected =
     filtered.length > 0 && filtered.every((l) => selected.has(l.id));
@@ -204,8 +220,28 @@ export function LeadTable({
           ))}
         </div>
         <div className="ml-auto flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            leftIcon={<Filter size={12} />}
+            onClick={() => setAdvDrawerOpen(true)}
+          >
+            {t.table.advancedFilters ?? "Filters"}
+            {advFilterCount > 0 ? (
+              <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-accent/20 px-1 text-[10px] font-bold text-accent-cyan">
+                {advFilterCount}
+              </span>
+            ) : null}
+          </Button>
           <SortMenu sort={sort} onChange={setSort} />
           <ExportButton leads={filtered} filename={defaultFilename} />
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setExportDrawerOpen(true)}
+          >
+            {locale === "fr" ? "Export+" : "Export+"}
+          </Button>
         </div>
       </div>
 
@@ -435,6 +471,20 @@ export function LeadTable({
           authed={authed}
         />
       ) : null}
+
+      <AdvancedFiltersDrawer
+        open={advDrawerOpen}
+        onClose={() => setAdvDrawerOpen(false)}
+        filters={advFilters}
+        onChange={setAdvFilters}
+      />
+
+      <AdvancedExportDrawer
+        open={exportDrawerOpen}
+        onClose={() => setExportDrawerOpen(false)}
+        leads={filtered}
+        selectedIds={selected}
+      />
 
       {toast ? (
         <div className="pointer-events-none fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full bg-foreground/95 px-3 py-1.5 text-xs font-medium text-background shadow-lg">

@@ -2,11 +2,13 @@
 
 import {
   BookmarkCheck,
+  CreditCard,
   Gauge,
   KeyRound,
   LayoutDashboard,
   ListChecks,
   LogOut,
+  MapPin,
   Search,
   Settings,
   Sparkles,
@@ -60,6 +62,11 @@ export function Sidebar({ userEmail = null, userPlan = null }: SidebarProps = {}
   const LINKS = [
     { href: "/app", label: t.sidebar.overview, icon: LayoutDashboard },
     { href: "/app/search", label: t.sidebar.newSearch, icon: Search },
+    {
+      href: "/app/geo",
+      label: (t.sidebar as Record<string, string>).geoSearch ?? "Geo Search",
+      icon: MapPin,
+    },
     { href: "/app/lists", label: t.sidebar.leadLists, icon: ListChecks },
     {
       href: "/app/searches",
@@ -67,6 +74,11 @@ export function Sidebar({ userEmail = null, userPlan = null }: SidebarProps = {}
       icon: BookmarkCheck,
     },
     { href: "/app/usage", label: t.sidebar.usage, icon: Gauge },
+    {
+      href: "/app/wallet",
+      label: (t.sidebar as Record<string, string>).wallet ?? "Wallet",
+      icon: CreditCard,
+    },
     ...(canUseApi
       ? [
           {
