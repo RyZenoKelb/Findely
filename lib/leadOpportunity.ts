@@ -258,8 +258,6 @@ export function getRecommendedAction(
 export function getSourceConfidence(lead: Lead): number {
   const map: Record<string, number> = {
     google_maps: 0.9,
-    google_search: 0.65,
-    directory: 0.55,
     mock: 0.3,
   };
   return map[lead.source] ?? 0.4;

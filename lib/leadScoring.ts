@@ -2,8 +2,6 @@ import type { Lead, LeadObjective } from "./leadTypes";
 
 const SOURCE_CREDIBILITY: Record<string, number> = {
   google_maps: 8,
-  google_search: 5,
-  directory: 4,
   mock: 3,
 };
 

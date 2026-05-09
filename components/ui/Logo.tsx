@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 export function LogoMark({
   className,
-  size = 28,
+  size = 34,
 }: {
   className?: string;
   size?: number;

@@ -109,7 +109,16 @@ function SearchPageInner({ authed }: { authed: boolean }) {
           {response.meta.fallbackUsed ? (
             <div className="flex items-start gap-2 rounded-lg border border-warning/30 bg-warning/10 px-4 py-2.5 text-xs text-warning">
               <Info size={14} className="mt-0.5 flex-none" />
-              <span className="leading-relaxed">{t.common.fallbackUsed}</span>
+              <div className="leading-relaxed">
+                <p>{t.common.fallbackUsed}</p>
+                {response.meta.warnings && response.meta.warnings.length > 0 ? (
+                  <ul className="mt-1 list-disc pl-4 text-warning/80">
+                    {response.meta.warnings.map((w, i) => (
+                      <li key={i}>{w.source}: {w.message}</li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
             </div>
           ) : null}
 

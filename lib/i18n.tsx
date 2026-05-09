@@ -755,7 +755,7 @@ const en: Dict = {
     copy: "Copy phone",
     openMaps: "Open in Maps",
     fallbackUsed:
-      "Google Places was requested but is not reachable — results came from the sample source.",
+      "The selected sources are not reachable — results came from the sample source.",
   },
   auth: {
     signInTitle: "Welcome back",
@@ -1285,7 +1285,7 @@ const fr: Dict = {
     copy: "Copier le téléphone",
     openMaps: "Ouvrir dans Maps",
     fallbackUsed:
-      "Google Places a été demandé mais n’est pas disponible — résultats issus de la source d’exemple.",
+      "Les sources sélectionnées ne sont pas disponibles — résultats issus de la source d’exemple.",
   },
   auth: {
     signInTitle: "Bon retour",

@@ -114,19 +114,6 @@ export function localizedSource(
             "Données d’entreprises issues de Google Places : adresse, téléphone, site web, note et lien Maps.",
           badge: "Données réelles",
         };
-      case "google_search":
-        return {
-          name: "Recherche Google",
-          description:
-            "Résultats organiques pour votre niche et votre zone.",
-        };
-      case "business_directories":
-      case "directory":
-        return {
-          name: "Annuaires professionnels",
-          description:
-            "Fiches issues d'annuaires professionnels publics.",
-        };
       case "mock":
         return {
           name: "Données de démo",
@@ -143,19 +130,6 @@ export function localizedSource(
           description:
             "Business data from Google Places: address, phone, website, rating, and Maps link.",
           badge: "Real data",
-        };
-      case "google_search":
-        return {
-          name: "Google Search",
-          description:
-            "Organic search results for your niche and location.",
-        };
-      case "business_directories":
-      case "directory":
-        return {
-          name: "Business Directories",
-          description:
-            "Directory listings from public business directories.",
         };
       case "mock":
         return {

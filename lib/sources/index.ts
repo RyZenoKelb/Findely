@@ -1,14 +1,10 @@
-import { directorySource } from "./directorySource";
 import { googleMapsSource } from "./googleMapsSource";
-import { googleSearchSource } from "./googleSearchSource";
 import { mockSource } from "./mockSource";
 import type { LeadSourceProvider, SourceMetadata } from "./types";
 
 export const ALL_PROVIDERS: LeadSourceProvider[] = [
   mockSource,
   googleMapsSource,
-  googleSearchSource,
-  directorySource,
 ];
 
 export function listSources(): SourceMetadata[] {
