@@ -4,6 +4,7 @@ import { ArrowRight, Lock, Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
+import { OAuthButtons } from "@/components/auth/OAuthButtons";
 import { Button, LinkButton } from "@/components/ui/Button";
 import { Input, Label } from "@/components/ui/Field";
 import { PublicShell } from "@/components/landing/PublicShell";
@@ -134,7 +135,15 @@ function SignInForm() {
               </Button>
             </div>
 
-            <div className="mt-4 text-center text-xs text-muted">
+            <div className="my-5 flex items-center gap-3 text-[11px] uppercase tracking-wide text-muted">
+              <span className="h-px flex-1 bg-border" />
+              {a?.orDivider ?? "or"}
+              <span className="h-px flex-1 bg-border" />
+            </div>
+
+            <OAuthButtons redirectTo={redirectTo} />
+
+            <div className="mt-5 text-center text-xs text-muted">
               {a?.noAccount ?? "New to Findely?"}{" "}
               <Link
                 href="/signup"

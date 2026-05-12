@@ -243,6 +243,10 @@ export function SearchForm({
     setLoading(true);
     onStart?.(state);
     try {
+      // Over-fetch to compensate for "already seen" leads that get filtered client-side
+      const backendLimit = state.excludeSeen
+        ? Math.min(Math.ceil(state.limit * 1.5), 1000)
+        : state.limit;
       const res = await fetch("/api/search", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -254,7 +258,7 @@ export function SearchForm({
           objective: state.objective,
           filters: state.filters,
           sources: state.sources,
-          limit: state.limit,
+          limit: backendLimit,
           advanced: {
             minScore: state.minScore ?? undefined,
             requirePhone: state.requirePhone || undefined,
@@ -380,16 +384,23 @@ export function SearchForm({
             <Input
               id="limit"
               type="number"
-              min={10}
-              max={120}
+              min={1}
+              max={1000}
               value={state.limit}
               onChange={(e) =>
                 patch(
                   "limit",
-                  Math.max(1, Math.min(120, Number(e.target.value) || 40))
+                  Math.max(1, Math.min(1000, Number(e.target.value) || 40))
                 )
               }
             />
+            {state.limit > 60 ? (
+              <p className="mt-1 text-[11px] text-muted">
+                {locale === "fr"
+                  ? "Les grandes recherches peuvent prendre plus de temps."
+                  : "Large searches may take longer."}
+              </p>
+            ) : null}
           </div>
         </div>
       </Section>

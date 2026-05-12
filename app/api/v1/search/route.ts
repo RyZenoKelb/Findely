@@ -65,7 +65,7 @@ const BodySchema = z.object({
   objective: ObjectiveSchema.optional(),
   filters: z.array(FilterSchema).max(16).optional(),
   sources: z.array(z.string().max(40)).max(8).optional(),
-  limit: z.number().int().min(1).max(120).optional(),
+  limit: z.number().int().min(1).max(1000).optional(),
   advanced: z
     .object({
       minScore: z.number().int().min(0).max(100).optional(),

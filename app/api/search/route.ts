@@ -30,6 +30,8 @@ import {
 } from "@/lib/quota";
 import { getRateLimitKey, rateLimit } from "@/lib/rateLimit";
 import { resolveProviders } from "@/lib/sources";
+import { googleMapsSource } from "@/lib/sources/googleMapsSource";
+import { getPlanLimits } from "@/lib/plans";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { cryptoRandomId } from "@/lib/utils";
 
@@ -66,7 +68,7 @@ const BodySchema = z.object({
   objective: ObjectiveSchema.optional(),
   filters: z.array(FilterSchema).max(16).optional(),
   sources: z.array(z.string().max(40)).max(8).optional(),
-  limit: z.number().int().min(1).max(120).optional(),
+  limit: z.number().int().min(1).max(1000).optional(),
   advanced: z
     .object({
       minScore: z.number().int().min(0).max(100).optional(),
@@ -105,6 +107,22 @@ export async function POST(request: Request) {
 
   // ---- Auth / demo gate -----------------------------------------------------
   const profile = await getCurrentUserProfile();
+
+  // ---- Plan lead-limit guard ------------------------------------------------
+  // Prevent e.g. a free plan (100 leads/month) from launching a 1000-lead batch.
+  if (profile) {
+    const planLimits = getPlanLimits(profile.plan);
+    const planMax = Math.min(planLimits.monthlyLeads, 1000);
+    if (Number.isFinite(planMax) && limit > planMax) {
+      return NextResponse.json(
+        {
+          error: `Your ${planLimits.label} plan allows at most ${planMax} leads per search. Upgrade to request more.`,
+          code: "quota_exceeded",
+        },
+        { status: 403 }
+      );
+    }
+  }
   if (!profile && !env.demoMode) {
     return NextResponse.json(
       { error: "Unauthorized", code: "unauthorized" },
@@ -174,9 +192,6 @@ export async function POST(request: Request) {
   );
 
   const rawLeads = results.flat();
-  const providersWithResults = providers.filter(
-    (_, i) => (results[i] ?? []).length > 0
-  );
   const requestedButMissing = requestedSources.filter(
     (id) => !providers.some((p) => p.id === id)
   );
@@ -247,6 +262,7 @@ export async function POST(request: Request) {
   };
 
   const usedIds = Array.from(new Set(limited.map((l) => l.source)));
+  const googleMeta = googleMapsSource.lastMeta;
 
   const response: SearchResponse = {
     leads: limited,
@@ -258,6 +274,18 @@ export async function POST(request: Request) {
       fallbackUsed,
       warnings: providerWarnings,
       missingSources: requestedButMissing,
+      requestedLimit: limit,
+      returnedCount: limited.length,
+      ...(googleMeta
+        ? {
+            rawFetchedCount: googleMeta.rawFetchedCount,
+            dedupedCount: googleMeta.dedupedCount,
+            batchesRun: googleMeta.batchesRun,
+            limitReached: googleMeta.limitReached,
+            cappedByProvider: googleMeta.cappedByProvider,
+            providerNotes: googleMeta.providerNotes,
+          }
+        : {}),
     },
   };
 

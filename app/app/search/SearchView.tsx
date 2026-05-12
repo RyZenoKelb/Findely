@@ -34,6 +34,7 @@ function SearchPageInner({ authed }: { authed: boolean }) {
   const { t, locale } = useI18n();
   const [response, setResponse] = React.useState<SearchResponse | null>(null);
   const [loading, setLoading] = React.useState(false);
+  const [largeSearch, setLargeSearch] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [hiddenSeen, setHiddenSeen] = React.useState(0);
   const [showSeen, setShowSeen] = React.useState(false);
@@ -56,27 +57,33 @@ function SearchPageInner({ authed }: { authed: boolean }) {
   function handleResults(resp: SearchResponse) {
     const state = currentStateRef.current;
     const wantExclude = state?.excludeSeen ?? true;
+    const userLimit = state?.limit ?? 40;
     setExcludeSeen(wantExclude);
 
     const annotated = annotateSeen(resp.leads);
     const visible = wantExclude
       ? annotated.filter((l) => !l.seenBefore)
       : annotated;
-    setHiddenSeen(annotated.length - visible.length);
+
+    // Trim to the user's requested limit (backend over-fetches to compensate)
+    const trimmed = visible.slice(0, userLimit);
+    setHiddenSeen(0);
 
     const finalResp: SearchResponse = {
       ...resp,
-      leads: (wantExclude ? visible : annotated) as Lead[],
+      leads: trimmed as Lead[],
       meta: {
         ...resp.meta,
-        total: (wantExclude ? visible : annotated).length,
+        total: trimmed.length,
+        requestedLimit: userLimit,
+        returnedCount: trimmed.length,
       },
     };
     setResponse(finalResp);
     setLoading(false);
     setError(null);
-    saveLeads(visible as Lead[]);
-    markSeen(resp.leads);
+    saveLeads(trimmed as Lead[]);
+    markSeen(trimmed as Lead[]);
     setShowSeen(!wantExclude);
   }
 
@@ -87,6 +94,7 @@ function SearchPageInner({ authed }: { authed: boolean }) {
         onStart={(state) => {
           currentStateRef.current = state;
           setLoading(true);
+          setLargeSearch(state.limit > 60);
           setError(null);
         }}
         onResults={handleResults}
@@ -102,7 +110,7 @@ function SearchPageInner({ authed }: { authed: boolean }) {
         </div>
       ) : null}
 
-      <LoadingSteps running={loading} />
+      <LoadingSteps running={loading} large={largeSearch} locale={locale} />
 
       {!loading && response ? (
         <div className="space-y-3">
@@ -147,11 +155,30 @@ function SearchPageInner({ authed }: { authed: boolean }) {
 
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-xs">
             <div className="flex flex-wrap items-center gap-2 text-muted">
-              <span className="text-foreground">
-                {response.meta.total} {t.table.leadsFound}
-              </span>
+              {response.meta.requestedLimit != null &&
+              response.meta.requestedLimit > response.meta.total ? (
+                <span className="text-foreground">
+                  {locale === "fr"
+                    ? `${response.meta.requestedLimit} demandés · ${response.meta.total} trouvés`
+                    : `${response.meta.requestedLimit} requested · ${response.meta.total} found`}
+                </span>
+              ) : (
+                <span className="text-foreground">
+                  {response.meta.total} {t.table.leadsFound}
+                </span>
+              )}
               <span>·</span>
-              <span>{response.meta.durationMs} ms</span>
+              {response.meta.batchesRun != null && response.meta.batchesRun > 1 ? (
+                <>
+                  <span>
+                    {locale === "fr"
+                      ? `${response.meta.batchesRun} lots`
+                      : `${response.meta.batchesRun} batches`}
+                  </span>
+                  <span>·</span>
+                </>
+              ) : null}
+              <span>{(response.meta.durationMs / 1000).toFixed(1)} s</span>
               <span>·</span>
               <span className="inline-flex items-center gap-1">
                 {response.meta.sourcesUsed.map((s) => (

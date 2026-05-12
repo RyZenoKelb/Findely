@@ -68,7 +68,7 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
   const googleMapRef = React.useRef<google.maps.Map | null>(null);
   const circleRef = React.useRef<google.maps.Circle | null>(null);
   const polygonRef = React.useRef<google.maps.Polygon | null>(null);
-  const markerRef = React.useRef<google.maps.Marker | null>(null);
+  const markerRef = React.useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
 
   function patch<K extends keyof GeoState>(key: K, value: GeoState[K]) {
     setState((s) => ({ ...s, [key]: value }));
@@ -94,7 +94,7 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
     }
 
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=drawing,geometry,places`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=drawing,geometry,places,marker`;
     script.async = true;
     script.defer = true;
     script.onload = () => setMapReady(true);
@@ -107,6 +107,7 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
     const map = new google.maps.Map(mapRef.current, {
       center: { lat: 48.8566, lng: 2.3522 },
       zoom: 12,
+      mapId: "findely_dark_map",
       styles: darkMapStyles,
       disableDefaultUI: true,
       zoomControl: true,
@@ -148,7 +149,7 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
 
     circleRef.current?.setMap(null);
     polygonRef.current?.setMap(null);
-    markerRef.current?.setMap(null);
+    if (markerRef.current) markerRef.current.map = null;
 
     if (state.drawMode === "radius" && state.center) {
       const circle = new google.maps.Circle({
@@ -163,17 +164,18 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
       });
       circleRef.current = circle;
 
-      const marker = new google.maps.Marker({
+      const pinEl = document.createElement("div");
+      pinEl.style.width = "14px";
+      pinEl.style.height = "14px";
+      pinEl.style.borderRadius = "50%";
+      pinEl.style.background = "#6366f1";
+      pinEl.style.border = "2px solid #fff";
+      pinEl.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
+
+      const marker = new google.maps.marker.AdvancedMarkerElement({
         map: googleMapRef.current,
         position: state.center,
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 6,
-          fillColor: "#6366f1",
-          fillOpacity: 1,
-          strokeColor: "#fff",
-          strokeWeight: 2,
-        },
+        content: pinEl,
       });
       markerRef.current = marker;
 
@@ -219,7 +221,7 @@ export default function GeoSearchView({ authed }: { authed: boolean }) {
   function resetZone() {
     circleRef.current?.setMap(null);
     polygonRef.current?.setMap(null);
-    markerRef.current?.setMap(null);
+    if (markerRef.current) markerRef.current.map = null;
     setState((s) => ({
       ...s,
       center: null,

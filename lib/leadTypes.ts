@@ -153,6 +153,14 @@ export interface SearchResponse {
     fallbackUsed?: boolean;
     warnings?: { source: string; message: string }[];
     missingSources?: string[];
+    requestedLimit?: number;
+    returnedCount?: number;
+    rawFetchedCount?: number;
+    dedupedCount?: number;
+    batchesRun?: number;
+    limitReached?: boolean;
+    cappedByProvider?: boolean;
+    providerNotes?: string[];
   };
 }
 

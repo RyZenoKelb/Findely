@@ -30,6 +30,7 @@ import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { useI18n } from "@/lib/i18n";
 import type { AppSettings } from "@/lib/leadTypes";
 import { getPlanLimits, isUnlimited, type Plan } from "@/lib/plans";
+import { updateProfileName } from "@/lib/actions/profile";
 import { clearSeen, seenCount } from "@/lib/seenLeads";
 import { listSources } from "@/lib/sources";
 import { DEFAULT_SETTINGS, getSettings, updateSettings } from "@/lib/storage";
@@ -38,6 +39,7 @@ import { cn, formatNumber } from "@/lib/utils";
 export interface SettingsViewProps {
   plan: Plan | null;
   email: string | null;
+  profileName?: string | null;
 }
 
 function planLabel(plan: Plan, t: ReturnType<typeof useI18n>["t"]): string {
@@ -88,16 +90,32 @@ const NAV_ITEMS = [
   { id: "danger", icon: ShieldAlert, key: "navDanger" as const },
 ];
 
-export function SettingsView({ plan, email }: SettingsViewProps) {
+export function SettingsView({ plan, email, profileName }: SettingsViewProps) {
   const { t, locale } = useI18n();
 
-  const [persisted, setPersisted] = React.useState<AppSettings>(() =>
-    typeof window === "undefined" ? DEFAULT_SETTINGS : getSettings()
-  );
-  const [draft, setDraft] = React.useState<AppSettings>(persisted);
-  const [seenTotal, setSeenTotal] = React.useState<number>(() =>
-    typeof window === "undefined" ? 0 : seenCount()
-  );
+  const serverSettings: AppSettings = {
+    ...DEFAULT_SETTINGS,
+    profileName: profileName ?? DEFAULT_SETTINGS.profileName,
+    profileEmail: email ?? DEFAULT_SETTINGS.profileEmail,
+  };
+
+  const [persisted, setPersisted] = React.useState<AppSettings>(serverSettings);
+  const [draft, setDraft] = React.useState<AppSettings>(serverSettings);
+  const [seenTotal, setSeenTotal] = React.useState(0);
+  const [hydrated, setHydrated] = React.useState(false);
+
+  if (!hydrated && typeof window !== "undefined") {
+    const stored = getSettings();
+    const merged: AppSettings = {
+      ...stored,
+      profileName: profileName ?? stored.profileName,
+      profileEmail: email ?? stored.profileEmail,
+    };
+    setPersisted(merged);
+    setDraft(merged);
+    setSeenTotal(seenCount());
+    setHydrated(true);
+  }
   const [saveState, setSaveState] = React.useState<"idle" | "saving" | "saved">(
     "idle"
   );
@@ -128,11 +146,21 @@ export function SettingsView({ plan, email }: SettingsViewProps) {
     }));
   }
 
-  function handleSave() {
+  async function handleSave() {
     setSaveState("saving");
     const next = updateSettings(draft);
     setPersisted(next);
     setDraft(next);
+
+    if (draft.profileName !== persisted.profileName) {
+      const result = await updateProfileName(draft.profileName);
+      if (!result.ok) {
+        setToast(result.error);
+        setSaveState("idle");
+        return;
+      }
+    }
+
     setSaveState("saved");
     setTimeout(() => setSaveState("idle"), 1600);
   }
@@ -274,15 +302,15 @@ export function SettingsView({ plan, email }: SettingsViewProps) {
                 <Input
                   id="dli"
                   type="number"
-                  min={10}
-                  max={120}
+                  min={1}
+                  max={1000}
                   value={draft.defaultLimit}
                   onChange={(e) =>
                     patch(
                       "defaultLimit",
                       Math.max(
-                        10,
-                        Math.min(120, Number(e.target.value) || 40)
+                        1,
+                        Math.min(1000, Number(e.target.value) || 40)
                       )
                     )
                   }

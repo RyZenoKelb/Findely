@@ -61,6 +61,7 @@ export interface DashboardViewProps {
   authed?: boolean;
   onboardingCompleted?: boolean;
   email?: string | null;
+  profileName?: string | null;
   summary?: UsageSummary | null;
   overview?: DashboardOverviewData | null;
 }
@@ -142,6 +143,7 @@ export default function DashboardView({
   authed = false,
   onboardingCompleted = false,
   email = null,
+  profileName = null,
   summary = null,
   overview = null,
 }: DashboardViewProps = {}) {
@@ -239,11 +241,13 @@ export default function DashboardView({
         leadCount: l.leadIds.length,
       }));
 
-  const displayName = email
-    ? email.split("@")[0]
-    : locale === "fr"
-      ? "invité"
-      : "guest";
+  const displayName = profileName
+    ? profileName
+    : email
+      ? email.split("@")[0]
+      : locale === "fr"
+        ? "vous"
+        : "there";
 
   return (
     <div className="space-y-6">

@@ -54,7 +54,7 @@ const BodySchema = z.object({
   zone: ZoneSchema,
   country: z.string().trim().max(64).optional(),
   language: z.string().trim().max(16).optional(),
-  limit: z.number().int().min(1).max(120).optional(),
+  limit: z.number().int().min(1).max(1000).optional(),
 });
 
 const TEXT_SEARCH_URL =
@@ -140,21 +140,26 @@ export async function POST(request: Request) {
     searchRadiusMeters = Math.min(maxDist * 1.2, 50000);
   }
 
-  const fetchLimit = Math.min(limit * 3, 60);
-  let rawResults: PlacesResult[] = [];
+  const dedupedMap = new Map<string, PlacesResult>();
+  let batchesRun = 0;
 
   try {
+    // Always run nearby search from center
     const nearbyResults = await nearbySearch(
       body.businessType,
       searchCenter,
       searchRadiusMeters,
       apiKey,
       body.language,
-      fetchLimit
+      60
     );
-    rawResults = nearbyResults;
+    batchesRun++;
+    for (const r of nearbyResults) {
+      if (!dedupedMap.has(r.place_id)) dedupedMap.set(r.place_id, r);
+    }
 
-    if (rawResults.length < fetchLimit) {
+    // Text search biased toward center
+    if (dedupedMap.size < limit) {
       const locationStr = `${searchCenter.lat},${searchCenter.lng}`;
       const textResults = await textSearchBiased(
         body.businessType,
@@ -162,23 +167,48 @@ export async function POST(request: Request) {
         searchRadiusMeters,
         apiKey,
         body.language,
-        fetchLimit - rawResults.length
+        60
       );
-      const existingIds = new Set(rawResults.map((r) => r.place_id));
+      batchesRun++;
       for (const r of textResults) {
-        if (!existingIds.has(r.place_id)) rawResults.push(r);
+        if (!dedupedMap.has(r.place_id)) dedupedMap.set(r.place_id, r);
+      }
+    }
+
+    // For large limits, add offset search points within/around the zone
+    if (limit > 60 && dedupedMap.size < limit) {
+      const dLat = (searchRadiusMeters / 1000) / 111;
+      const dLng = dLat / Math.cos((searchCenter.lat * Math.PI) / 180);
+      const offsets = [
+        { lat: dLat * 0.6, lng: 0 },
+        { lat: -dLat * 0.6, lng: 0 },
+        { lat: 0, lng: dLng * 0.6 },
+        { lat: 0, lng: -dLng * 0.6 },
+        { lat: dLat * 0.4, lng: dLng * 0.4 },
+        { lat: dLat * 0.4, lng: -dLng * 0.4 },
+        { lat: -dLat * 0.4, lng: dLng * 0.4 },
+        { lat: -dLat * 0.4, lng: -dLng * 0.4 },
+      ];
+      const subRadius = Math.max(searchRadiusMeters * 0.5, 1000);
+      for (const off of offsets) {
+        if (dedupedMap.size >= limit * 2) break;
+        const pt = { lat: searchCenter.lat + off.lat, lng: searchCenter.lng + off.lng };
+        const sub = await nearbySearch(body.businessType, pt, subRadius, apiKey, body.language, 60);
+        batchesRun++;
+        for (const r of sub) {
+          if (!dedupedMap.has(r.place_id)) dedupedMap.set(r.place_id, r);
+        }
       }
     }
   } catch (err) {
     return NextResponse.json(
-      {
-        error: "Google Places API error",
-        detail: err instanceof Error ? err.message : "Unknown",
-      },
+      { error: "Google Places API error", detail: err instanceof Error ? err.message : "Unknown" },
       { status: 502 }
     );
   }
 
+  // Deduplicate then fetch details only for final set
+  const rawResults = [...dedupedMap.values()];
   const details = await batchDetails(
     rawResults.map((r) => r.place_id),
     apiKey,
@@ -289,8 +319,12 @@ export async function POST(request: Request) {
     leads: limited,
     meta: {
       total: limited.length,
+      requestedLimit: limit,
+      returnedCount: limited.length,
       rawResultsCount: rawCount,
       filteredByZoneCount: geoFiltered.length,
+      batchesRun,
+      cappedByProvider: rawResults.length < limit,
       zone: {
         type: zone.type,
         ...(zone.type === "radius"

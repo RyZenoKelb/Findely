@@ -39,6 +39,7 @@ export default async function DashboardPage() {
       authed={Boolean(profile)}
       onboardingCompleted={profile?.onboarding_completed ?? false}
       email={profile?.email ?? null}
+      profileName={profile?.full_name ?? null}
       summary={summary}
       overview={overview}
     />

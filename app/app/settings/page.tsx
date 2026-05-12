@@ -7,6 +7,7 @@ export default async function SettingsPage() {
     <SettingsView
       plan={profile?.plan ?? null}
       email={profile?.email ?? null}
+      profileName={profile?.full_name ?? null}
     />
   );
 }
