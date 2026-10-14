@@ -62,8 +62,6 @@ The source code is shared for portfolio and technical evaluation purposes only.
 
 ## License
 
-Copyright © 2026 Gabriel Sdika.
-
 All rights reserved.
 
 No part of this repository may be copied, modified, distributed, published, sublicensed or used commercially without prior written permission from the author.
